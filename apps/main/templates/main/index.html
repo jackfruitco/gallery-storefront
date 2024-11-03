@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_stylesheet %}
+    <link rel="stylesheet" href={% static "main/style.css"%}>
+{% endblock %}
+
+{% block parallax %}
+    <div id="parallax" class="bgimg-1 display-container opacity-min" >
+        <div class="display-topthirdmiddle" style="white-space:nowrap;">
+            <span class="center padding-large black xxlarge letter-wide animate-opacity">Pottery<span> By</span> Marnie</span>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div id="portfolio-highlights" class="container padding-64" >
+      <h3 class="center">HIGHLIGHTS</h3>
+      <p class="center"><em>Click an image to view in more detail.<br>
+          Or, see <a href="{% url 'gallery:index' %}"><i>my gallery</i></a> for more!</em></p>
+       {% include 'gallery/gallery-carousel.html' %}
+    </div>
+{%  endblock %}

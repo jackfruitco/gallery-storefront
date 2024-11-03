@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import os
 
+from gunicorn import app
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -29,8 +31,8 @@ DEBUG = os.getenv('DJANGO_DEBUG', '') != 'False'
 
 ALLOWED_HOSTS = str(os.getenv('DJANGO_ALLOWED_HOSTS')).split(', ')
 
-CSRF_TRUSTED_ORIGINS = str(os.getenv('CSRF_TRUSTED_ORIGINS')).split(', ')
-#CSRF_TRUSTED_ORIGINS = ['http://localhost',]
+# CSRF_TRUSTED_ORIGINS = str(os.getenv('CSRF_TRUSTED_ORIGINS')).split(', ')
+CSRF_TRUSTED_ORIGINS = ['http://localhost',]
 CSRF_COOKIE_SECURE = os.environ.get('CSRF_COOKIE_SECURE', '') != 'False'
 
 
@@ -43,6 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'apps.main.apps.MainConfig',
+    'apps.gallery.apps.GalleryConfig',
 ]
 
 MIDDLEWARE = [

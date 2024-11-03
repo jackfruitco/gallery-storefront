@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html lang="en">
+<head>    
+    <link rel="stylesheet" href={% static "w3.css" %}>
+    <link rel="stylesheet" href={% static "core.css" %}>
+    {% block extra_stylesheet %}{% endblock %}
+    <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
+</head>
+
+<body>  
+    {% block header %}{% include 'header.html' %}{% endblock %}
+    
+    <main id="main">
+        {% block parallax %}{% endblock %}
+        {% block content %}{% endblock %}
+    </main>
+
+    {% block footer %}{% include 'footer.html' %}{% endblock %}
+</body>
+</html>

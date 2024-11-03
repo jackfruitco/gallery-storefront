@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load home_extras %}
+
+{% block title %}About {{ profile.first_name }}{% endblock %}
+
+{% block content %}
+    <div id="aboutSection" class="content container padding-64" >
+        <h3 class="center">ABOUT {{ profile.first_name|upper }}</h3>
+        <!-- $$$ Add quote field to profile model and change <em> below to tag-->
+        <h6 class="center">{{ profile.position|title }}
+            {% if profile.quote != '' %}
+            | <em>{{ profile.quote }}</em></h6><br>
+            {% endif %}
+        <p>{{ profile.about_me|split_sentences:'0:3' }}</p>
+      <div class="row">
+        <div class="col m6 center padding-large">
+          <p><b><i class="fa fa-user margin-right"></i>{{ profile.first_name|capfirst }}</b></p><br>
+          <img src="{% if profile.portrait %}{{ profile.portrait.url }}
+                    {% else %}{% static 'main/images/PersonPlaceholder.png' %}
+                    {% endif %} " class="round image opacity hover-opacity-off" alt="Photo of {{ profile.first_name }}" width="500" height="333">
+        </div>
+
+        <!-- Hide this text on small devices -->
+        <div class="col m6 hide-small padding-large">
+          <p>{{ profile.about_me|split_sentences:'3:' }}</p>
+        </div>
+      </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,14 @@
+<div>
+<!-- Container (Gallery Carousel)-->
+    {% if project_list %}
+        <div id='carousel' class="carousel-container center">
+        {% for project in project_list %}
+            {% with id=project.id img=project.get_key_image %}
+                <a href="{% url 'gallery:detail' id %}"><img class="carousel round-large opacity hover-opacity-off" src="{{ img.image.url }}" alt="{{ img.description }}"></a>
+            {% endwith %}
+        {% endfor %}
+        </div>
+    {% else %}
+        <p style="padding-left: 20%">No projects are available to view.</p>
+    {% endif %}
+</div>

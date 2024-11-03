@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_stylesheet %}
+    <link rel="stylesheet" href={% static "gallery/style.css" %}>
+{% endblock %}
+
+{% block title %}Gallery{% endblock %}
+
+{% block parallax %}
+    <div id="parallax" class="bgimg-2 display-container opacity-min">
+        <div class="display-topthirdmiddle">
+            <span class="center padding-large black xxlarge letter-wide animate-opacity">GALLERY</span>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div id="portfolio" class="content container padding-64" >
+      <h3 class="center">MY WORK</h3>
+      <p class="center"><em>Here is some of my latest work.<br> Click a project to view in more detail.</em></p><br>
+    </div>
+    {% include 'gallery/gallery-carousel.html' %}
+{% endblock %}
