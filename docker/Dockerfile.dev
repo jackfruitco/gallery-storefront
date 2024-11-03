@@ -44,6 +44,12 @@ RUN mkdir -p /app/static && \
     chown -R appuser:appuser /app/static && \
     chown -R appuser:appuser /app/media
 
+# Install libpq (PostgreSQL client library)
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    nano \
+    curl \
+
 # Switch to the non-privileged user to run the application.
 # USER appuser
 
