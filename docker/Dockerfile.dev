@@ -46,9 +46,9 @@ RUN mkdir -p /app/static && \
 
 # Install libpq (PostgreSQL client library)
 RUN apt-get update && apt-get install -y \
-    libpq-dev \
+    # libpq-dev \
     nano \
-    curl \
+    curl
 
 # Switch to the non-privileged user to run the application.
 # USER appuser
