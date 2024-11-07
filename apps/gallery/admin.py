@@ -1,23 +1,23 @@
 from django.contrib import admin
-from .models import Project, ProjectImage, ProjectType, Color
+from .models import Product, ProductImage, Color, ProductCategory
 
 
 class MediaUploadInline(admin.StackedInline):
-    model = ProjectImage
+    model = ProductImage
     extra = 1
     max_num = 4
 
-class ProjectAdmin(admin.ModelAdmin):
+class ProductAdmin(admin.ModelAdmin):
     fieldsets = [
-        (None, {"fields": ["name", "type", "description", "primary_color"]}),
+        (None, {"fields": ["name", "category", "description", "primary_color"]}),
         ("Website Options", {"fields": ["display"]}),
-        ("Storefront", {"fields": []}),
+        ("Storefront", {"fields": ["add_to_shopify", "shop_GID","price","sku"]}),
     ]
     inlines = [MediaUploadInline]
     list_display = ["name", "primary_color", "display"]
-    list_filter = ["type", "display"]
+    list_filter = ["category", "display"]
     search_fields = ["description"]
 
-admin.site.register(Project, ProjectAdmin)
-admin.site.register(ProjectType)
+admin.site.register(Product, ProductAdmin)
+admin.site.register(ProductCategory)
 admin.site.register(Color)

@@ -1,7 +1,8 @@
 from django.shortcuts import render, get_object_or_404
 from django.views import generic
-# from apps.main.models import Profile
-from apps.gallery.models import Project
+from apps.gallery.models import Product
+from apps.shopify_app.decorators import shop_login_required
+import shopify
 
 def index(request):
     # Number of visits to this view, as counted in the session variable.
@@ -11,15 +12,12 @@ def index(request):
 
     def get_queryset():
         """Return the last five published questions."""
-        return Project.objects.order_by("-created_at")[:4]
+        return Product.objects.order_by("-created_at")[:4]
 
     return render(request,
                   'main/index.html',
-                  {"project_list": get_queryset()},
+                  {"product_list": get_queryset()},
                   )
-
-def redirect(request):
-    return redirect("/home")
 
 #class AboutView(generic.DetailView):
     # model = Profile
@@ -38,3 +36,9 @@ def redirect(request):
     #    # Add in the publisher
     #    context["profile"] = self.profile
     #    return context
+
+@shop_login_required
+def product(request):
+    products = shopify.Product.find(limit=3)
+
+    return render(request, template_name='main/test.html', context={'products': products})

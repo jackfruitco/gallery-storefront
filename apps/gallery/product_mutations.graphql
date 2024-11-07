@@ -1,0 +1,24 @@
+# reference shopify GraphQL API
+# uses productSet() to update product
+# when synchronous is set to True, returned Json will inclue Shopify productID (GID)
+mutation createProductAsynchronous($productSet: ProductSetInput!, $synchronous: Boolean!) {
+  productSet(synchronous: $synchronous, input: $productSet) {
+    product {
+      id
+    }
+    productSetOperation {
+      id
+      status
+      userErrors {
+        code
+        field
+        message
+      }
+    }
+    userErrors {
+      code
+      field
+      message
+    }
+  }
+}

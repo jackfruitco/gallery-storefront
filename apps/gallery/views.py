@@ -4,18 +4,18 @@
 # from django.urls import reverse
 from django.views import generic
 
-from .models import Project, ProjectImage
+from .models import Product, ProductImage
 
 
 # Create your views here.
 class IndexView(generic.ListView):
     template_name = "gallery/index.html"
-    context_object_name = "project_list"
+    context_object_name = "product_list"
 
     def get_queryset(self):
         """Return the last five published questions."""
-        return Project.objects.filter(display=True).order_by("-created_at")[:16]
+        return Product.objects.filter(display=True).order_by("-created_at")[:16]
 
 class DetailView(generic.DetailView):
     template_name = "gallery/detail.html"
-    model = Project
+    model = Product

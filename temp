@@ -1,0 +1,16 @@
+       with shopify.Session.temp(shop_url, api_version, token):
+
+            inputs = '''{
+              "synchronous": false,
+              "productSet": {
+                "title": %s,
+              }
+            }
+            ''' % self.name
+
+            result = shopify.GraphQL().execute(
+                query=mutation,
+                variables=inputs,
+            )
+
+        return result

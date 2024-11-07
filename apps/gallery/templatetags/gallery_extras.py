@@ -1,7 +1,7 @@
 import os
 
 from django import template
-from apps.gallery.models import Project, ProjectImage
+from apps.gallery.models import Product, ProductImage
 
 register = template.Library()
 
@@ -12,5 +12,5 @@ register = template.Library()
 #    return file_ext
 
 @register.filter(is_safe=True)
-def get_all_project_images(project_pk):
-    return ProjectImage.objects.filter(id=project_pk).all()
+def get_all_product_images(product_pk):
+    return Product.objects.filter(id=product_pk).all()

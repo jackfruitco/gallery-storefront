@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{ project.name }}{% endblock %}
+{% block title %}{{ product.name }}{% endblock %}
 
 {% block extra_stylesheet %}
     <link rel="stylesheet" href={% static "gallery/style.css" %}>
@@ -10,16 +10,16 @@
 {% block content %}
     <div class="flex flex-left" style="padding: 56px">
         {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-        <img class="key round-xxlarge" src="{{ project.get_key_image.image.url }}"
-             alt="{{ project.get_key_image.description }}">
+        <img class="key round-xxlarge" src="{{ product.get_key_image.image.url }}"
+             alt="{{ product.get_key_image.description }}">
         <div class="item-details flex">
-            <h1>{{ project.name }}</h1>
-            <hr><h6>{{ project.description }}</h6>
+            <h1>{{ product.name }}</h1>
+            <hr><h6>{{ product.description }}</h6>
         </div>
     </div>
 
     <!--<div class="carousel-container">
-        {% for img in project.get_images %}
+        {% for img in product.get_images %}
             <img class="carousel round-xlarge" src="{{ img.image.url }}" alt="{{ img.description }}">
         {% endfor %}
     </div>-->
