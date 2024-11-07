@@ -8,13 +8,15 @@ class MediaUploadInline(admin.StackedInline):
     max_num = 4
 
 class ProductAdmin(admin.ModelAdmin):
+    readonly_fields = ("shop_GID", "created_at", "modified_at")
+
     fieldsets = [
         (None, {"fields": ["name", "category", "description", "primary_color"]}),
         ("Website Options", {"fields": ["display"]}),
         ("Storefront", {"fields": ["add_to_shopify", "shop_GID","price","sku"]}),
     ]
     inlines = [MediaUploadInline]
-    list_display = ["name", "primary_color", "display"]
+    list_display = ["name", "primary_color", "display", "shop_GID"]
     list_filter = ["category", "display"]
     search_fields = ["description"]
 
