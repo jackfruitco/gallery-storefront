@@ -19,6 +19,7 @@ from django.urls import include, path
 from django.conf.urls.static import static
 from django.conf import settings
 from apps.main import views as main_views
+from apps.shopify_app.decorators import shop_login_required
 
 urlpatterns = [
     path('', main_views.index, name='index_redirect'),

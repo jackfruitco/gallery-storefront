@@ -13,7 +13,6 @@ api_version = apps.get_app_config('shopify_app').SHOPIFY_API_VERSION
 def _new_session():
     return shopify.Session(shop_url, api_version)
 
-# Ask user for their ${shop}.myshopify.com address
 
 @staff_member_required
 def login(request):
@@ -25,14 +24,12 @@ def login(request):
 
 
 def authenticate(request):
-    # shop_url = request.GET.get('shop', request.POST.get('shop')).strip()
     if not shop_url:
         messages.error(request, "A shop param is required")
         return redirect(reverse(login))
     scope = apps.get_app_config('shopify_app').SHOPIFY_API_SCOPES
     redirect_uri = request.build_absolute_uri(reverse('shopify:finalize'))
     state = binascii.b2a_hex(os.urandom(15)).decode("utf-8")
-    # request.session['shopify_oauth_state_param'] = state
 
     auth_url = _new_session().create_permission_url(scope, redirect_uri, state)
     return redirect(auth_url)
@@ -67,23 +64,6 @@ def finalize(request):
     # messages.info(request, "Logged in to shopify store.")
     # request.session.pop('return_to', None)
     return redirect(request.session.get('return_to', reverse('admin:index')))
-
-    # store_token = ShopifyAccessToken(user=request.user, access_token=access_token)
-    # store_token.save()
-
-    #with shopify.Session.temp(shop_url, api_version, access_token):
-    #    new_product = shopify.Product()
-
-    #    new_product.handle = "jackfruit-test-item"
-    #    new_product.title = "Jackfruit Test"
-    #    new_product.description = "Jackfruit Test Objecting for testing purposes"
-    #    new_product.product_type = "snowboard"
-    #    new_product.vendor = "jackfruitco-test"
-    #    success = new_product.save()
-
-    #return redirect(reverse('shopify:product'), access_token=access_token)
-    #return redirect(request.session.get('return_to', reverse('/')))
-    #return redirect(reverse('main:index'))
 
 def logout(request):
     request.session.pop('shopify', None)

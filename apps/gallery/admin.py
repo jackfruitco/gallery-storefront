@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import Product, ProductImage, Color, ProductCategory
+from apps.shopify_app.decorators import shopify_token_required
 
 
 class MediaUploadInline(admin.StackedInline):
@@ -13,7 +14,7 @@ class ProductAdmin(admin.ModelAdmin):
     fieldsets = [
         (None, {"fields": ["name", "category", "description", "primary_color"]}),
         ("Website Options", {"fields": ["display"]}),
-        ("Storefront", {"fields": ["add_to_shopify", "shop_GID","price","sku"]}),
+        ("Storefront", {"fields": ["shopify_sync", "shop_GID","price","sku"]}),
     ]
     inlines = [MediaUploadInline]
     list_display = ["name", "primary_color", "display", "shop_GID"]

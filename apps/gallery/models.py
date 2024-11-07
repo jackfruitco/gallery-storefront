@@ -4,7 +4,7 @@ from autoslug import AutoSlugField
 from django.apps import apps
 from django.db import models
 import logging, json
-
+from apps.shopify_app.decorators import shop_login_required, shopify_token_required
 from apps.shopify_app.models import ShopifyAccessToken
 
 logger = logging.getLogger(__name__)
@@ -12,6 +12,7 @@ logger.setLevel(logging.INFO)
 
 def get_image_path(instance, filename):
     return "images/products/{0}/{1}".format(instance.fk_product.pk, instance.slug + "." + filename.split('.')[-1])
+
 
 class ProductCategory(models.Model):
     name = models.CharField(max_length=50)
@@ -37,7 +38,7 @@ class Product(models.Model):
 
     # Shopify data
     available_for_sale = models.BooleanField(default=False)
-    add_to_shopify = models.BooleanField(default=False)
+    shopify_sync = models.BooleanField(default=False, help_text="Sync this item with Shopify")
     shop_GID  = models.CharField(max_length=100, blank=True, help_text="Shopify productID", editable=False)
     sku = models.CharField(max_length=50, blank=True)
     price = models.FloatField(null=True, blank=True)
@@ -52,8 +53,8 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
-    # @shop_login_required
-    def shopify_sync(self) -> bool:
+    @shopify_token_required
+    def shopify_sync(self):
         """push item to shopify as new product"""
         shop_url = apps.get_app_config('shopify_app').SHOPIFY_URL
         api_version = apps.get_app_config('shopify_app').SHOPIFY_API_VERSION
@@ -96,15 +97,26 @@ class Product(models.Model):
             )
 
         # BROKEN BUG
-        self.shop_GID = json.loads(response)['data']['productSet']['product']['id']
+        # _var = json.loads(response)['data']['productSet']['product']['id']
+        # obj = Product.objects.get(self)
+        # obj.shop_GID = _var
+        # obj.save()
 
-        return True
+        logger.warning(json.loads(response)['data']['productSet']['product']['id'])
+        # logger.warning(Product.shop_GID)
+
+        return response
 
     def save(self, **kwargs):
         _shop_sync = None
+        if self.shopify_sync and not self.shop_GID:
+            self.shop_GID = json.loads(self.shopify_sync())['data']['productSet']['product']['id']
+            self.save()
         super().save(**kwargs)
 
-        if self.add_to_shopify: _shop_sync = self.shopify_sync()
+
+
+
 
 class ProductImage(models.Model):
     fk_product = models.ForeignKey(Product, on_delete=models.CASCADE)
