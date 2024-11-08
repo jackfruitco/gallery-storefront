@@ -4,8 +4,10 @@ from autoslug import AutoSlugField
 from django.apps import apps
 from django.db import models
 import logging, json
+from django.utils.text import slugify
 from apps.shopify_app.decorators import shop_login_required, shopify_token_required
 from apps.shopify_app.models import ShopifyAccessToken
+from apps.shopify_app.api_connectors import _shop_sync
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -19,29 +21,41 @@ class ProductCategory(models.Model):
     def __str__(self):
         return self.name
 
+
 class Color(models.Model):
     name = models.CharField(max_length=50)
     def __str__(self):
         return self.name
+
 
 class Product(models.Model):
     name = models.CharField(max_length=100, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     modified_at = models.DateTimeField(auto_now=True, editable=False)
 
-    # product information
+    # Product information
     category = models.ManyToManyField('ProductCategory')
     description = models.TextField(blank=True)
 
-    # display information
-    display = models.BooleanField(default=True, help_text="Display this product in website gallery")
+    # Site Gallery Display Data
+    display = models.BooleanField(default=True, help_text=
+    "If selected, this product will be displayed in Site Gallery")
 
-    # Shopify data
-    available_for_sale = models.BooleanField(default=False)
-    shopify_sync = models.BooleanField(default=False, help_text="Sync this item with Shopify")
-    shop_GID  = models.CharField(max_length=100, blank=True, help_text="Shopify productID", editable=False)
+    # Shopify Store Data
+    shop_sync = models.BooleanField(
+        default=False,
+        help_text="If selected, this product's data will synced with Shopify and "
+                  "available via the Shopify Online Store and Shopify POS. Please note, "
+                  "updates made via Shopify Admin will be overridden, and do not sync with"
+                  "this site.")
+    shop_GID  = models.CharField(max_length=100, blank=True, help_text="Shopify Global productID", editable=False)
+    shop_status = models.CharField(max_length=10, default="ACTIVE",
+                                   choices={
+                                       "ACTIVE": "Active",
+                                       "DRAFT": "Draft",
+                                       "ARCHIVED": "Archived"})
     sku = models.CharField(max_length=50, blank=True)
-    price = models.FloatField(null=True, blank=True)
+    price = models.FloatField(default=0, help_text="If item is not synced with Shopify, enter price as '0'.")
 
     primary_color = models.ForeignKey(Color, on_delete=models.CASCADE)
 
@@ -53,69 +67,13 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
-    @shopify_token_required
-    def shopify_sync(self):
-        """push item to shopify as new product"""
-        shop_url = apps.get_app_config('shopify_app').SHOPIFY_URL
-        api_version = apps.get_app_config('shopify_app').SHOPIFY_API_VERSION
-
-        # below needs error handling for if token does not exist. Consider shop login decorator
-        token = ShopifyAccessToken.objects.get(user=1).access_token
-        document = open('/app/apps/gallery/product_mutations.graphql', 'r').read()
-
-        with shopify.Session.temp(shop_url, api_version, token):
-            response = shopify.GraphQL().execute(
-                query=document,
-                variables={
-                    "synchronous": True,
-                    "productSet": {
-                        "title": self.name,
-                        "descriptionHtml": "<i>%s</i>" % self.description,
-                        "status": "ACTIVE",
-                        "productOptions": [
-                            {
-                                "name": "Color",
-                                "position": 1,
-                                "values": [
-                                    {"name": self.primary_color.name},
-                                ]
-                            }
-                        ],
-                        "variants": [
-                            {
-                                "optionValues": [{
-                                    "optionName": "Color",
-                                    "name": self.primary_color.name,
-                                }],
-                                "price": self.price,
-                            },
-                        ],
-
-                    }
-                },
-                operation_name='createProductAsynchronous',
-            )
-
-        # BROKEN BUG
-        # _var = json.loads(response)['data']['productSet']['product']['id']
-        # obj = Product.objects.get(self)
-        # obj.shop_GID = _var
-        # obj.save()
-
-        logger.warning(json.loads(response)['data']['productSet']['product']['id'])
-        # logger.warning(Product.shop_GID)
-
-        return response
-
     def save(self, **kwargs):
-        _shop_sync = None
-        if self.shopify_sync and not self.shop_GID:
-            self.shop_GID = json.loads(self.shopify_sync())['data']['productSet']['product']['id']
-            self.save()
+        if self.shop_sync:
+            response = _shop_sync(self)
+            if not self.shop_GID:
+                self.shop_GID = json.loads(response)['data']['productSet']['product']['id']
+                self.save()
         super().save(**kwargs)
-
-
-
 
 
 class ProductImage(models.Model):

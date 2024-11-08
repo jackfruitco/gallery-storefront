@@ -14,11 +14,12 @@ class ProductAdmin(admin.ModelAdmin):
     fieldsets = [
         (None, {"fields": ["name", "category", "description", "primary_color"]}),
         ("Website Options", {"fields": ["display"]}),
-        ("Storefront", {"fields": ["shopify_sync", "shop_GID","price","sku"]}),
+        ("Storefront", {"fields": ["shop_sync", "shop_GID","shop_status","price","sku"]}),
+        ("Technical Data", {"fields": ["created_at", "modified_at"]})
     ]
     inlines = [MediaUploadInline]
-    list_display = ["name", "primary_color", "display", "shop_GID"]
-    list_filter = ["category", "display"]
+    list_display = ["name", "primary_color", "display", "shop_sync", "shop_GID", "shop_status"]
+    list_filter = ["category", "display", "shop_sync"]
     search_fields = ["description"]
 
 admin.site.register(Product, ProductAdmin)
