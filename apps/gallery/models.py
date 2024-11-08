@@ -7,7 +7,7 @@ import logging, json
 from django.utils.text import slugify
 from apps.shopify_app.decorators import shop_login_required, shopify_token_required
 from apps.shopify_app.models import ShopifyAccessToken
-from apps.shopify_app.api_connectors import _shop_sync
+from apps.shopify_app.api_connectors import _shop_sync, _shop_publish
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -73,6 +73,7 @@ class Product(models.Model):
             if not self.shop_GID:
                 self.shop_GID = json.loads(response)['data']['productSet']['product']['id']
                 self.save()
+            _shop_publish(self.shop_GID)
         super().save(**kwargs)
 
 

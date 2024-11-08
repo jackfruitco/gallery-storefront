@@ -91,3 +91,26 @@ def _shop_sync(self):
     logger.warning(json.loads(response)['data']['productSet']['product']['id'])
 
     return response
+
+@shopify_token_required
+def _shop_publish(productID):
+    shop_url = apps.get_app_config('shopify_app').SHOPIFY_URL
+    api_version = apps.get_app_config('shopify_app').SHOPIFY_API_VERSION
+
+    # ! BUG: add error handling for when token does not exist. Consider shop login decorator
+    # ! BUG: get access_token for user logged in
+    token = ShopifyAccessToken.objects.get(user=1).access_token
+    document = open('/app/apps/shopify_app/product_mutations.graphql', 'r').read()
+
+    with shopify.Session.temp(shop_url, api_version, token):
+        response = shopify.GraphQL().execute(
+            query=document,
+            variables={
+                "id": productID,
+                "input": {
+                    "publicationId": "gid://shopify/Publication/148057129196"
+                }
+            },
+            operation_name='publishablePublish',
+        )
+    return response

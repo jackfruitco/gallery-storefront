@@ -1,6 +1,7 @@
 # reference shopify GraphQL API
 # uses productSet() to update product
 # when synchronous is set to True, returned Json will include Shopify productID (GID)
+
 mutation createProductSynchronous($productSet: ProductSetInput!, $synchronous: Boolean!) {
   productSet(synchronous: $synchronous, input: $productSet) {
     product {
@@ -17,6 +18,26 @@ mutation createProductSynchronous($productSet: ProductSetInput!, $synchronous: B
     }
     userErrors {
       code
+      field
+      message
+    }
+  }
+}
+
+mutation publishablePublish($id: ID!, $input: [PublicationInput!]!) {
+  publishablePublish(id: $id, input: $input) {
+    publishable {
+      availablePublicationsCount {
+        count
+      }
+      resourcePublicationsCount {
+        count
+      }
+    }
+    shop {
+      publicationCount
+    }
+    userErrors {
       field
       message
     }
