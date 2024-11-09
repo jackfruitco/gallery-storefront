@@ -16,6 +16,9 @@ services:
       - stack.dev.env
     expose:
       - 8000
+    volumes:
+      - static-vol:/app/static
+      - media-vol:/app/media
     networks:
       - StoreNet
 

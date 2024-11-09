@@ -43,3 +43,31 @@ mutation publishablePublish($id: ID!, $input: [PublicationInput!]!) {
     }
   }
 }
+
+mutation productDelete($input: ProductDeleteInput!) {
+  productDelete(input: $input) {
+    deletedProductId
+    userErrors {
+      field
+      message
+    }
+  }
+}
+
+mutation productCreateMedia($media: [CreateMediaInput!]!, $productId: ID!) {
+  productCreateMedia(media: $media, productId: $productId) {
+    media {
+      alt
+      mediaContentType
+      status
+    }
+    mediaUserErrors {
+      field
+      message
+    }
+    product {
+      id
+      title
+    }
+  }
+}

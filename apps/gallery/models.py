@@ -7,7 +7,7 @@ import logging, json
 from django.utils.text import slugify
 from apps.shopify_app.decorators import shop_login_required, shopify_token_required
 from apps.shopify_app.models import ShopifyAccessToken
-from apps.shopify_app.api_connectors import _shop_sync, _shop_publish
+from apps.shopify_app.api_connectors import _shop_sync, _shop_publish, _shop_product_delete, _shop_create_media
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -76,11 +76,16 @@ class Product(models.Model):
             _shop_publish(self.shop_GID)
         super().save(**kwargs)
 
+    def delete(self, **kwargs):
+        if self.shop_GID:
+            _shop_product_delete(self.shop_GID)
+        super().delete(**kwargs)
+
 
 class ProductImage(models.Model):
     fk_product = models.ForeignKey(Product, on_delete=models.CASCADE)
     key_image = models.BooleanField(default=False)
-    priority = models.PositiveSmallIntegerField(default=10)
+    # priority = models.PositiveSmallIntegerField(default=10)
     description = models.CharField(max_length=100, blank=False,
                                    help_text="3-5 words describing the image")
     slug = AutoSlugField(populate_from='description', unique_with='fk_product', always_update=True)
@@ -91,6 +96,11 @@ class ProductImage(models.Model):
 
     def __str__(self):
         return self.description
+
+    def save(self, **kwargs):
+        # if self.fk_product.shop_GID:
+        #    _shop_create_media(self, get_image_path)
+        super().save(**kwargs)
 
     class ProductFilter(django_filters.FilterSet):
         name = django_filters.CharFilter(lookup_expr='ic')

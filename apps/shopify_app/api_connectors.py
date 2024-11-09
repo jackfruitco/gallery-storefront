@@ -3,15 +3,21 @@ from apps.shopify_app.models import ShopifyAccessToken
 from django.apps import apps
 from django.utils.text import slugify
 import json, shopify, logging
+from django.contrib.sites.models import Site
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
+shop_url = apps.get_app_config('shopify_app').SHOPIFY_URL
+api_version = apps.get_app_config('shopify_app').SHOPIFY_API_VERSION
+# token = ShopifyAccessToken.objects.get(user=1).access_token
+# document = open('/app/apps/shopify_app/product_mutations.graphql', 'r').read()
+
 @shopify_token_required
 def _shop_sync(self):
     """Sync product with Shopify"""
-    shop_url = apps.get_app_config('shopify_app').SHOPIFY_URL
-    api_version = apps.get_app_config('shopify_app').SHOPIFY_API_VERSION
+    # shop_url = apps.get_app_config('shopify_app').SHOPIFY_URL
+    # api_version = apps.get_app_config('shopify_app').SHOPIFY_API_VERSION
 
     # ! BUG: add error handling for when token does not exist. Consider shop login decorator
     # ! BUG: get access_token for user logged in
@@ -93,9 +99,9 @@ def _shop_sync(self):
     return response
 
 @shopify_token_required
-def _shop_publish(productID):
-    shop_url = apps.get_app_config('shopify_app').SHOPIFY_URL
-    api_version = apps.get_app_config('shopify_app').SHOPIFY_API_VERSION
+def _shop_publish(productGID):
+    # shop_url = apps.get_app_config('shopify_app').SHOPIFY_URL
+    # api_version = apps.get_app_config('shopify_app').SHOPIFY_API_VERSION
 
     # ! BUG: add error handling for when token does not exist. Consider shop login decorator
     # ! BUG: get access_token for user logged in
@@ -106,11 +112,64 @@ def _shop_publish(productID):
         response = shopify.GraphQL().execute(
             query=document,
             variables={
-                "id": productID,
+                "id": productGID,
                 "input": {
                     "publicationId": "gid://shopify/Publication/148057129196"
                 }
             },
             operation_name='publishablePublish',
         )
+    logger.warning(json.loads(response))
+    return response
+
+@shopify_token_required
+def _shop_product_delete(productGID):
+    # shop_url = apps.get_app_config('shopify_app').SHOPIFY_URL
+    # api_version = apps.get_app_config('shopify_app').SHOPIFY_API_VERSION
+
+    # ! BUG: add error handling for when token does not exist. Consider shop login decorator
+    # ! BUG: get access_token for user logged in
+    token = ShopifyAccessToken.objects.get(user=1).access_token
+    document = open('/app/apps/shopify_app/product_mutations.graphql', 'r').read()
+
+    with shopify.Session.temp(shop_url, api_version, token):
+        response = shopify.GraphQL().execute(
+            query=document,
+            variables={
+                "input": {
+                    "id": productGID,
+                }
+            },
+            operation_name='productDelete',
+        )
+    logger.warning(json.loads(response))
+    return response
+
+@shopify_token_required
+def _shop_create_media(self):
+    # shop_url = apps.get_app_config('shopify_app').SHOPIFY_URL
+    # api_version = apps.get_app_config('shopify_app').SHOPIFY_API_VERSION
+
+    # ! BUG: add error handling for when token does not exist. Consider shop login decorator
+    # ! BUG: get access_token for user logged in
+    token = ShopifyAccessToken.objects.get(user=1).access_token
+    document = open('/app/apps/shopify_app/product_mutations.graphql', 'r').read()
+
+    img_url = 'http://%s%s' % (Site.objects.get_current().domain, self.get_absolute_url())
+
+    with shopify.Session.temp(shop_url, api_version, token):
+        response = shopify.GraphQL().execute(
+            query=document,
+            variables={
+                "media": {
+                    "alt": self.description,
+                    "mediaContentType": "IMAGE",
+                    "originalSource": img_url,
+                },
+                "productId": self.fk_product.shop_GID
+            },
+        operation_name='productCreateMedia',
+        )
+    logger.warning(img_url)
+    logger.warning(json.loads(response))
     return response
