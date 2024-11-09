@@ -1,8 +1,15 @@
-## Shopify App
+# Gallery Storefront Django Project
+This Django project's goal is to create a website that serves the dual purpose of a showcase gallery and storefront. 
+
+The storefront uses Shopify as a backend, via shopify-python-api and GraphQL API integration. Both the site and Shopify store use the site as the database of truth, meaning products should only be managed via the Django Project Admin page. 
+
+***This project is not yet complete, and as such, not all capabilities exist.***
+
+### Shopify App
 - [ ] **BUG**: Fix ShopifyAccessToken to retrieve token for user logged in
 - [ ] **BUG**: Fix decorators to required Shopify Access Token prior to making GraphQL API calls
 
-### GraphQL API
+**GraphQL API**
 - [ ] **BUG**: Fix media upload
   - Desired End State: 
     - Media uploaded via Admin are pushed to Shopify via GraphQL API
@@ -15,13 +22,13 @@
   - [ ] Deserialize JSON response to parse for errors; prevent object from saving to ensure source DB matches Shopify
   - [ ] Notify user of failed sync including error message
 
-## Store App
+### Store App
 - [ ] Pending
 
-## Main App
+### Main App
 - [ ] Pending
 
-## Gallery App
+### Gallery App
 - [ ] FEATURE: Match source DB model with Shopify Product model
   - [ ] Support Options
   - [ ] Support Variants
