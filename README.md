@@ -5,7 +5,7 @@ The storefront uses Shopify as a backend, via shopify-python-api and GraphQL API
 
 ***This project is not yet complete, and as such, not all capabilities exist.***
 
-### 1. apps.Shopify_App
+### 1. apps.Shopify_App To-Do's
 - [ ] **BUG**: Fix ShopifyAccessToken to retrieve token for user logged in
 - [ ] **BUG**: Fix decorators to required Shopify Access Token prior to making GraphQL API calls
 
@@ -22,13 +22,13 @@ The storefront uses Shopify as a backend, via shopify-python-api and GraphQL API
   - [ ] Deserialize JSON response to parse for errors; prevent object from saving to ensure source DB matches Shopify
   - [ ] Notify user of failed sync including error message
 
-### 2. apps.Store
+### 2. apps.Store To-Do's
 - [ ] Pending
 
-### 3. apps.Main
+### 3. apps.Main To-Do's
 - [ ] Pending
 
-### 4. apps.Gallery
+### 4. apps.Gallery To-Do's
 - [ ] FEATURE: Match source DB model with Shopify Product model
   - [ ] Support Options
   - [ ] Support Variants
