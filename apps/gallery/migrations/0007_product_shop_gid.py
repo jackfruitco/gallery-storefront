@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='product',
-            name='shop_GID',
+            name='shop_global_id',
             field=models.CharField(blank=True, help_text='Shopify productID', max_length=100),
         ),
     ]

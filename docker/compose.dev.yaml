@@ -32,7 +32,7 @@ services:
 #       db:
 #         condition: service_healthy
 #   db:
-#     image: postgres:${DB_IMAGE_TAG}
+#     image: postgres:16.4
 #     restart: always
 #     user: postgres
 #     secrets:
@@ -50,7 +50,7 @@ services:
 #       timeout: 5s
 #       retries: 5
   nginx:
-    image: nginx:${PROXY_IMAGE_TAG}
+    image: nginx:latest
     ports:
       - "80:80"
     env_file:

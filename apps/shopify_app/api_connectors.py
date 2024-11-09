@@ -24,7 +24,7 @@ def _shop_sync(self):
     document = open('/app/apps/shopify_app/product_mutations.graphql', 'r').read()
 
     with shopify.Session.temp(shop_url, api_version, token):
-        if self.shop_GID:
+        if self.shop_global_id:
             response = shopify.GraphQL().execute(
                 query=document,
                 variables={
@@ -32,7 +32,7 @@ def _shop_sync(self):
                     "productSet": {
                         "title": self.name,
                         "descriptionHtml": "<p>%s</p>" % self.description,
-                        "id": self.shop_GID,
+                        "id": self.shop_global_id,
                         "handle": slugify(self.name),
                         # "productType": self.category.name,
                         "status": self.shop_status,
@@ -66,7 +66,7 @@ def _shop_sync(self):
                     "productSet": {
                         "title": self.name,
                         "descriptionHtml": "<p>%s</p>" % self.description,
-                        # "id": self.shop_GID,
+                        # "id": self.shop_global_id,
                         "handle": slugify(self.name),
                         # "productType": self.category.name,
                         "status": self.shop_status,
@@ -166,7 +166,7 @@ def _shop_create_media(self):
                     "mediaContentType": "IMAGE",
                     "originalSource": img_url,
                 },
-                "productId": self.fk_product.shop_GID
+                "productId": self.fk_product.shop_global_id
             },
         operation_name='productCreateMedia',
         )
