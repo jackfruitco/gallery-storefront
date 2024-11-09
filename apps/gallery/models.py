@@ -44,8 +44,8 @@ class Product(models.Model):
                   "available via the Shopify Online Store and Shopify POS. Please note, "
                   "updates made via Shopify Admin will be overridden, and do not sync with"
                   "this site.")
-    shop_GID  = models.CharField(max_length=100, blank=True, help_text="Shopify Global productID", editable=False)
-    shop_status = models.CharField(max_length=10, default="ACTIVE",
+    shop_global_id  = models.CharField(max_length=100, blank=True, help_text="Shopify Global productID", editable=False)
+    shop_status = models.CharField(max_length=10, default="DRAFT",
                                    choices={
                                        "ACTIVE": "Active",
                                        "DRAFT": "Draft",
@@ -66,15 +66,15 @@ class Product(models.Model):
     def save(self, **kwargs):
         if self.shop_sync:
             response = _shop_sync(self)
-            if not self.shop_GID:
-                self.shop_GID = json.loads(response)['data']['productSet']['product']['id']
+            if not self.shop_global_id:
+                self.shop_global_id = json.loads(response)['data']['productSet']['product']['id']
                 self.save()
-            _shop_publish(self.shop_GID)
+            _shop_publish(self.shop_global_id)
         super().save(**kwargs)
 
     def delete(self, **kwargs):
-        if self.shop_GID:
-            _shop_product_delete(self.shop_GID)
+        if self.shop_global_id:
+            _shop_product_delete(self.shop_global_id)
         super().delete(**kwargs)
 
 
@@ -95,7 +95,7 @@ class ProductImage(models.Model):
 
     def save(self, **kwargs):
         super().save(**kwargs)
-        if self.fk_product.shop_GID:
+        if self.fk_product.shop_global_id:
            _shop_create_media(self)
 
     class ProductFilter(django_filters.FilterSet):
