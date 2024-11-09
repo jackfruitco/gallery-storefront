@@ -18,9 +18,9 @@ class ProductAdmin(admin.ModelAdmin):
         ("Technical Data", {"fields": ["created_at", "modified_at"]})
     ]
     inlines = [MediaUploadInline]
-    list_display = ["name", "primary_color", "display", "shop_sync", "shop_GID", "shop_status"]
+    list_display = ["name", "display", "shop_sync", "shop_status"]
     list_filter = ["category", "display", "shop_sync"]
-    search_fields = ["description"]
+    search_fields = ["name", "description", "shop_GID"]
 
 admin.site.register(Product, ProductAdmin)
 admin.site.register(ProductCategory)

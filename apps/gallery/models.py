@@ -1,11 +1,7 @@
 import django_filters
-import shopify
 from autoslug import AutoSlugField
-from django.apps import apps
 from django.db import models
 import logging, json
-from django.utils.text import slugify
-from apps.shopify_app.decorators import shop_login_required, shopify_token_required
 from apps.shopify_app.models import ShopifyAccessToken
 from apps.shopify_app.api_connectors import _shop_sync, _shop_publish, _shop_product_delete, _shop_create_media
 
@@ -56,11 +52,11 @@ class Product(models.Model):
                                        "ARCHIVED": "Archived"})
     sku = models.CharField(max_length=50, blank=True)
     price = models.FloatField(default=0, help_text="If item is not synced with Shopify, enter price as '0'.")
-
     primary_color = models.ForeignKey(Color, on_delete=models.CASCADE)
 
     def get_key_image(self):
         return ProductImage.objects.filter(fk_product=self, key_image=True).first()
+
     def get_images(self):
         return ProductImage.objects.filter(fk_product=self.pk).filter(key_image=False).all()[:4]
 
@@ -85,7 +81,7 @@ class Product(models.Model):
 class ProductImage(models.Model):
     fk_product = models.ForeignKey(Product, on_delete=models.CASCADE)
     key_image = models.BooleanField(default=False)
-    # priority = models.PositiveSmallIntegerField(default=10)
+    priority = models.PositiveSmallIntegerField(default=10)
     description = models.CharField(max_length=100, blank=False,
                                    help_text="3-5 words describing the image")
     slug = AutoSlugField(populate_from='description', unique_with='fk_product', always_update=True)
@@ -98,9 +94,9 @@ class ProductImage(models.Model):
         return self.description
 
     def save(self, **kwargs):
-        # if self.fk_product.shop_GID:
-        #    _shop_create_media(self, get_image_path)
         super().save(**kwargs)
+        if self.fk_product.shop_GID:
+           _shop_create_media(self)
 
     class ProductFilter(django_filters.FilterSet):
         name = django_filters.CharFilter(lookup_expr='ic')

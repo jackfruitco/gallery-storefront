@@ -3,7 +3,6 @@ from apps.shopify_app.models import ShopifyAccessToken
 from django.apps import apps
 from django.utils.text import slugify
 import json, shopify, logging
-from django.contrib.sites.models import Site
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -155,7 +154,8 @@ def _shop_create_media(self):
     token = ShopifyAccessToken.objects.get(user=1).access_token
     document = open('/app/apps/shopify_app/product_mutations.graphql', 'r').read()
 
-    img_url = 'http://%s%s' % (Site.objects.get_current().domain, self.get_absolute_url())
+    #! BUG: remove hardcoded domain link
+    img_url = 'http://%s%s' % ('localhost', self.image.url)
 
     with shopify.Session.temp(shop_url, api_version, token):
         response = shopify.GraphQL().execute(
@@ -170,6 +170,5 @@ def _shop_create_media(self):
             },
         operation_name='productCreateMedia',
         )
-    logger.warning(img_url)
     logger.warning(json.loads(response))
     return response

@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.sites',
     'apps.main.apps.MainConfig',
     'apps.gallery.apps.GalleryConfig',
     'apps.store.apps.StoreConfig',
@@ -138,6 +137,3 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# https://docs.djangoproject.com/en/dev/ref/contrib/sites/#enabling-the-sites-framework
-SITE_ID = 1
