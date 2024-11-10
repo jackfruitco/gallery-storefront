@@ -1,15 +1,9 @@
-# Comments are provided throughout this file to help you get started.
-# If you need more help, visit the Docker Compose reference guide at
-# https://docs.docker.com/go/compose-spec-reference/
-
-# Here the instructions define your application as a service called "server".
-# This service is built from the Dockerfile.dev in the current directory.
-# You can add other services your application may depend on here, such as a
-# database or a cache. For examples, see the Awesome Compose repository:
-# https://github.com/docker/awesome-compose
 services:
   server:
-    image: ghcr.io/jackruit117/gallerystorefront:${SERVER_IMAGE_TAG}
+    # image: ghcr.io/jackruit117/gallerystorefront:${SERVER_IMAGE_TAG}
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
     env_file:
       - stack.env
     expose:
@@ -19,38 +13,30 @@ services:
       - media-vol:/app/media
     networks:
       - StoreNet
+    depends_on:
+      db:
+        condition: service_healthy
 
-# The commented out section below is an example of how to define a PostgreSQL
-# database that your application can use. `depends_on` tells Docker Compose to
-# start the database before your application. The `db-data` volume persists the
-# database data between container restarts. The `db-password` secret is used
-# to set the database password. You must create `db/password.txt` and add
-# a password of your choosing to it before running `docker compose up`.
-#     depends_on:
-#       db:
-#         condition: service_healthy
-#   db:
-#     image: postgres:${DB_IMAGE_TAG}
-#     restart: always
-#     user: postgres
-#     secrets:
-#       - db-password
-#     volumes:
-#       - db-data:/var/lib/postgresql/data
-#     environment:
-#       - POSTGRES_DB=example
-#       - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
-#     expose:
-#       - 5432
-#     healthcheck:
-#       test: [ "CMD", "pg_isready" ]
-#       interval: 10s
-#       timeout: 5s
-#       retries: 5
+  db:
+    image: postgres:16.4
+    restart: always
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    expose:
+      - '5432'
+    env_file:
+      - stack.env
+    user: postgres
+    healthcheck:
+      test: [ "CMD", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   nginx:
-    image: nginx:${PROXY_IMAGE_TAG}
+    image: nginx:latest
     ports:
-      - "80:80"
+      - '80:80'
     env_file:
       - stack.env
     volumes:
@@ -63,9 +49,9 @@ services:
       - StoreNet
       # - _TunnelNet            # Cloudflare Tunnel
 volumes:
-#   db-data:
-   static-vol:
-   media-vol:
+  db-data:
+  static-vol:
+  media-vol:
 # secrets:
 #   db-password:
 #     file: db/password.txt
