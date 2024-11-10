@@ -8,6 +8,7 @@ The storefront uses Shopify as a backend, via shopify-python-api and GraphQL API
 ### 1. apps.Shopify_App To-Do's
 - [ ] **BUG**: Fix ShopifyAccessToken to retrieve token for user logged in
 - [ ] **BUG**: Fix decorators to required Shopify Access Token prior to making GraphQL API calls
+- [ ] **BUG**: Fix failure to call deleteProduct mutation upon disabling Product.shop_sync
 
 **GraphQL API**
 - [ ] **BUG**: Fix media upload
@@ -26,7 +27,8 @@ The storefront uses Shopify as a backend, via shopify-python-api and GraphQL API
 - [ ] Pending
 
 ### 3. apps.Main To-Do's
-- [ ] Pending
+- [ ] **BUG**: Fix products appearing on site index when Product.display is set to False
+- [ ] FEATURE: Add field to Product Model to filter featured images for display on site index
 
 ### 4. apps.Gallery To-Do's
 - [ ] FEATURE: Match source DB model with Shopify Product model
