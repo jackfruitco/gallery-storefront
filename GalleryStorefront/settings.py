@@ -30,12 +30,10 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', SECRET_KEY_INSECURE)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DJANGO_DEBUG', '') != 'False'
 
-ALLOWED_HOSTS = str(os.getenv('DJANGO_ALLOWED_HOSTS')).split(', ')
+ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS').split(', ')
 
-# CSRF_TRUSTED_ORIGINS = str(os.getenv('CSRF_TRUSTED_ORIGINS')).split(', ')
-CSRF_TRUSTED_ORIGINS = ['http://localhost',]
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS').split(', ')
 CSRF_COOKIE_SECURE = os.environ.get('CSRF_COOKIE_SECURE', '') != 'False'
-
 
 # Application definition
 INSTALLED_APPS = [
