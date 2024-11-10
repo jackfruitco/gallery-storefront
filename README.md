@@ -37,4 +37,4 @@ The storefront uses Shopify as a backend, via shopify-python-api and GraphQL API
   - [ ] Update _shop_sync to perform mutations including options and variants
 
 ### 5. General To-Do's
-- [ ] Pending
+- [ ] **BUG**: Fix alignment on Admin Login button
