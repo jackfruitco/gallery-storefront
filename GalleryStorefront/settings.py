@@ -84,8 +84,9 @@ WSGI_APPLICATION = 'GalleryStorefront.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+DEV_DB = os.getenv('DJANGO_DEV_DB', 'False')
 
-if DEBUG:
+if DEV_DB:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',

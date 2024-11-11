@@ -57,7 +57,7 @@ RUN apt-get update && apt-get install -y \
 COPY .. .
 
 # Collect static files
-RUN python manage.py collectstatic -v 2 --no-input
+# RUN python manage.py collectstatic -v 2 --no-input
 
 # Expose the port that the application listens on.
 EXPOSE 8000
