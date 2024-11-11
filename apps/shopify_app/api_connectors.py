@@ -98,7 +98,7 @@ def _shop_sync(self):
     return response
 
 @shopify_token_required
-def _shop_publish(productGID):
+def _shop_publish(product_global_id):
     # shop_url = apps.get_app_config('shopify_app').SHOPIFY_URL
     # api_version = apps.get_app_config('shopify_app').SHOPIFY_API_VERSION
 
@@ -106,14 +106,15 @@ def _shop_publish(productGID):
     # ! BUG: get access_token for user logged in
     token = ShopifyAccessToken.objects.get(user=1).access_token
     document = open('/app/apps/shopify_app/product_mutations.graphql', 'r').read()
+    publicationId = apps.get_app_config('shopify_app').SHOPIFY_ONLINE_PUB_ID
 
     with shopify.Session.temp(shop_url, api_version, token):
         response = shopify.GraphQL().execute(
             query=document,
             variables={
-                "id": productGID,
+                "id": product_global_id,
                 "input": {
-                    "publicationId": "gid://shopify/Publication/148057129196"
+                    "publicationId": publicationId,
                 }
             },
             operation_name='publishablePublish',
@@ -122,7 +123,7 @@ def _shop_publish(productGID):
     return response
 
 @shopify_token_required
-def _shop_product_delete(productGID):
+def _shop_product_delete(product_global_id):
     # shop_url = apps.get_app_config('shopify_app').SHOPIFY_URL
     # api_version = apps.get_app_config('shopify_app').SHOPIFY_API_VERSION
 
@@ -136,7 +137,7 @@ def _shop_product_delete(productGID):
             query=document,
             variables={
                 "input": {
-                    "id": productGID,
+                    "id": product_global_id,
                 }
             },
             operation_name='productDelete',

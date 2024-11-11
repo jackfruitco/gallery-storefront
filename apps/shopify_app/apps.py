@@ -12,8 +12,8 @@ class ShopifyAppConfig(AppConfig):
     SHOPIFY_API_SCOPES = os.environ.get('SHOPIFY_API_SCOPES', 'read_products,read_orders').split(',')
     SHOPIFY_ACCESS_TOKEN = None
 
-    SHOPIFY_ONLINE_GID = os.environ.get('SHOPIFY_ONLINE_GID')
-    SHOPIFY_POS_GID = os.environ.get('SHOPIFY_POS_GID')
+    SHOPIFY_ONLINE_PUB_ID = os.environ.get('SHOPIFY_ONLINE_PUB_ID')
+    SHOPIFY_POS_PUB_ID = os.environ.get('SHOPIFY_POS_PUB_ID')
 
     def store_access_token(self, access_token):
         self.SHOPIFY_ACCESS_TOKEN = access_token
