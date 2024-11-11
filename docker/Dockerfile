@@ -51,13 +51,13 @@ RUN apt-get update && apt-get install -y \
     curl
 
 # Switch to the non-privileged user to run the application.
-# USER appuser
+USER appuser
 
 # Copy the source code into the container.
 COPY .. .
 
 # Collect static files
-RUN python manage.py collectstatic -v 2 --no-input
+# RUN python manage.py collectstatic --no-input
 
 # Expose the port that the application listens on.
 EXPOSE 8000
