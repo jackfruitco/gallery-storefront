@@ -84,7 +84,7 @@ WSGI_APPLICATION = 'GalleryStorefront.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-DEV_DB = os.environ.get('DJANGO_DEV_DB', False) == True
+DEV_DB = os.environ.get('DJANGO_DEV_DB', False)
 
 if DEV_DB:
     DATABASES = {
@@ -108,19 +108,23 @@ else:
 LOGGING = {
     "version": 1,  # the dictConfig format version
     "disable_existing_loggers": False,  # retain the default loggers
-    "loggers": {
-        "": {
-            "level": "DEBUG",
-            "handlers": ["general.log"],
-        },
-    },
     "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
         "file": {
             "class": "logging.FileHandler",
             "filename": "general.log",
             "level": "DEBUG",
         },
     },
+    "loggers": {
+        "": {
+            "level": "DEBUG",
+            "handlers": ["file", "console"],
+        },
+    },
+
 }
 
 # Password validation

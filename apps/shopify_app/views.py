@@ -4,8 +4,11 @@ from django.contrib import messages
 from django.urls import reverse
 from django.apps import apps
 from .models import ShopifyAccessToken
-import binascii, os, shopify
+import binascii, os, shopify, logging
 from django.contrib.admin.views.decorators import staff_member_required
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 shop_url = apps.get_app_config('shopify_app').SHOPIFY_URL
 api_version = apps.get_app_config('shopify_app').SHOPIFY_API_VERSION
@@ -19,6 +22,7 @@ def login(request):
     # If the ${shop}.myshopify.com address is already provided in the URL,
     # just skip to authenticate
     if shop_url:
+        logger.info('shop_url already exists: %s' % shop_url)
         return authenticate(request)
     return render(request, 'shopify_app/login.html', {})
 
@@ -32,6 +36,7 @@ def authenticate(request):
     state = binascii.b2a_hex(os.urandom(15)).decode("utf-8")
 
     auth_url = _new_session().create_permission_url(scope, redirect_uri, state)
+    logger.info('auth_url finished: %s' % auth_url)
     return redirect(auth_url)
 
 
@@ -39,7 +44,9 @@ def finalize(request):
     shop_url = apps.get_app_config('shopify_app').SHOPIFY_URL
     session = shopify.Session(shop_url, api_version)
     params = request.GET.dict()
+    logger.debug("Shopify Auth Params: %s" % params)
     access_token = session.request_token(params)
+    logger.debug("Shopify Auth Token: %s" % access_token)
 
     # Update (or create) access_token in user profile
     obj, created = ShopifyAccessToken.objects.update_or_create(
@@ -47,6 +54,8 @@ def finalize(request):
         defaults={"user": request.user,
                   "access_token": access_token },
     )
+
+    logger.info("ShopifyAccessToken saved for %s" % request.user)
 
     session = shopify.Session(shop_url, api_version, access_token)
     shopify.ShopifyResource.activate_session(session)
