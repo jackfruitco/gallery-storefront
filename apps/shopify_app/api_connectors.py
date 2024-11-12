@@ -93,7 +93,7 @@ def _shop_sync(self):
                 operation_name='createProductSynchronous',
             )
 
-    logger.warning(json.loads(response)['data']['productSet']['product']['id'])
+    logger.info(json.loads(response)['data']['productSet']['product']['id'])
 
     return response
 
@@ -119,7 +119,7 @@ def _shop_publish(product_global_id):
             },
             operation_name='publishablePublish',
         )
-    logger.warning(json.loads(response))
+    logger.info(json.loads(response))
     return response
 
 @shopify_token_required
@@ -142,7 +142,7 @@ def _shop_product_delete(product_global_id):
             },
             operation_name='productDelete',
         )
-    logger.warning(json.loads(response))
+    logger.info(json.loads(response))
     return response
 
 @shopify_token_required
@@ -171,5 +171,5 @@ def _shop_create_media(self):
             },
         operation_name='productCreateMedia',
         )
-    logger.warning(json.loads(response))
+    logger.info(json.loads(response))
     return response

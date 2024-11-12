@@ -14,6 +14,8 @@ services:
       dockerfile: docker/Dockerfile.dev
     env_file:
       - stack.dev.env
+    environment:
+      DJANGO_DEV_DB: True
     expose:
       - 8000
     volumes:

@@ -38,11 +38,13 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     --mount=type=bind,source=requirements.txt,target=requirements.txt \
     python -m pip install -r requirements.txt
 
-# Create Static/Media Files Directory
+# Create Static/Media/Logging Files Directory
 RUN mkdir -p /app/static && \
     mkdir -p /app/media && \
+    touch /app/general.log && \
     chown -R appuser:appuser /app/static && \
-    chown -R appuser:appuser /app/media
+    chown -R appuser:appuser /app/media && \
+    chown appuser:appuser /app/general.log
 
 # Install libpq (PostgreSQL client library)
 RUN apt-get update && apt-get install -y \
