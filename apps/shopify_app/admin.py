@@ -1,3 +1,11 @@
 from django.contrib import admin
+from .models import ShopifyAccessToken
 
-# Register your models here.
+
+@admin.register(ShopifyAccessToken)
+class ShopifyAccessToken(admin.ModelAdmin):
+    readonly_fields = ("user", "access_token", "created_at")
+
+    fieldsets = [
+        (None, {"fields": ["user", "access_token", "created_at"]}),
+    ]
