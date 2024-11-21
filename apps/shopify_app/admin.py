@@ -9,3 +9,5 @@ class ShopifyAccessToken(admin.ModelAdmin):
     fieldsets = [
         (None, {"fields": ["user", "access_token", "created_at"]}),
     ]
+
+    list_display = ["user", "created_at"]
