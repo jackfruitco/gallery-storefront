@@ -84,7 +84,7 @@ WSGI_APPLICATION = 'GalleryStorefront.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-DEV_DB = os.environ.get('DJANGO_DEV_DB', False)
+DEV_DB = os.environ.get('DJANGO_DEV_DB', False) == True
 
 if DEV_DB:
     DATABASES = {
