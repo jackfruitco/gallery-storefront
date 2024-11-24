@@ -64,10 +64,10 @@ def finalize(request):
         user=request.user,
         defaults={"user": request.user,
                   "access_token": access_token,
-                  "shop": shop_url,},
+                  "shop": shop_url},
     )
 
-    logger.info("ShopifyAccessToken saved (store: %s; user: %s" % (shop_url, request.user) )
+    logger.info("ShopifyAccessToken saved (store: %s; user: %s)" % (shop_url, request.user) )
     messages.success(request, "ShopifyAccessToken saved! You can now sync items with the Shopify storefront.")
 
     session = shopify.Session(shop_url, api_version, access_token)

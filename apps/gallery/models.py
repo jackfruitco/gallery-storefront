@@ -1,12 +1,12 @@
 import django_filters
 from autoslug import AutoSlugField
 from django.db import models
-import logging, json
+import logging
 from apps.shopify_app.models import ShopifyAccessToken
-from apps.shopify_app.api_connectors import _shop_sync, _shop_publish, _shop_product_delete, _shop_create_media
+#from apps.shopify_app.api_connectors import _shop_sync, _shop_publish, _shop_product_delete, _shop_create_media
+from apps.shopify_app.api_connectors import shop_sync, _shop_product_delete
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 def get_image_path(instance, filename):
     return "images/products/{0}/{1}".format(instance.fk_product.pk, instance.slug + "." + filename.split('.')[-1])
@@ -54,6 +54,9 @@ class Product(models.Model):
     price = models.FloatField(default=0, help_text="If item is not synced with Shopify, enter price as '0'.")
     primary_color = models.ForeignKey(Color, on_delete=models.CASCADE)
 
+    sync_error = models.BooleanField(default=False)
+    sync_error_msg = models.TextField(blank=True, null=True)
+
     def get_key_image(self):
         return ProductImage.objects.filter(fk_product=self, key_image=True).first()
 
@@ -65,11 +68,17 @@ class Product(models.Model):
 
     def save(self, **kwargs):
         if self.shop_sync:
-            response = _shop_sync(self)
-            if not self.shop_global_id:
-                self.shop_global_id = json.loads(response)['data']['productSet']['product']['id']
-                self.save()
-            _shop_publish(self.shop_global_id)
+            success, response = shop_sync(self)
+            if not success:
+                self.sync_error_msg = response
+            self.sync_error = not success
+            self.shop_global_id = response['data']['productSet']['product']['id']
+        else:
+            self.sync_error = False
+            self.sync_error_msg = ''
+
+        if (update_fields := kwargs.get("update_fields")) is not None:
+            kwargs["update_fields"] = {"sync_error", "sync_error_msg", "shop_global_id"}.union(update_fields)
         super().save(**kwargs)
 
     def delete(self, **kwargs):
@@ -95,8 +104,8 @@ class ProductImage(models.Model):
 
     def save(self, **kwargs):
         super().save(**kwargs)
-        if self.fk_product.shop_global_id:
-           _shop_create_media(self)
+        # if self.fk_product.shop_global_id:
+        #    _shop_create_media(self)
 
     class ProductFilter(django_filters.FilterSet):
         name = django_filters.CharFilter(lookup_expr='ic')

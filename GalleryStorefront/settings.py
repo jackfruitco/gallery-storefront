@@ -30,9 +30,9 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', SECRET_KEY_INSECURE)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DJANGO_DEBUG', '') != 'False'
 
-ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS').split(', ')
+# ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS').split(', ')
 
-CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS').split(', ')
+# CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS').split(', ')
 CSRF_COOKIE_SECURE = os.environ.get('CSRF_COOKIE_SECURE', '') != 'False'
 
 # Application definition
@@ -84,9 +84,10 @@ WSGI_APPLICATION = 'GalleryStorefront.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-DEV_DB = os.environ.get('DJANGO_DEV_DB', False) == True
+DEV_DB = os.environ.get('DJANGO_DEV_DB', False) # == True
 
-if DEV_DB:
+# if DEV_DB:
+if False:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -120,7 +121,7 @@ LOGGING = {
     },
     "loggers": {
         "": {
-            "level": "DEBUG",
+            "level": os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
             "handlers": ["file", "console"],
         },
     },

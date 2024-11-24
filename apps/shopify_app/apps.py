@@ -12,6 +12,17 @@ class ShopifyAppConfig(AppConfig):
     SHOPIFY_API_SCOPES = os.environ.get('SHOPIFY_API_SCOPES', 'read_products,read_orders').split(',')
     SHOPIFY_ACCESS_TOKEN = None
 
+    SHOPIFY_PUBLICATIONS = [
+        {
+            "name": "Online Store",
+            "gid": os.environ.get('SHOPIFY_ONLINE_PUB_ID'),
+        },
+        {
+            "name": "POS",
+            "gid": os.environ.get('SHOPIFY_POS_PUB_ID'),
+        }
+    ]
+
     SHOPIFY_ONLINE_PUB_ID = os.environ.get('SHOPIFY_ONLINE_PUB_ID')
     SHOPIFY_POS_PUB_ID = os.environ.get('SHOPIFY_POS_PUB_ID')
 

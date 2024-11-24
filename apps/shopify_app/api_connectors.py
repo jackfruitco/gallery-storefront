@@ -1,3 +1,7 @@
+from pyexpat.errors import messages
+
+from django.contrib.messages import success
+
 from apps.shopify_app.decorators import shopify_token_required
 from apps.shopify_app.models import ShopifyAccessToken
 from django.apps import apps
@@ -5,43 +9,83 @@ from django.utils.text import slugify
 import json, shopify, logging
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+
 
 shop_url = apps.get_app_config('shopify_app').SHOPIFY_URL
 api_version = apps.get_app_config('shopify_app').SHOPIFY_API_VERSION
 # token = ShopifyAccessToken.objects.get(user=1).access_token
 # document = open('/app/apps/shopify_app/product_mutations.graphql', 'r').read()
 
-@shopify_token_required
-def _shop_sync(self):
-    """Sync product with Shopify"""
-    # shop_url = apps.get_app_config('shopify_app').SHOPIFY_URL
-    # api_version = apps.get_app_config('shopify_app').SHOPIFY_API_VERSION
+def get_token_or_error() -> (bool, str):
+    if ShopifyAccessToken.objects.filter(user=1).exists():
+        return True, ShopifyAccessToken.objects.get(user=1).access_token
+    else:
+        return False, None
 
-    # ! BUG: add error handling for when token does not exist. Consider shop login decorator
-    # ! BUG: get access_token for user logged in
-    token = ShopifyAccessToken.objects.get(user=1).access_token
+def shop_sync(self) -> (bool, str):
+    """Syncs product with Shopify"""
+    # returns: (success as bool, error_msg as string)
+    # if bool = True, then no error
+    # if bool = False, then error with error msg included
+
+    # Attempt to get Shopify Token.If token not found, exit function and return error
+    token_exists, token = get_token_or_error()
+    if not token_exists:
+
+        msg = 'token does not exist - are you authorized with Shopify?'
+        logger.error("ShopifySync failed: %s" % msg)
+        return False, msg
+
+    # Open GraphQL document
     document = open('/app/apps/shopify_app/product_mutations.graphql', 'r').read()
 
+    # execute productSet GraphQL mutation to sync Product with Shopify
+    # if productSet fails, immediately exit sync function
+    success, product_response = _product_set(self, token, document)
+
+    if not success:
+        return False, product_response
+    prod_gid = product_response['data']['productSet']['product']['id']
+    logger.info("GraphQL execution success: %s (productSet: %s)" %
+                (success, prod_gid))
+
+    # if mutation_success, publish product to sales channels
+    # if publishablePublish fails, log quietly but continue sync
+    # mutation error will be logged and message displayed to user
+    shop_publications = apps.get_app_config('shopify_app').SHOPIFY_PUBLICATIONS
+    status = {}
+    for pub in shop_publications:
+        success, response = _publishable_publish(self, token, document, prod_gid, pub["gid"])
+        status[pub["gid"]] = {"success": success, "response": response}
+        msg = "GraphQL execution (publishablePublish %s): %s" % (pub["gid"], status[pub["gid"]])
+        if success: logger.info(msg)
+        else: logger.error(msg)
+
+    return True, product_response
+
+def _product_set(obj, token, document) -> (bool, str):
+    """Sync product with Shopify"""
+    # document = open('/app/apps/shopify_app/product_mutations.graphql', 'r').read()
+
     with shopify.Session.temp(shop_url, api_version, token):
-        if self.shop_global_id:
+        if obj.shop_global_id:
             response = shopify.GraphQL().execute(
                 query=document,
                 variables={
                     "synchronous": True,
                     "productSet": {
-                        "title": self.name,
-                        "descriptionHtml": "<p>%s</p>" % self.description,
-                        "id": self.shop_global_id,
-                        "handle": slugify(self.name),
+                        "title": obj.name,
+                        "descriptionHtml": "<p>%s</p>" % obj.description,
+                        "id": obj.shop_global_id,
+                        "handle": slugify(obj.name),
                         # "productType": self.category.name,
-                        "status": self.shop_status,
+                        "status": obj.shop_status,
                         "productOptions": [
                             {
                                 "name": "Color",
                                 "position": 1,
                                 "values": [
-                                    {"name": self.primary_color.name},
+                                    {"name": obj.primary_color.name},
                                 ]
                             }
                         ],
@@ -49,9 +93,9 @@ def _shop_sync(self):
                             {
                                 "optionValues": [{
                                     "optionName": "Color",
-                                    "name": self.primary_color.name,
+                                    "name": obj.primary_color.name,
                                 }],
-                                "price": self.price,
+                                "price": obj.price,
                             },
                         ],
                     }
@@ -64,18 +108,18 @@ def _shop_sync(self):
                 variables={
                     "synchronous": True,
                     "productSet": {
-                        "title": self.name,
-                        "descriptionHtml": "<p>%s</p>" % self.description,
+                        "title": obj.name,
+                        "descriptionHtml": "<p>%s</p>" % obj.description,
                         # "id": self.shop_global_id,
-                        "handle": slugify(self.name),
+                        "handle": slugify(obj.name),
                         # "productType": self.category.name,
-                        "status": self.shop_status,
+                        "status": obj.shop_status,
                         "productOptions": [
                             {
                                 "name": "Color",
                                 "position": 1,
                                 "values": [
-                                    {"name": self.primary_color.name},
+                                    {"name": obj.primary_color.name},
                                 ]
                             }
                         ],
@@ -83,9 +127,9 @@ def _shop_sync(self):
                             {
                                 "optionValues": [{
                                     "optionName": "Color",
-                                    "name": self.primary_color.name,
+                                    "name": obj.primary_color.name,
                                 }],
-                                "price": self.price,
+                                "price": obj.price,
                             },
                         ],
                     }
@@ -93,34 +137,35 @@ def _shop_sync(self):
                 operation_name='createProductSynchronous',
             )
 
-    logger.info(json.loads(response)['data']['productSet']['product']['id'])
+    response = json.loads(response)
 
-    return response
+    if not (response['data']['productSet']['userErrors']):
+        success = True
+    else: success = False
 
-@shopify_token_required
-def _shop_publish(product_global_id):
-    # shop_url = apps.get_app_config('shopify_app').SHOPIFY_URL
-    # api_version = apps.get_app_config('shopify_app').SHOPIFY_API_VERSION
+    return success, response
 
-    # ! BUG: add error handling for when token does not exist. Consider shop login decorator
+# @shopify_token_required
+def _publishable_publish(obj, token, document, prod_gid, pub_id) -> (bool, str):
     # ! BUG: get access_token for user logged in
-    token = ShopifyAccessToken.objects.get(user=1).access_token
-    document = open('/app/apps/shopify_app/product_mutations.graphql', 'r').read()
-    publicationId = apps.get_app_config('shopify_app').SHOPIFY_ONLINE_PUB_ID
-
     with shopify.Session.temp(shop_url, api_version, token):
         response = shopify.GraphQL().execute(
             query=document,
             variables={
-                "id": product_global_id,
+                "id": prod_gid,
                 "input": {
-                    "publicationId": publicationId,
+                    "publicationId": pub_id,
                 }
             },
             operation_name='publishablePublish',
         )
-    logger.info(json.loads(response))
-    return response
+    response = json.loads(response)
+
+    if not (response['errors']):
+        success = True
+    else: success = False
+
+    return success, response
 
 @shopify_token_required
 def _shop_product_delete(product_global_id):
