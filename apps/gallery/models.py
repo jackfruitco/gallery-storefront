@@ -1,12 +1,9 @@
 import django_filters
 from autoslug import AutoSlugField
 from django.db import models
-import logging
 from apps.shopify_app.models import ShopifyAccessToken
-#from apps.shopify_app.api_connectors import _shop_sync, _shop_publish, _shop_product_delete, _shop_create_media
 from apps.shopify_app.api_connectors import shop_sync, _shop_product_delete
 
-logger = logging.getLogger(__name__)
 
 def get_image_path(instance, filename):
     return "images/products/{0}/{1}".format(instance.fk_product.pk, instance.slug + "." + filename.split('.')[-1])

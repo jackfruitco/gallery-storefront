@@ -15,18 +15,13 @@ class ShopifyAppConfig(AppConfig):
     SHOPIFY_PUBLICATIONS = [
         {
             "name": "Online Store",
-            "gid": os.environ.get('SHOPIFY_ONLINE_PUB_ID'),
+            "id": os.environ.get('SHOPIFY_ONLINE_PUB_ID'),
         },
         {
             "name": "POS",
-            "gid": os.environ.get('SHOPIFY_POS_PUB_ID'),
+            "id": os.environ.get('SHOPIFY_POS_PUB_ID'),
         }
     ]
 
-    SHOPIFY_ONLINE_PUB_ID = os.environ.get('SHOPIFY_ONLINE_PUB_ID')
-    SHOPIFY_POS_PUB_ID = os.environ.get('SHOPIFY_POS_PUB_ID')
-
-    def store_access_token(self, access_token):
-        self.SHOPIFY_ACCESS_TOKEN = access_token
-        return self
-
+    def ready(self):
+        import apps.shopify_app.signals

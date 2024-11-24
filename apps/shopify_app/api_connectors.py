@@ -3,8 +3,9 @@ from apps.shopify_app.decorators import shopify_token_required
 from apps.shopify_app.models import ShopifyAccessToken
 from django.apps import apps
 from django.utils.text import slugify
-from django.urls import reverse
 import json, shopify, logging
+from django.dispatch import receiver
+from .signals import shop_sync_error
 
 logger = logging.getLogger(__name__)
 
@@ -46,20 +47,17 @@ def shop_sync(self) -> (bool, str):
     if not success:
         return False, product_response
     prod_gid = product_response['data']['productSet']['product']['id']
-    logger.info("GraphQL execution success: %s (productSet: %s)" %
-                (success, prod_gid))
+    # logger.info("GraphQL execution success: %s (productSet: %s)" %
+    #             (success, prod_gid))
 
     # if mutation_success, publish product to sales channels
     # if publishablePublish fails, log quietly but continue sync
     # mutation error will be logged and message displayed to user
     shop_publications = apps.get_app_config('shopify_app').SHOPIFY_PUBLICATIONS
     status = {}
-    for pub in shop_publications:
-        success, response = _publishable_publish(self, token, document, prod_gid, pub["gid"])
-        status[pub["gid"]] = {"success": success, "response": response}
-        msg = "GraphQL execution (publishablePublish %s): %s" % (pub["gid"], status[pub["gid"]])
-        if success: logger.info(msg)
-        else: logger.error(msg)
+    for publication in shop_publications:
+        success, response = _publishable_publish(self, token, document, prod_gid, publication)
+        # status[pub["gid"]] = {"success": success, "response": response}
 
     return True, product_response
 
@@ -143,27 +141,53 @@ def _product_set(obj, token, document) -> (bool, str):
         success = True
     else: success = False
 
+    if not success:
+        logger.error("GraphQL execution failed during %s: %s" %
+                     (_product_set.__name__, response))
+        # shop_sync_error.send(sender=_product_set.__name__, response=response, product=obj.name)
+    else:
+        logger.info("GraphQL execution succeeded during %s: %s (%s)" %
+                    (_product_set.__name__, obj.name, obj.shop_global_id))
+
     return success, response
 
 # @shopify_token_required
-def _publishable_publish(obj, token, document, prod_gid, pub_id) -> (bool, str):
+def _publishable_publish(obj, token, document, prod_id, publication) -> (bool, str):
     # ! BUG: get access_token for user logged in
     with shopify.Session.temp(shop_url, api_version, token):
         response = shopify.GraphQL().execute(
             query=document,
             variables={
-                "id": prod_gid,
+                "id": prod_id,
                 "input": {
-                    "publicationId": pub_id,
+                    "publicationId": publication["id"],
                 }
             },
             operation_name='publishablePublish',
         )
     response = json.loads(response)
 
-    if not (response['errors']):
-        success = True
-    else: success = False
+    # if 'errors' in response or 'field' in response['data']['publishablePublish']['userErrors']:
+    if 'errors' in response:
+        response = {
+            "message": response['errors'][0]['message'],
+            "field": response['errors'][0]['locations']
+            }
+        success = False
+    elif response['data']['publishablePublish']['userErrors']:
+        response = {
+            "message": response['data']['publishablePublish']['userErrors'][0]['message'],
+            "field": response['data']['publishablePublish']['userErrors'][0]['field']
+            }
+        success = False
+    else: success = True
+
+    if not success:
+        logger.error("GraphQL execution failed during %s: %s" % (_publishable_publish.__name__, response))
+        shop_sync_error.send(sender=_publishable_publish.__name__, response=response['message'],
+                             publication=publication['name'])
+    else:
+        logger.info("GraphQL execution succeeded during %s: %s" % (_publishable_publish.__name__, response))
 
     return success, response
 

@@ -1,8 +1,10 @@
-from django.contrib import messages
-from django.contrib import admin
+from django.contrib import admin, messages
+from django.dispatch import receiver
+from apps.shopify_app.signals import shop_sync_error
 from .models import Product, ProductImage, Color, ProductCategory
-from apps.shopify_app.decorators import shopify_token_required
+import logging
 
+logger = logging.getLogger(__name__)
 
 class MediaUploadInline(admin.StackedInline):
     model = ProductImage
@@ -26,6 +28,13 @@ class ProductAdmin(admin.ModelAdmin):
     search_fields = ["name", "description", "shop_global_id"]
 
     def save_model(self, request, obj, form, change):
+        @receiver(shop_sync_error)
+        def add_publish_error(sender, response='unknown', publication='unknown', **kwargs):
+            """Signal handler to add message when shop sync error occurs"""
+            message = ("The product %s failed to publish to Shopify %s (%s). Contact your Shopify Partner." %
+                       (obj.name, publication, response))
+            messages.warning(request, message)
+
         super(ProductAdmin, self).save_model(request, obj, form, change)
         if obj.sync_error or (obj.shop_sync and not obj.shop_global_id):
             data  = {"lvl": messages.ERROR,
