@@ -2,7 +2,6 @@ import binascii
 import logging
 import os
 import shopify
-
 from django.apps import apps
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
@@ -79,9 +78,3 @@ def logout(request):
     request.session.pop('shopify', None)
     messages.info(request, "Successfully logged out.")
     return redirect(reverse(login))
-
-def sync_error(request):
-    return render(request, "shopify_app/sync-error.html")
-
-def sync_success(request):
-    return render(request, "shopify_app/sync-debug.html")
