@@ -71,8 +71,9 @@ class Product(models.Model):
             success, response = shop_sync(self)
             if not success:
                 self.sync_error_msg = response
+            else:
+                self.shop_global_id = response['data']['productSet']['product']['id']
             self.sync_error = not success
-            self.shop_global_id = response['data']['productSet']['product']['id']
         else:
             self.sync_error = False
             self.sync_error_msg = ''

@@ -1,11 +1,9 @@
-from pyexpat.errors import messages
-
-from django.contrib.messages import success
-
+from django.utils.safestring import mark_safe
 from apps.shopify_app.decorators import shopify_token_required
 from apps.shopify_app.models import ShopifyAccessToken
 from django.apps import apps
 from django.utils.text import slugify
+from django.urls import reverse
 import json, shopify, logging
 
 logger = logging.getLogger(__name__)
@@ -32,8 +30,10 @@ def shop_sync(self) -> (bool, str):
     token_exists, token = get_token_or_error()
     if not token_exists:
 
-        msg = 'token does not exist - are you authorized with Shopify?'
-        logger.error("ShopifySync failed: %s" % msg)
+        # FUTURE FEAT: add link to error message
+        # msg = "token does not exist - are you <a href='%s'>authorized with Shopify?</a>" % reverse('shopify:login')
+        msg = "token does not exist - are you authorized with Shopify?"
+        logger.error(mark_safe("ShopifySync failed: %s" % msg))
         return False, msg
 
     # Open GraphQL document
