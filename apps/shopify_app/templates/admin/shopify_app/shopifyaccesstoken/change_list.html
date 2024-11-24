@@ -1,0 +1,12 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_urls %}
+
+{% block object-tools-items %}
+  {% if has_add_permission %}
+      <li>
+          <a href="{% url 'shopify:login' %}" class="addlink">
+          {% blocktranslate with cl.opts.verbose_name as name %}Request {{ name }}{% endblocktranslate %}
+          </a>
+      </li>
+  {% endif %}
+{% endblock %}
