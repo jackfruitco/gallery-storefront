@@ -34,15 +34,16 @@ class Product(models.Model):
     description = models.TextField(blank=True)
 
     # Site Gallery Display Data
-    display = models.BooleanField(default=True, help_text=
+    display = models.BooleanField(default=True, verbose_name="Gallery Display Enabled", help_text=
     "If selected, this product will be displayed in Site Gallery")
 
     # Shopify Store Data
     shop_sync = models.BooleanField(
         default=False,
+        verbose_name="Shopify Sync Enabled",
         help_text="If selected, this product's data will synced with Shopify and "
                   "available via the Shopify Online Store and Shopify POS. Please note, "
-                  "updates made via Shopify Admin will be overridden, and do not sync with"
+                  "updates made via Shopify Admin will be overridden, and do not sync with "
                   "this site.")
     shop_global_id  = models.CharField(max_length=100, blank=True, help_text="Shopify Global productID", editable=False)
     shop_status = models.CharField(max_length=10, default="DRAFT",
