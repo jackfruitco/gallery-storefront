@@ -2,7 +2,7 @@
 # uses productSet() to update product
 # when synchronous is set to True, returned Json will include Shopify productID (GID)
 
-mutation createProductSynchronous($productSet: ProductSetInput!, $synchronous: Boolean!) {
+mutation productSet($productSet: ProductSetInput!, $synchronous: Boolean!) {
   productSet(synchronous: $synchronous, input: $productSet) {
     product {
       id
