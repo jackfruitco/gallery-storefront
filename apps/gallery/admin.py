@@ -29,7 +29,7 @@ class ProductAdmin(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         @receiver(shop_sync_error)
-        def add_publish_error(sender, response='unknown', publication='unknown', **kwargs):
+        def add_sync_error_message(sender, response='unknown', publication='unknown', **kwargs):
             """Signal handler to add message when shop sync error occurs"""
             message = ("The product %s failed to publish to Shopify %s (%s). Contact your Shopify Partner." %
                        (obj.name, publication, response))
