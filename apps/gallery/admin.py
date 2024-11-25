@@ -13,25 +13,24 @@ class MediaUploadInline(admin.StackedInline):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    readonly_fields = ("shop_global_id", "created_at", "modified_at")
+    readonly_fields = ("shopify_global_id", "created_at", "modified_at")
 
     fieldsets = [
         (None, {"fields": ["name", "category", "description", "primary_color"]}),
         ("Website Options", {"fields": ["display"]}),
-        ("Storefront", {"fields": ["shop_sync", "shop_global_id","shop_status","price","sku"]}),
+        ("Storefront", {"fields": ["shopify_sync", "shopify_global_id","shopify_status","price","sku"]}),
         ("Technical Data", {"fields": ["created_at", "modified_at"]})
     ]
 
     inlines = [MediaUploadInline]
-    list_display = ["name", "display", "shop_sync", "shop_status"]
-    list_filter = ["category", "display", "shop_sync"]
-    search_fields = ["name", "description", "shop_global_id"]
+    list_display = ["name", "display", "shopify_sync", "shopify_status"]
+    list_filter = ["category", "display", "shopify_sync"]
+    search_fields = ["name", "description", "shopify_global_id"]
 
     def save_model(self, request, obj, form, change):
         @receiver(sync_message)
-        def add_sync_message(sender, level=messages.INFO, message='Contact your Shopify Partner for %s', **kwargs):
+        def add_sync_message(sender, level=messages.INFO, message='Contact your Shopify Partner for assistance.', **kwargs):
             """Signal handler to add message when shop sync error occurs"""
-            message = message % obj.name
             messages.add_message(request, level, message)
         super(ProductAdmin, self).save_model(request, obj, form, change)
 

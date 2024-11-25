@@ -3,6 +3,7 @@ from autoslug import AutoSlugField
 from django.db import models
 from apps.shopify_app.models import ShopifyAccessToken
 from apps.shopify_app import shopify_bridge
+from django.apps import apps
 
 def get_image_path(instance, filename):
     return "images/products/{0}/{1}".format(instance.fk_product.pk, instance.slug + "." + filename.split('.')[-1])
@@ -34,15 +35,15 @@ class Product(models.Model):
     "If selected, this product will be displayed in Site Gallery")
 
     # Shopify Store Data
-    shop_sync = models.BooleanField(
+    shopify_sync = models.BooleanField(
         default=False,
         verbose_name="Shopify Sync Enabled",
         help_text="If selected, this product's data will synced with Shopify and "
                   "available via the Shopify Online Store and Shopify POS. Please note, "
                   "updates made via Shopify Admin will be overridden, and do not sync with "
                   "this site.")
-    shop_global_id  = models.CharField(max_length=100, blank=True, help_text="Shopify Global productID", editable=False)
-    shop_status = models.CharField(max_length=10, default="DRAFT",
+    shopify_global_id  = models.CharField(max_length=100, blank=True, help_text="Shopify Global productID", editable=False)
+    shopify_status = models.CharField(max_length=10, default="DRAFT",
                                    choices={
                                        "ACTIVE": "Active",
                                        "DRAFT": "Draft",
@@ -61,16 +62,19 @@ class Product(models.Model):
         return self.name
 
     def save(self, **kwargs):
-        if self.shop_sync:
-            success, response = shopify_bridge.sync(self)
-            if success: self.shop_global_id = response['data']['productSet']['product']['id']
+        if self.shopify_sync:
+            success, response = shopify_bridge.product_set(self)
+            if success: self.shopify_global_id = response['data']['productSet']['product']['id']
         if (update_fields := kwargs.get("update_fields")) is not None:
-            kwargs["update_fields"] = {"shop_global_id"}.union(update_fields)
+            kwargs["update_fields"] = {"shopify_global_id"}.union(update_fields)
         super().save(**kwargs)
+        if self.shopify_sync and self.shopify_global_id:
+            for publication in apps.get_app_config('shopify_app').SHOPIFY_PUBLICATIONS:
+                shopify_bridge.publish(self, publication)
 
     def delete(self, **kwargs):
-        if self.shop_global_id:
-            shopify_bridge.sync(self, productDelete=True)
+        if self.shopify_global_id:
+            shopify_bridge.product_delete(self)
         super().delete(**kwargs)
 
 
@@ -91,8 +95,8 @@ class ProductImage(models.Model):
 
     def save(self, **kwargs):
         super().save(**kwargs)
-        # if self.fk_product.shop_global_id:
-        #    _shop_create_media(self)
+        # if self.fk_product.shopify_global_id:
+        #    shopify_bridge.create_media(self)
 
     class ProductFilter(django_filters.FilterSet):
         name = django_filters.CharFilter(lookup_expr='ic')

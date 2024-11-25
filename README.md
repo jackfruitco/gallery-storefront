@@ -8,7 +8,7 @@ The storefront uses Shopify as a backend, via shopify-python-api and GraphQL API
 ### 1. apps.Shopify_App To-Do's
 - [ ] **BUG**: Fix ShopifyAccessToken to retrieve token for user logged in
 - [ ] **BUG**: Fix decorators to required Shopify Access Token prior to making GraphQL API calls
-- [ ] **BUG**: Fix failure to call deleteProduct mutation upon disabling Product.shop_sync
+- [ ] **BUG**: Fix failure to call deleteProduct mutation upon disabling Product.shopify_sync
 
 **GraphQL API**
 - [ ] **BUG**: Fix media upload
@@ -34,7 +34,7 @@ The storefront uses Shopify as a backend, via shopify-python-api and GraphQL API
 - [ ] FEATURE: Match source DB model with Shopify Product model
   - [ ] Support Options
   - [ ] Support Variants
-  - [ ] Update _shop_sync to perform mutations including options and variants
+  - [ ] Update _shopify_sync to perform mutations including options and variants
 
 ### 5. General To-Do's
 - [ ] **BUG**: Fix alignment on Admin Login button

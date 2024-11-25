@@ -11,7 +11,7 @@ shop_url = apps.get_app_config('shopify_app').SHOPIFY_URL
 api_version = apps.get_app_config('shopify_app').SHOPIFY_API_VERSION
 
 
-def sync(obj, **kwargs) -> (bool, str):
+def sync_setup() -> (str, str):
     """Syncs product with Shopify Admin using various GraphQL mutations"""
 
     # Attempt to get Shopify Token. If token not found, exit function and return error
@@ -19,32 +19,12 @@ def sync(obj, **kwargs) -> (bool, str):
     if not token_exists:
         # FUTURE FEAT: add link to error message
         msg = "token does not exist - are you authorized with Shopify?"
-        logger.error("ShopifySync failed: %s" % msg)
-        return False, msg
+        return {"errors": [{'message': msg, 'locations': sync_setup.__name__}]}
 
     # Open GraphQL document
     document = open('/app/apps/shopify_app/product_mutations.graphql', 'r').read()
 
-    if 'productDelete' in kwargs and kwargs['productDelete']:
-        return _product_delete(obj, token, document)
-
-    # execute productSet GraphQL mutation to sync Product with Shopify
-    # if productSet fails, immediately exit sync function
-    success, response = _product_set(obj, token, document)
-
-    if not success:
-        return False, response
-    prod_gid = response['data']['productSet']['product']['id']
-    # logger.info("GraphQL execution success: %s (productSet: %s)" %
-    #             (success, prod_gid))
-
-    # if mutation_success, publish product to sales channels
-    # if publishablePublish fails, log quietly but continue sync
-    # mutation error will be logged and message displayed to user
-    for publication in apps.get_app_config('shopify_app').SHOPIFY_PUBLICATIONS:
-        _publishable_publish(obj, token, document, prod_gid, publication)
-
-    return True, response
+    return {"token": token, "document": document}
 
 
 def get_token_or_error() -> (bool, str):
@@ -54,23 +34,26 @@ def get_token_or_error() -> (bool, str):
         return False, None
 
 
-def _product_set(obj, token, document) -> (bool, str):
+def product_set(obj) -> (bool, str):
     """Sync product with Shopify Admin using GraphQL mutation 'createProductSynchronous'"""
     operation_name = 'productSet'
 
-    with shopify.Session.temp(shop_url, api_version, token):
-        if obj.shop_global_id:
+    success, config = error_parser(sync_setup(), sync_setup.__name__, obj)
+    if not success: return False, config
+
+    with shopify.Session.temp(shop_url, api_version, config['token']):
+        if obj.shopify_global_id:
             response = shopify.GraphQL().execute(
-                query=document,
+                query=config['document'],
                 variables={
                     "synchronous": True,
                     "productSet": {
                         "title": obj.name,
                         "descriptionHtml": "<p>%s</p>" % obj.description,
-                        "id": obj.shop_global_id,
+                        "id": obj.shopify_global_id,
                         "handle": slugify(obj.name),
                         # "productType": self.category.name,
-                        "status": obj.shop_status,
+                        "status": obj.shopify_status,
                         "productOptions": [
                             {
                                 "name": "Color",
@@ -95,16 +78,16 @@ def _product_set(obj, token, document) -> (bool, str):
             )
         else:
             response = shopify.GraphQL().execute(
-                query=document,
+                query=config['document'],
                 variables={
                     "synchronous": True,
                     "productSet": {
                         "title": obj.name,
                         "descriptionHtml": "<p>%s</p>" % obj.description,
-                        # "id": self.shop_global_id,
+                        # "id": self.shopify_global_id,
                         "handle": slugify(obj.name),
                         # "productType": self.category.name,
-                        "status": obj.shop_status,
+                        "status": obj.shopify_status,
                         "productOptions": [
                             {
                                 "name": "Color",
@@ -127,19 +110,22 @@ def _product_set(obj, token, document) -> (bool, str):
                 },
                 operation_name=operation_name,
             )
-    return error_parser(json.loads(response), operation_name)
+    return error_parser(json.loads(response), operation_name, obj)
 
-# @shopify_token_required
-def _publishable_publish(obj, token, document, prod_id, publication) -> (bool, str):
+
+def publish(obj, publication) -> (bool, str):
     """Publish product to Shopify publication using GraphQL mutation 'publishablePublish'"""
     # ! BUG: get access_token for user logged in
     operation_name='publishablePublish'
 
-    with shopify.Session.temp(shop_url, api_version, token):
+    success, config = error_parser(sync_setup(), sync_setup.__name__, obj)
+    if not success: return False, config
+
+    with shopify.Session.temp(shop_url, api_version, config['token']):
         response = shopify.GraphQL().execute(
-            query=document,
+            query=config['document'],
             variables={
-                "id": prod_id,
+                "id": obj.shopify_global_id,
                 "input": {
                     "publicationId": publication["id"],
                 }
@@ -147,51 +133,57 @@ def _publishable_publish(obj, token, document, prod_id, publication) -> (bool, s
             operation_name=operation_name,
         )
 
-    return error_parser(json.loads(response), operation_name)
+    return error_parser(json.loads(response), operation_name, obj, publication=publication)
 
 
-def _product_delete(obj, token, document):
+def product_delete(obj):
     """Delete product from Shopify Admin using GraphQL mutation 'productDelete'"""
     operation_name = 'productDelete'
 
-    with shopify.Session.temp(shop_url, api_version, token):
+    success, config = error_parser(sync_setup(), sync_setup.__name__, obj)
+    if not success: return False, config
+
+    with shopify.Session.temp(shop_url, api_version, config['token']):
         response = shopify.GraphQL().execute(
-            query=document,
+            query=config['document'],
             variables={
                 "input": {
-                    "id": obj.shop_global_id,
+                    "id": obj.shopify_global_id,
                 }
             },
             operation_name=operation_name,
         )
 
-    return error_parser(json.loads(response), operation_name)
+    return error_parser(json.loads(response), operation_name, obj)
 
 
-def _shop_create_media(obj, token, document):
+def create_media(obj):
     """Sync product media in Shopify Admin using GraphQL mutation 'productCreateMedia'"""
     operation_name = 'productCreateMedia'
+
+    success, config = error_parser(sync_setup(), sync_setup.__name__, obj)
+    if not success: return False, config
 
     #! BUG: remove hardcoded domain link
     img_url = 'http://%s%s' % ('localhost', obj.image.url)
 
-    with shopify.Session.temp(shop_url, api_version, token):
+    with shopify.Session.temp(shop_url, api_version, config['token']):
         response = shopify.GraphQL().execute(
-            query=document,
+            query=config['document'],
             variables={
                 "media": {
                     "alt": obj.description,
                     "mediaContentType": "IMAGE",
                     "originalSource": img_url,
                 },
-                "productId": obj.fk_product.shop_global_id
+                "productId": obj.fk_product.shopify_global_id
             },
         operation_name=operation_name,
         )
-    return error_parser(json.loads(response), operation_name)
+    return error_parser(json.loads(response), operation_name, obj)
 
 
-def error_parser(response, operation_name):
+def error_parser(response, operation_name, obj, **kwargs):
     """Parse JSON response for 'errors' or 'userError' and construct signals and logging"""
     if 'errors' in response:
         response = {
@@ -199,7 +191,7 @@ def error_parser(response, operation_name):
             "field": response['errors'][0]['locations']
             }
         success = False
-    elif response['data'][operation_name]['userErrors']:
+    elif 'data' in response and response['data'][operation_name]['userErrors']:
         response = {
             "message": response['data'][operation_name]['userErrors'][0]['message'],
             "field": response['data'][operation_name]['userErrors'][0]['field']
@@ -213,13 +205,21 @@ def error_parser(response, operation_name):
     msg = "GraphQL execution %s: %s" % ('succeeded' if success else 'failed',  response)
     if not success:
         logger.error(msg=msg)
-        sync_message.send(sender=operation_name, level=messages.ERROR,
-                          message="The product %s failed to publish to Shopify %s (%s). Contact your Shopify Partner." %
-                           ("%s", "publication", response['message']))
+        if operation_name == sync_setup.__name__:
+            sync_message.send(sender=operation_name, level=messages.ERROR,
+                              message='The product "%s" could not be synced to Shopify (%s).' %
+                                      (obj.name, response['message']))
+        else:
+            if 'publication' not in kwargs: publication='publication'
+            else: publication = kwargs['publication']['name']
+            sync_message.send(sender=operation_name, level=messages.WARNING,
+                              message='The product "%s" failed to publish to Shopify %s (%s). Contact your Shopify Partner.' %
+                               (obj.name, publication, response['message']))
     else:
         logger.info(msg=msg)
         if operation_name == 'productSet':
             sync_message.send(sender=operation_name, level=messages.SUCCESS,
-                              message="The product %s synced successfully to Shopify!")
+                              message='The product "%s" synced successfully to Shopify in %s status!' %
+                                      (obj.name, obj.shopify_status))
 
     return success, response
