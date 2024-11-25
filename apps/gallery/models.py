@@ -2,7 +2,7 @@ import django_filters
 from autoslug import AutoSlugField
 from django.db import models
 from apps.shopify_app.models import ShopifyAccessToken
-from apps.shopify_app import api_connectors
+from apps.shopify_app import shopify_bridge
 
 def get_image_path(instance, filename):
     return "images/products/{0}/{1}".format(instance.fk_product.pk, instance.slug + "." + filename.split('.')[-1])
@@ -62,7 +62,7 @@ class Product(models.Model):
 
     def save(self, **kwargs):
         if self.shop_sync:
-            success, response = api_connectors.sync(self)
+            success, response = shopify_bridge.sync(self)
             if success: self.shop_global_id = response['data']['productSet']['product']['id']
         if (update_fields := kwargs.get("update_fields")) is not None:
             kwargs["update_fields"] = {"shop_global_id"}.union(update_fields)
@@ -70,7 +70,7 @@ class Product(models.Model):
 
     def delete(self, **kwargs):
         if self.shop_global_id:
-            api_connectors.sync(self, productDelete=True)
+            shopify_bridge.sync(self, productDelete=True)
         super().delete(**kwargs)
 
 

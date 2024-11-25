@@ -11,45 +11,6 @@ shop_url = apps.get_app_config('shopify_app').SHOPIFY_URL
 api_version = apps.get_app_config('shopify_app').SHOPIFY_API_VERSION
 
 
-def error_parser(response, operation_name):
-    """Parse JSON response for 'errors' or 'userError' and construct signals and logging"""
-    if 'errors' in response:
-        response = {
-            "message": response['errors'][0]['message'],
-            "field": response['errors'][0]['locations']
-            }
-        success = False
-    elif response['data'][operation_name]['userErrors']:
-        response = {
-            "message": response['data'][operation_name]['userErrors'][0]['message'],
-            "field": response['data'][operation_name]['userErrors'][0]['field']
-            }
-        success = False
-    else: success = True
-
-    # Logging and Signaling
-    # Signal receiver is at ProductAdmin.save_model() to add_message
-    # Success Signal only sent for productSet; publishablePublish will succeed quietly
-    msg = "GraphQL execution %s: %s" % ('succeeded' if success else 'failed',  response)
-    if not success:
-        logger.error(msg=msg)
-        sync_message.send(sender=operation_name, level=messages.ERROR,
-                          message="The product %s failed to publish to Shopify %s (%s). Contact your Shopify Partner." %
-                           ("%s", "publication", response['message']))
-    else:
-        logger.info(msg=msg)
-        if operation_name == 'productSet':
-            sync_message.send(sender=operation_name, level=messages.SUCCESS,
-                              message="The product %s synced successfully to Shopify!")
-
-    return success, response
-
-def get_token_or_error() -> (bool, str):
-    if ShopifyAccessToken.objects.filter(user=1).exists():
-        return True, ShopifyAccessToken.objects.get(user=1).access_token
-    else:
-        return False, None
-
 def sync(obj, **kwargs) -> (bool, str):
     """Syncs product with Shopify Admin using various GraphQL mutations"""
 
@@ -84,6 +45,14 @@ def sync(obj, **kwargs) -> (bool, str):
         _publishable_publish(obj, token, document, prod_gid, publication)
 
     return True, response
+
+
+def get_token_or_error() -> (bool, str):
+    if ShopifyAccessToken.objects.filter(user=1).exists():
+        return True, ShopifyAccessToken.objects.get(user=1).access_token
+    else:
+        return False, None
+
 
 def _product_set(obj, token, document) -> (bool, str):
     """Sync product with Shopify Admin using GraphQL mutation 'createProductSynchronous'"""
@@ -220,3 +189,37 @@ def _shop_create_media(obj, token, document):
         operation_name=operation_name,
         )
     return error_parser(json.loads(response), operation_name)
+
+
+def error_parser(response, operation_name):
+    """Parse JSON response for 'errors' or 'userError' and construct signals and logging"""
+    if 'errors' in response:
+        response = {
+            "message": response['errors'][0]['message'],
+            "field": response['errors'][0]['locations']
+            }
+        success = False
+    elif response['data'][operation_name]['userErrors']:
+        response = {
+            "message": response['data'][operation_name]['userErrors'][0]['message'],
+            "field": response['data'][operation_name]['userErrors'][0]['field']
+            }
+        success = False
+    else: success = True
+
+    # Logging and Signaling
+    # Signal receiver is at ProductAdmin.save_model() to add_message
+    # Success Signal only sent for productSet; publishablePublish will succeed quietly
+    msg = "GraphQL execution %s: %s" % ('succeeded' if success else 'failed',  response)
+    if not success:
+        logger.error(msg=msg)
+        sync_message.send(sender=operation_name, level=messages.ERROR,
+                          message="The product %s failed to publish to Shopify %s (%s). Contact your Shopify Partner." %
+                           ("%s", "publication", response['message']))
+    else:
+        logger.info(msg=msg)
+        if operation_name == 'productSet':
+            sync_message.send(sender=operation_name, level=messages.SUCCESS,
+                              message="The product %s synced successfully to Shopify!")
+
+    return success, response
