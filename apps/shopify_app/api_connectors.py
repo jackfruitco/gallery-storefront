@@ -2,7 +2,8 @@ from apps.shopify_app.models import ShopifyAccessToken
 from django.apps import apps
 from django.utils.text import slugify
 import json, shopify, logging
-from .signals import shop_sync_error
+from django.contrib import messages
+from .signals import sync_message
 
 logger = logging.getLogger(__name__)
 
@@ -28,15 +29,20 @@ def error_parser(response, operation_name):
 
     # Logging and Signaling
     # Signal receiver is at ProductAdmin.save_model() to add_message
-    msg = "%s GraphQL execution %s: %s" % (
-        _product_set.__name__, 'succeeded' if success else 'failed',  response)
+    # Success Signal only sent for productSet; publishablePublish will succeed quietly
+    msg = "GraphQL execution %s: %s" % ('succeeded' if success else 'failed',  response)
     if not success:
         logger.error(msg=msg)
-        shop_sync_error.send(sender=_product_set.__name__, response=response['message'])
-    else: logger.info(msg=msg)
+        sync_message.send(sender=operation_name, level=messages.ERROR,
+                          message="The product %s failed to publish to Shopify %s (%s). Contact your Shopify Partner." %
+                           ("%s", "publication", response['message']))
+    else:
+        logger.info(msg=msg)
+        if operation_name == 'productSet':
+            sync_message.send(sender=operation_name, level=messages.SUCCESS,
+                              message="The product %s synced successfully to Shopify!")
 
     return success, response
-
 
 def get_token_or_error() -> (bool, str):
     if ShopifyAccessToken.objects.filter(user=1).exists():
@@ -44,11 +50,10 @@ def get_token_or_error() -> (bool, str):
     else:
         return False, None
 
-def shop_sync(obj, **kwargs) -> (bool, str):
+def sync(obj, **kwargs) -> (bool, str):
     """Syncs product with Shopify Admin using various GraphQL mutations"""
-    # returns: (success as bool, response as string)
 
-    # Attempt to get Shopify Token.If token not found, exit function and return error
+    # Attempt to get Shopify Token. If token not found, exit function and return error
     token_exists, token = get_token_or_error()
     if not token_exists:
         # FUTURE FEAT: add link to error message
@@ -59,9 +64,8 @@ def shop_sync(obj, **kwargs) -> (bool, str):
     # Open GraphQL document
     document = open('/app/apps/shopify_app/product_mutations.graphql', 'r').read()
 
-    if kwargs['productDelete']:
-        _product_delete(obj, token, document)
-        return error_parser(obj, "productDelete")
+    if 'productDelete' in kwargs and kwargs['productDelete']:
+        return _product_delete(obj, token, document)
 
     # execute productSet GraphQL mutation to sync Product with Shopify
     # if productSet fails, immediately exit sync function
@@ -83,7 +87,7 @@ def shop_sync(obj, **kwargs) -> (bool, str):
 
 def _product_set(obj, token, document) -> (bool, str):
     """Sync product with Shopify Admin using GraphQL mutation 'createProductSynchronous'"""
-    operation_name = 'createProductSynchronous'
+    operation_name = 'productSet'
 
     with shopify.Session.temp(shop_url, api_version, token):
         if obj.shop_global_id:

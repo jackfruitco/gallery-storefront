@@ -1,3 +1,3 @@
 import django.dispatch
 
-shop_sync_error = django.dispatch.Signal()
+sync_message = django.dispatch.Signal()

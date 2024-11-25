@@ -2,8 +2,7 @@ import django_filters
 from autoslug import AutoSlugField
 from django.db import models
 from apps.shopify_app.models import ShopifyAccessToken
-from apps.shopify_app.api_connectors import shop_sync, _shop_product_delete
-
+from apps.shopify_app import api_connectors
 
 def get_image_path(instance, filename):
     return "images/products/{0}/{1}".format(instance.fk_product.pk, instance.slug + "." + filename.split('.')[-1])
@@ -52,9 +51,6 @@ class Product(models.Model):
     price = models.FloatField(default=0, help_text="If item is not synced with Shopify, enter price as '0'.")
     primary_color = models.ForeignKey(Color, on_delete=models.CASCADE)
 
-    sync_error = models.BooleanField(default=False)
-    sync_error_msg = models.TextField(blank=True, null=True)
-
     def get_key_image(self):
         return ProductImage.objects.filter(fk_product=self, key_image=True).first()
 
@@ -66,23 +62,15 @@ class Product(models.Model):
 
     def save(self, **kwargs):
         if self.shop_sync:
-            success, response = shop_sync(self)
-            if not success:
-                self.sync_error_msg = response
-            else:
-                self.shop_global_id = response['data']['productSet']['product']['id']
-            self.sync_error = not success
-        else:
-            self.sync_error = False
-            self.sync_error_msg = ''
-
+            success, response = api_connectors.sync(self)
+            if success: self.shop_global_id = response['data']['productSet']['product']['id']
         if (update_fields := kwargs.get("update_fields")) is not None:
-            kwargs["update_fields"] = {"sync_error", "sync_error_msg", "shop_global_id"}.union(update_fields)
+            kwargs["update_fields"] = {"shop_global_id"}.union(update_fields)
         super().save(**kwargs)
 
     def delete(self, **kwargs):
         if self.shop_global_id:
-            shop_sync(self, productDelete=True)
+            api_connectors.sync(self, productDelete=True)
         super().delete(**kwargs)
 
 
