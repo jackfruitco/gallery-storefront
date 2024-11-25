@@ -30,10 +30,12 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', SECRET_KEY_INSECURE)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DJANGO_DEBUG', '') != 'False'
 
-# ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS').split(', ')
+envvar = os.getenv('DJANGO_ALLOWED_HOSTS', None)
+if envvar: ALLOWED_HOSTS = envvar.split(', ')
 
-# CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS').split(', ')
 CSRF_COOKIE_SECURE = os.environ.get('CSRF_COOKIE_SECURE', '') != 'False'
+envvar = os.getenv('CSRF_TRUSTED_ORIGINS', None)
+if envvar: CSRF_TRUSTED_ORIGINS = envvar.split(', ')
 
 # Application definition
 INSTALLED_APPS = [
@@ -113,16 +115,17 @@ LOGGING = {
         "console": {
             "class": "logging.StreamHandler",
         },
-        "file": {
-            "class": "logging.FileHandler",
-            "filename": "general.log",
-            "level": "DEBUG",
-        },
+        # "file": {
+        #     "class": "logging.FileHandler",
+        #     "filename": "logs/general.log",
+        #     "level": "DEBUG",
+        # },
     },
     "loggers": {
         "": {
             "level": os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
-            "handlers": ["file", "console"],
+            # "handlers": ["file", "console"],
+            "handlers": ["console"],
         },
     },
 
