@@ -82,7 +82,7 @@ class Product(models.Model):
 
     def delete(self, **kwargs):
         if self.shop_global_id:
-            _shop_product_delete(self.shop_global_id)
+            shop_sync(self, productDelete=True)
         super().delete(**kwargs)
 
 

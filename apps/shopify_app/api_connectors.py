@@ -1,5 +1,3 @@
-from django.utils.safestring import mark_safe
-from apps.shopify_app.decorators import shopify_token_required
 from apps.shopify_app.models import ShopifyAccessToken
 from django.apps import apps
 from django.utils.text import slugify
@@ -46,7 +44,7 @@ def get_token_or_error() -> (bool, str):
     else:
         return False, None
 
-def shop_sync(self) -> (bool, str):
+def shop_sync(obj, **kwargs) -> (bool, str):
     """Syncs product with Shopify Admin using various GraphQL mutations"""
     # returns: (success as bool, response as string)
 
@@ -54,21 +52,24 @@ def shop_sync(self) -> (bool, str):
     token_exists, token = get_token_or_error()
     if not token_exists:
         # FUTURE FEAT: add link to error message
-        # msg = "token does not exist - are you <a href='%s'>authorized with Shopify?</a>" % reverse('shopify:login')
         msg = "token does not exist - are you authorized with Shopify?"
-        logger.error(mark_safe("ShopifySync failed: %s" % msg))
+        logger.error("ShopifySync failed: %s" % msg)
         return False, msg
 
     # Open GraphQL document
     document = open('/app/apps/shopify_app/product_mutations.graphql', 'r').read()
 
+    if kwargs['productDelete']:
+        _product_delete(obj, token, document)
+        return error_parser(obj, "productDelete")
+
     # execute productSet GraphQL mutation to sync Product with Shopify
     # if productSet fails, immediately exit sync function
-    success, product_response = _product_set(self, token, document)
+    success, response = _product_set(obj, token, document)
 
     if not success:
-        return False, product_response
-    prod_gid = product_response['data']['productSet']['product']['id']
+        return False, response
+    prod_gid = response['data']['productSet']['product']['id']
     # logger.info("GraphQL execution success: %s (productSet: %s)" %
     #             (success, prod_gid))
 
@@ -76,9 +77,9 @@ def shop_sync(self) -> (bool, str):
     # if publishablePublish fails, log quietly but continue sync
     # mutation error will be logged and message displayed to user
     for publication in apps.get_app_config('shopify_app').SHOPIFY_PUBLICATIONS:
-        _publishable_publish(self, token, document, prod_gid, publication)
+        _publishable_publish(obj, token, document, prod_gid, publication)
 
-    return True, product_response
+    return True, response
 
 def _product_set(obj, token, document) -> (bool, str):
     """Sync product with Shopify Admin using GraphQL mutation 'createProductSynchronous'"""
@@ -172,58 +173,46 @@ def _publishable_publish(obj, token, document, prod_id, publication) -> (bool, s
             },
             operation_name=operation_name,
         )
-    response = json.loads(response)
 
-    return error_parser(response, operation_name)
+    return error_parser(json.loads(response), operation_name)
 
-@shopify_token_required
-def _shop_product_delete(product_global_id):
+
+def _product_delete(obj, token, document):
     """Delete product from Shopify Admin using GraphQL mutation 'productDelete'"""
     operation_name = 'productDelete'
-
-    # ! BUG: add error handling for when token does not exist. Consider shop login decorator
-    # ! BUG: get access_token for user logged in
-    token = ShopifyAccessToken.objects.get(user=1).access_token
-    document = open('/app/apps/shopify_app/product_mutations.graphql', 'r').read()
 
     with shopify.Session.temp(shop_url, api_version, token):
         response = shopify.GraphQL().execute(
             query=document,
             variables={
                 "input": {
-                    "id": product_global_id,
+                    "id": obj.shop_global_id,
                 }
             },
             operation_name=operation_name,
         )
-    logger.info(json.loads(response))
-    return response
 
-@shopify_token_required
-def _shop_create_media(self):
+    return error_parser(json.loads(response), operation_name)
+
+
+def _shop_create_media(obj, token, document):
     """Sync product media in Shopify Admin using GraphQL mutation 'productCreateMedia'"""
     operation_name = 'productCreateMedia'
 
-    # ! BUG: add error handling for when token does not exist. Consider shop login decorator
-    # ! BUG: get access_token for user logged in
-    token = ShopifyAccessToken.objects.get(user=1).access_token
-    document = open('/app/apps/shopify_app/product_mutations.graphql', 'r').read()
-
     #! BUG: remove hardcoded domain link
-    img_url = 'http://%s%s' % ('localhost', self.image.url)
+    img_url = 'http://%s%s' % ('localhost', obj.image.url)
 
     with shopify.Session.temp(shop_url, api_version, token):
         response = shopify.GraphQL().execute(
             query=document,
             variables={
                 "media": {
-                    "alt": self.description,
+                    "alt": obj.description,
                     "mediaContentType": "IMAGE",
                     "originalSource": img_url,
                 },
-                "productId": self.fk_product.shop_global_id
+                "productId": obj.fk_product.shop_global_id
             },
-        operation_name='productCreateMedia',
+        operation_name=operation_name,
         )
-    logger.info(json.loads(response))
-    return response
+    return error_parser(json.loads(response), operation_name)
