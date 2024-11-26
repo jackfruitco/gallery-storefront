@@ -1,9 +1,12 @@
 import django_filters
 from autoslug import AutoSlugField
 from django.db import models
+from django.utils.text import slugify
+
 from apps.shopify_app.models import ShopifyAccessToken
 from apps.shopify_app import shopify_bridge
 from django.apps import apps
+from apps.store.context_processors import get_store_url
 
 def get_image_path(instance, filename):
     return "images/products/{0}/{1}".format(instance.fk_product.pk, instance.slug + "." + filename.split('.')[-1])
@@ -30,18 +33,18 @@ class Product(models.Model):
     category = models.ManyToManyField('ProductCategory')
     description = models.TextField(blank=True)
 
-    # Site Gallery Display Data
+    # Site Options
+    featured = models.BooleanField(default=True, verbose_name="Featured Product", help_text=
+        "Enable to display this product on the Homepage as a featured product.")
     display = models.BooleanField(default=True, verbose_name="Gallery Display Enabled", help_text=
-    "If selected, this product will be displayed in Site Gallery")
+        "Enable to display this product in Site Gallery")
 
     # Shopify Store Data
-    shopify_sync = models.BooleanField(
-        default=False,
-        verbose_name="Shopify Sync Enabled",
-        help_text="If selected, this product's data will synced with Shopify and "
-                  "available via the Shopify Online Store and Shopify POS. Please note, "
-                  "updates made via Shopify Admin will be overridden, and do not sync with "
-                  "this site.")
+    shopify_sync = models.BooleanField(default=False, verbose_name="Shopify Sync Enabled", help_text=
+        "Enable to sync this product with Shopify Admin and make it "
+        "available via the Shopify Online Store and Shopify POS. Please note, "
+        "updates made via Shopify Admin will be overridden, and do not sync with "
+        "this site's product database. A Shopify Access Token is required!")
     shopify_global_id  = models.CharField(max_length=100, blank=True, help_text="Shopify Global productID", editable=False)
     shopify_status = models.CharField(max_length=10, default="DRAFT",
                                    choices={
@@ -57,6 +60,11 @@ class Product(models.Model):
 
     def get_images(self):
         return ProductImage.objects.filter(fk_product=self.pk).filter(key_image=False).all()[:4]
+
+    def get_shop_url(self):
+        url = get_store_url()
+        if url.endswith("/"): url = url[:-1]
+        return '%s/products/%s' % (url, slugify(self.name))
 
     def __str__(self):
         return self.name
