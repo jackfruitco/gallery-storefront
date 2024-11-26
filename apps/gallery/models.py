@@ -34,9 +34,9 @@ class Product(models.Model):
     description = models.TextField(blank=True)
 
     # Site Options
-    featured = models.BooleanField(default=True, verbose_name="Enable Featured Product", help_text=
+    feature = models.BooleanField(default=True, verbose_name="Enable Featured Product", help_text=
         "Enable to display this product on the Homepage as a featured product.")
-    displayed = models.BooleanField(default=True, verbose_name="Enable Gallery Display", help_text=
+    display = models.BooleanField(default=True, verbose_name="Enable Gallery Display", help_text=
         "Enable to display this product in Site Gallery")
 
     # Shopify Store Data

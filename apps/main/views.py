@@ -12,7 +12,7 @@ def index(request):
 
     def get_queryset():
         """Return the last five published questions."""
-        return Product.objects.order_by("-created_at")[:4]
+        return Product.objects.filter(feature=True).order_by("-created_at")[:4]
 
     return render(request,
                   'main/index.html',
