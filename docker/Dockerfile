@@ -41,10 +41,11 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 # Create Static/Media/Logging Files Directory
 RUN mkdir -p /app/static && \
     mkdir -p /app/media && \
-    touch /app/general.log && \
+    mkdir -p /app/logs && \
+    touch /app/logs/general.log && \
     chown -R appuser:appuser /app/static && \
     chown -R appuser:appuser /app/media && \
-    chown appuser:appuser /app/general.log
+    chown -R appuser:appuser /app/logs
 
 # Install libpq (PostgreSQL client library)
 RUN apt-get update && apt-get install -y \

@@ -5,6 +5,18 @@
 
 {% block extra_stylesheet %}
     <link rel="stylesheet" href={% static "gallery/style.css" %}>
+    <style>
+    .background {
+        background-color: #1b1b1b;
+        color: silver;
+    }
+    .bar {
+        background-color: #ffffff;
+        opacity: 0.4;
+        color: #000000;
+    }
+    .bar:hover { opacity: 1 !important; }
+    </style>
 {% endblock %}
 
 {% block content %}
@@ -14,14 +26,17 @@
              alt="{{ product.get_key_image.description }}">
         <div class="item-details flex">
             <h1>{{ product.name }}</h1>
-            <hr><h6>{{ product.description }}</h6>
+            <hr><h6>
+            {% if product.shopify_sync and product.shopify_status == 'ACTIVE' %}
+            <a href="{{ product.get_shop_url }}"><i>Available!</i></a>
+            {% endif %}{{ product.description }}</h6>
         </div>
     </div>
 
-    <!--<div class="carousel-container">
+    <div class="carousel-container">
         {% for img in product.get_images %}
             <img class="carousel round-xlarge" src="{{ img.image.url }}" alt="{{ img.description }}">
         {% endfor %}
-    </div>-->
+    </div>
 
 {% endblock %}
