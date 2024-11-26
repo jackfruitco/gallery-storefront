@@ -30,7 +30,7 @@ class ProductAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         @receiver(sync_message)
         def add_sync_message(sender, level=messages.INFO, message='Contact your Shopify Partner for assistance.', **kwargs):
-            '''Signal handler to add message when shop sync error occurs'''
+            """Signal handler to add message when shop sync error occurs"""
             messages.add_message(request, level, message)
         super(ProductAdmin, self).save_model(request, obj, form, change)
 

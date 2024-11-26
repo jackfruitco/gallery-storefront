@@ -34,13 +34,13 @@ class Product(models.Model):
     description = models.TextField(blank=True)
 
     # Site Options
-    featured = models.BooleanField(default=True, verbose_name="Featured Product", help_text=
+    featured = models.BooleanField(default=True, verbose_name="Enable Featured Product", help_text=
         "Enable to display this product on the Homepage as a featured product.")
-    display = models.BooleanField(default=True, verbose_name="Gallery Display Enabled", help_text=
+    displayed = models.BooleanField(default=True, verbose_name="Enable Gallery Display", help_text=
         "Enable to display this product in Site Gallery")
 
     # Shopify Store Data
-    shopify_sync = models.BooleanField(default=False, verbose_name="Shopify Sync Enabled", help_text=
+    shopify_sync = models.BooleanField(default=False, verbose_name="Enable ShopSync", help_text=
         "Enable to sync this product with Shopify Admin and make it "
         "available via the Shopify Online Store and Shopify POS. Please note, "
         "updates made via Shopify Admin will be overridden, and do not sync with "
