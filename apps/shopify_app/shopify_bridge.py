@@ -51,7 +51,7 @@ def product_set(obj) -> (bool, str):
                         "title": obj.name,
                         "descriptionHtml": "<p>%s</p>" % obj.description,
                         "id": obj.shopify_global_id,
-                        "handle": slugify(obj.name),
+                        "handle": obj.slug,
                         # "productType": self.category.name,
                         "status": obj.shopify_status,
                         "productOptions": [
@@ -85,7 +85,7 @@ def product_set(obj) -> (bool, str):
                         "title": obj.name,
                         "descriptionHtml": "<p>%s</p>" % obj.description,
                         # "id": self.shopify_global_id,
-                        "handle": slugify(obj.name),
+                        "handle": obj.slug,
                         # "productType": self.category.name,
                         "status": obj.shopify_status,
                         "productOptions": [

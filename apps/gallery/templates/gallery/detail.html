@@ -20,7 +20,7 @@
 {% endblock %}
 
 {% block content %}
-    <div class="flex flex-left" style="padding: 56px">
+    <div class="flex flex-left no-wrap" style="padding: 56px">
         {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
         <img class="key round-xxlarge" src="{{ product.get_key_image.image.url }}"
              alt="{{ product.get_key_image.description }}">

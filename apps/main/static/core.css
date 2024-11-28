@@ -22,7 +22,7 @@ body, html {
 }
 
 /* Turn off parallax scrolling for tablets and phones */
-@media only screen and (max-device-width: 1000px) {
+@media only screen and (max-device-width: 600px) {
     .bgimg-1, .bgimg-2, .bgimg-3 {
         background-attachment: scroll;
         min-height: 400px;
@@ -33,6 +33,10 @@ body, html {
     h4 { font-size: 1.5vw; }
     h5 { font-size: 1.25vw;}
     h6 { font-size: 1.0vw; }
+
+    .flex.no-wrap {
+        flex-wrap: wrap;
+    }
 }
 
 img.carousel {
@@ -52,6 +56,10 @@ img.carousel {
     display: flex;
     flex-flow: row wrap;
     /* gap: 15px; */
+}
+
+.flex.no-wrap {
+    flex-wrap: nowrap;
 }
 
 .center { justify-content: center; }

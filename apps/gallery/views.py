@@ -14,7 +14,7 @@ class IndexView(generic.ListView):
 
     def get_queryset(self):
         """Return the last five published questions."""
-        return Product.objects.filter(display=True).order_by("-created_at")[:16]
+        return Product.objects.filter(status='ACTIVE').order_by("-created_at")[:16]
 
 class DetailView(generic.DetailView):
     template_name = "gallery/detail.html"

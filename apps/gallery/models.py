@@ -1,3 +1,6 @@
+from audioop import reverse
+from unicodedata import category
+
 import django_filters
 from autoslug import AutoSlugField
 from django.db import models
@@ -29,9 +32,13 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     modified_at = models.DateTimeField(auto_now=True, editable=False)
 
+
     # Product information
     category = models.ManyToManyField('ProductCategory')
     description = models.TextField(blank=True)
+
+    # slug = AutoSlugField(populate_from='name', unique_with='category', always_update=True)
+    slug = AutoSlugField(populate_from='name', unique=True, always_update=True)
 
     choices = {
         "DRAFT": "Draft",
@@ -70,7 +77,11 @@ class Product(models.Model):
     def get_shop_url(self):
         url = store_url()["storefront_url"]
         if url.endswith("/"): url = url[:-1]
-        return '%s/products/%s' % (url, slugify(self.name))
+        return '%s/products/%s' % (url, self.slug)
+
+    def get_absolute_url(self):
+        return reverse('gallery:product', kwargs={'category': self.category.name, 'slug': self.slug})
+        # return '/%s/%s/' % (self.category.name, self.slug())
 
     def __str__(self):
         return self.name
