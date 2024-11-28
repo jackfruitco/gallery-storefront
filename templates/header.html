@@ -17,7 +17,7 @@
       <!-- Navbar on small screens -->
         <div id="navDemo" class="bar-block white hide hide-large hide-medium">
             <a href="{% url 'gallery:index' %}" class="bar-item button" onclick="toggleFunction()">GALLERY</a>
-            <a href="https://jackfruitco-test.myshopify.com" class="bar-item button" onclick="toggleFunction()"><i class="fa-solid fa-shop"></i> SHOP</a>
+            <a href="{{ storefront_url }}" class="bar-item button" onclick="toggleFunction()"><i class="fa-solid fa-shop"></i> SHOP</a>
         </div>
     
         <script>
