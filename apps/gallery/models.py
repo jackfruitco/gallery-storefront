@@ -105,7 +105,10 @@ class Product(models.Model):
 
 class ProductImage(models.Model):
     fk_product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    key_image = models.BooleanField(default=False)
+    feature_image = models.BooleanField(default=False,
+                                        help_text="Enable to display this image as the featured image. "
+                                                  "The featured image is used as the product's primary image."
+                                                  "Only select this for one image per product.")
     # priority = models.PositiveSmallIntegerField(default=10)
     description = models.CharField(max_length=100, blank=False,
                                    help_text="3-5 words describing the image")
