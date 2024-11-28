@@ -106,7 +106,7 @@ class Product(models.Model):
 class ProductImage(models.Model):
     fk_product = models.ForeignKey(Product, on_delete=models.CASCADE)
     key_image = models.BooleanField(default=False)
-    priority = models.PositiveSmallIntegerField(default=10)
+    # priority = models.PositiveSmallIntegerField(default=10)
     description = models.CharField(max_length=100, blank=False,
                                    help_text="3-5 words describing the image")
     slug = AutoSlugField(populate_from='description', unique_with='fk_product', always_update=True)
