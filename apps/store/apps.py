@@ -5,4 +5,4 @@ class StoreConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'apps.store'
 
-    store_url = os.getenv('STORE_URL')
+    storefront_url = os.getenv('STOREFRONT_URL')

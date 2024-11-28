@@ -9,7 +9,7 @@
           </a>
           <a href="{% url 'main:index' %}" class="bar-item button"><i class="fa-solid fa-house"></i> HOME</a>
           <a href="{% url 'gallery:index' %}" class="bar-item button hide-small"><i class="fa fa-th"></i> GALLERY</a>
-          <a href="https://jackfruitco-test.myshopify.com" class="bar-item button hide-small"><i class="fa-solid fa-shop"></i> SHOP</a>
+          <a href="{{ storefront_url }}" class="bar-item button hide-small"><i class="fa-solid fa-shop"></i> SHOP</a>
           <!--<a href="{% url 'admin:index' %}" style="float: right; background: #ffffff; opacity: 0.5" class="bar-item button" onclick="toggleFunction()">Admin Site</a>-->
           <!--<a href="#" class="bar-item button hide-small right hover-red"><i class="fa fa-search"></i></a>-->
         </div> 

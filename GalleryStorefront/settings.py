@@ -76,6 +76,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'apps.shopify_app.context_processors.current_shop',
+                'apps.store.context_processors.store_url',
             ],
         },
     },
