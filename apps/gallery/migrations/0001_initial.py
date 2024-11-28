@@ -50,7 +50,7 @@ class Migration(migrations.Migration):
             name='ProductImage',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('key_image', models.BooleanField(default=False)),
+                ('feature_image', models.BooleanField(default=False)),
                 ('priority', models.PositiveSmallIntegerField(default=10)),
                 ('description', models.CharField(help_text='3-5 words describing the image', max_length=100)),
                 ('slug', autoslug.fields.AutoSlugField(always_update=True, editable=False, populate_from='description', unique_with=('fk_product',))),

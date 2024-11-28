@@ -68,11 +68,11 @@ class Product(models.Model):
     price = models.FloatField(default=0, help_text="If item is not synced with Shopify, enter price as '0'.")
     primary_color = models.ForeignKey(Color, on_delete=models.CASCADE)
 
-    def get_key_image(self):
-        return ProductImage.objects.filter(fk_product=self, key_image=True).first()
+    def get_feature_image(self):
+        return ProductImage.objects.filter(fk_product=self, feature_image=True).first()
 
     def get_images(self):
-        return ProductImage.objects.filter(fk_product=self.pk).filter(key_image=False).all()[:4]
+        return ProductImage.objects.filter(fk_product=self.pk).filter(feature_image=False).all()[:4]
 
     def get_shop_url(self):
         url = store_url()["storefront_url"]
