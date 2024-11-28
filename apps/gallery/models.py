@@ -33,11 +33,21 @@ class Product(models.Model):
     category = models.ManyToManyField('ProductCategory')
     description = models.TextField(blank=True)
 
+    choices = {
+        "DRAFT": "Draft",
+        "ACTIVE": "Active",
+        "ARCHIVED": "Archived"}
+
     # Site Options
+    status = models.CharField(max_length=10, verbose_name="Enable Site Gallery", default="ACTIVE",
+                                      choices=choices, help_text="Enable to display this product in Site Gallery")
     feature = models.BooleanField(default=True, verbose_name="Enable Featured Product", help_text=
         "Enable to display this product on the Homepage as a featured product.")
-    display = models.BooleanField(default=True, verbose_name="Enable Gallery Display", help_text=
-        "Enable to display this product in Site Gallery")
+    # display = models.BooleanField(default=True, verbose_name="Enable Gallery Display", help_text="Enable to display this product in Site Gallery")
+    @property
+    def display(self)-> bool:
+        """Used to check if Bool to display on gallery website"""
+        return True if self.status == "ACTIVE" else False
 
     # Shopify Store Data
     shopify_sync = models.BooleanField(default=False, verbose_name="Enable ShopSync", help_text=
@@ -46,11 +56,7 @@ class Product(models.Model):
         "updates made via Shopify Admin will be overridden, and do not sync with "
         "this site's product database. A Shopify Access Token is required!")
     shopify_global_id  = models.CharField(max_length=100, blank=True, help_text="Shopify Global productID", editable=False)
-    shopify_status = models.CharField(max_length=10, default="DRAFT",
-                                   choices={
-                                       "ACTIVE": "Active",
-                                       "DRAFT": "Draft",
-                                       "ARCHIVED": "Archived"})
+    shopify_status = models.CharField(max_length=10, default="DRAFT", choices=choices)
     sku = models.CharField(max_length=50, blank=True)
     price = models.FloatField(default=0, help_text="If item is not synced with Shopify, enter price as '0'.")
     primary_color = models.ForeignKey(Color, on_delete=models.CASCADE)
@@ -108,3 +114,4 @@ class ProductImage(models.Model):
 
     class ProductFilter(django_filters.FilterSet):
         name = django_filters.CharFilter(lookup_expr='ic')
+

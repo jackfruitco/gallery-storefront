@@ -6,17 +6,10 @@
     <link rel="stylesheet" href={% static "w3.css" %}>
     <link rel="stylesheet" href={% static "core.css" %}>
     <script src="https://kit.fontawesome.com/626fde7ac4.js" crossorigin="anonymous"></script>
-    <style>
-        .bar {
-            background-color: #ffffff;
-            opacity: 0.3;
-        }
-    </style>
     {% block extra_stylesheet %}{% endblock %}
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
 </head>
-
 <body class="background">  
     {% block header %}{% include 'header.html' %}{% endblock %}
     

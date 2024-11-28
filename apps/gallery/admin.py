@@ -17,14 +17,14 @@ class ProductAdmin(admin.ModelAdmin):
 
     fieldsets = [
         (None, {'fields': ['name', 'category', 'description', 'primary_color']}),
-        ('Website Options', {'fields': ['display', 'featured']}),
+        ('Website Options', {'fields': ['status', 'feature']}),
         ('Storefront', {'fields': ['shopify_sync', 'shopify_global_id','shopify_status','price','sku']}),
         ('Technical Data', {'fields': ['created_at', 'modified_at']})
     ]
 
     inlines = [MediaUploadInline]
-    list_display = ['name', 'display', 'shopify_sync', 'shopify_status']
-    list_filter = ['category', 'display', 'shopify_sync']
+    list_display = ['name', 'status', 'feature', 'shopify_sync', 'shopify_status']
+    list_filter = ['category', 'feature', 'status', 'shopify_sync']
     search_fields = ['name', 'description', 'shopify_global_id']
 
     def save_model(self, request, obj, form, change):
