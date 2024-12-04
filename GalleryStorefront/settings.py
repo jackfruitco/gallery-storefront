@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'apps.gallery.apps.GalleryConfig',
     'apps.store.apps.StoreConfig',
     'apps.shopify_app.apps.ShopifyAppConfig',
+    'nested_admin'
 ]
 
 MIDDLEWARE = [

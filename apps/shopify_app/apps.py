@@ -9,7 +9,7 @@ class ShopifyAppConfig(AppConfig):
     SHOPIFY_API_SECRET = os.environ.get('SHOPIFY_API_SECRET')
     SHOPIFY_URL = os.environ.get('SHOPIFY_URL')
     SHOPIFY_API_VERSION = os.environ.get('SHOPIFY_API_VERSION', '2024-07')
-    SHOPIFY_API_SCOPES = os.environ.get('SHOPIFY_API_SCOPES', 'read_products,read_orders').split(',')
+    MAIN_LOCATION = os.environ.get('SHOPIFY_MAIN_LOCATION')
     SHOPIFY_ACCESS_TOKEN = None
 
     SHOPIFY_PUBLICATIONS = [

@@ -54,20 +54,122 @@ mutation productDelete($input: ProductDeleteInput!) {
   }
 }
 
+
+mutation stagedUploadsCreate($input: [StagedUploadInput!]!) {
+  stagedUploadsCreate(input: $input) {
+    stagedTargets {
+      url
+      resourceUrl
+      parameters {
+        name
+        value
+      }
+    }
+    userErrors {
+      field
+      message
+    }
+  }
+}
+
 mutation productCreateMedia($media: [CreateMediaInput!]!, $productId: ID!) {
   productCreateMedia(media: $media, productId: $productId) {
     media {
       alt
       mediaContentType
       status
+      mediaErrors {
+        code
+        details
+        message
+      }
+      mediaWarnings {
+        code
+        message
+      }
+    }
+    product {
+      id
     }
     mediaUserErrors {
       field
       message
     }
-    product {
+  }
+}
+
+query getFileStatus($id: ID!) {
+  product(id: $id) {
+    title
+    media(first:5) {
+      edges {
+        node {
+          ... fieldsForMediaTypes
+        }
+      }
+    }
+  }
+}
+
+fragment fieldsForMediaTypes on Media {
+  alt
+  mediaContentType
+  preview {
+    image {
       id
-      title
+      altText
+      url
+    }
+  }
+  status
+  mediaErrors {
+    code
+    details
+    message
+  }
+  mediaWarnings {
+    code
+    message
+  }
+  ... on Video {
+    id
+    sources {
+      format
+      height
+      mimeType
+      url
+      width
+    }
+    originalSource {
+      format
+      height
+      mimeType
+      url
+      width
+    }
+  }
+  ... on ExternalVideo {
+    id
+    host
+    embeddedUrl
+  }
+  ... on Model3d {
+    sources {
+      format
+      mimeType
+      url
+    }
+    originalSource {
+      format
+      mimeType
+      url
+    }
+  }
+  ... on MediaImage {
+    id
+    image {
+      altText
+      url
     }
   }
 }

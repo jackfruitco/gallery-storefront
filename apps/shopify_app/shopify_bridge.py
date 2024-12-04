@@ -1,14 +1,25 @@
 from apps.shopify_app.models import ShopifyAccessToken
 from django.apps import apps
-from django.utils.text import slugify
 import json, shopify, logging
 from django.contrib import messages
+from django.conf import settings
 from .signals import sync_message
+from urllib.parse import urlparse
+from os.path import splitext
+import requests
+
 
 logger = logging.getLogger(__name__)
 
 shop_url = apps.get_app_config('shopify_app').SHOPIFY_URL
 api_version = apps.get_app_config('shopify_app').SHOPIFY_API_VERSION
+
+
+def get_ext(url):
+    """Return the filename extension from url, or ''."""
+    parsed = urlparse(url)
+    root, ext = splitext(parsed.path)
+    return ext  # or ext[1:] if you don't want the leading '.'
 
 
 def sync_setup() -> (str, str):
@@ -157,15 +168,12 @@ def product_delete(obj):
     return error_parser(json.loads(response), operation_name, obj)
 
 
-def create_media(obj):
+def create_media(obj, resource_url):
     """Sync product media in Shopify Admin using GraphQL mutation 'productCreateMedia'"""
     operation_name = 'productCreateMedia'
 
     success, config = error_parser(sync_setup(), sync_setup.__name__, obj)
     if not success: return False, config
-
-    #! BUG: remove hardcoded domain link
-    img_url = 'http://%s%s' % ('localhost', obj.image.url)
 
     with shopify.Session.temp(shop_url, api_version, config['token']):
         response = shopify.GraphQL().execute(
@@ -174,7 +182,7 @@ def create_media(obj):
                 "media": {
                     "alt": obj.description,
                     "mediaContentType": "IMAGE",
-                    "originalSource": img_url,
+                    "originalSource": resource_url,
                 },
                 "productId": obj.fk_product.shopify_global_id
             },
@@ -183,21 +191,112 @@ def create_media(obj):
     return error_parser(json.loads(response), operation_name, obj)
 
 
+def staged_uploads_create(obj):
+    """Creates staged upload targets to upload media to Shopify. Reference GraphQL API 'stagedUploadsCreate'"""
+    operation_name = 'stagedUploadsCreate'
+
+    success, config = error_parser(sync_setup(), sync_setup.__name__, obj)
+    if not success: return False, config
+
+    http_method = 'PUT'
+    ext = get_ext(obj.image.url)
+
+    with shopify.Session.temp(shop_url, api_version, config['token']):
+        response = shopify.GraphQL().execute(
+            query=config['document'],
+            variables={
+                "input": [
+                    {
+                        "filename": "%s%s" % (obj.description, ext),
+                        "mimeType": "image/%s" % ext[1:],
+                        "httpMethod": http_method,
+                        "resource": "IMAGE"
+                    },
+                ]
+            },
+        operation_name=operation_name,
+        )
+
+    success, response = error_parser(json.loads(response), operation_name, obj)
+    if not success: return success, response
+
+    url = response['data']['stagedUploadsCreate']['stagedTargets'][0]['url']
+    resource_url = response['data']['stagedUploadsCreate']['stagedTargets'][0]['resourceUrl']
+    img_path = '%s%s' % (settings.BASE_DIR, obj.image.url)
+
+    # logger.debug(img_path)
+    # logger.debug(open(img_path, 'rb').read())
+
+    http = {}
+    params = {}
+
+    if http_method == 'PUT':
+        param_method = 'headers'
+        # with open(img_path, "r") as f:
+        http['files'] = {'file': open(img_path, 'rb').read()}
+    elif http_method == 'POST':
+        param_method = 'files'
+        http[param_method]= {'file': open(img_path, "rb").read()}
+    else: param_method = ['missing']
+
+    for param in response['data']['stagedUploadsCreate']['stagedTargets'][0]['parameters']:
+        params[param['name']] = param['value']
+    http[param_method] = params
+
+    for var in ['headers', 'files', 'data']:
+        if var not in http: http[var] = None
+
+    # HTTP PUT/POST request to upload media file to Shopify using url provided by GraphQL response
+    requests.request(http_method, url, data=http['data'], headers=http['headers'], files=http['files'])
+
+    success, response = create_media(obj, resource_url)
+
+    # return error_parser(json.loads(response), operation_name, obj)
+    return error_parser(response, 'productCreateMedia', obj)
+
+def get_file_status(obj):
+    """Queries product for all media. Reference GraphQL API '...'"""
+    operation_name = 'getFileStatus'
+
+    success, config = error_parser(sync_setup(), sync_setup.__name__, obj)
+    if not success: return False, config
+
+    with shopify.Session.temp(shop_url, api_version, config['token']):
+        response = shopify.GraphQL().execute(
+            query=config['document'],
+            variables={
+                "id": obj.shopify_global_id,
+            },
+        operation_name=operation_name,
+        )
+
+    # success, response = error_parser(json.loads(response), operation_name, obj)
+    # if not success: return success, response
+    logger.debug(response)
+    return
+
+
+
 def error_parser(response, operation_name, obj, **kwargs):
     """Parse JSON response for 'errors' or 'userError' and construct signals and logging"""
+    success = True
     if 'errors' in response:
+        success = False
         response = {
             "message": response['errors'][0]['message'],
             "field": response['errors'][0]['locations']
             }
-        success = False
-    elif 'data' in response and response['data'][operation_name]['userErrors']:
-        response = {
-            "message": response['data'][operation_name]['userErrors'][0]['message'],
-            "field": response['data'][operation_name]['userErrors'][0]['field']
-            }
-        success = False
-    else: success = True
+    elif 'data' in response:
+        user_error = []
+        if 'userErrors' in response['data'][operation_name]: user_error = response['data'][operation_name]['userErrors']
+        elif 'mediaUserErrors' in response['data'][operation_name]: user_error = response['data'][operation_name]['mediaUserErrors']
+
+        if user_error:
+            success = False
+            response = {
+                "message": user_error[0]['message'],
+                "field": user_error[0]['field'][0]
+                }
 
     # Logging and Signaling
     # Signal receiver is at ProductAdmin.save_model() to add_message
@@ -209,13 +308,20 @@ def error_parser(response, operation_name, obj, **kwargs):
             sync_message.send(sender=operation_name, level=messages.ERROR,
                               message='The product "%s" could not be synced to Shopify (%s).' %
                                       (obj.name, response['message']))
-        else:
+        elif operation_name == 'publishablePublish':
             if 'publication' not in kwargs: publication='publication'
             else: publication = kwargs['publication']['name']
             sync_message.send(sender=operation_name, level=messages.WARNING,
-                              message='The product "%s" failed to publish to Shopify %s (%s). Contact your Shopify Partner.' %
-                               (obj.name, publication, response['message']))
-    else:
+                              message='The product "%s" could not be published to Shopify %s (%s). Contact your Shopify Partner.' %
+                                      (obj.name, publication, response['message']))
+        elif operation_name == 'stagedUploadsCreate':
+            sync_message.send(sender=operation_name, level=messages.WARNING,
+                              message='The media "%s" could not be staged for upload to Shopify (%s). Contact your Shopify Partner' %
+                                      (obj.description, response['message']))
+        else:
+            sync_message.send(sender=operation_name, level=messages.WARNING,
+                              message="An unknown error occurred. Please contact your Shopify Partner")
+    elif operation_name != sync_setup.__name__:
         logger.info(msg=msg)
         if operation_name == 'productSet':
             sync_message.send(sender=operation_name, level=messages.SUCCESS,
@@ -223,3 +329,4 @@ def error_parser(response, operation_name, obj, **kwargs):
                                       (obj.name, obj.shopify_status))
 
     return success, response
+

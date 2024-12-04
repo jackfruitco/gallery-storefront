@@ -1,8 +1,9 @@
 from django.contrib import admin, messages
 from django.dispatch import receiver
 from apps.shopify_app.signals import sync_message
-from .models import Product, ProductImage, Color, ProductCategory
+from .models import Product, ProductImage, Color, ProductCategory, ProductVariant, ProductOption, ProductOptionValue
 import logging
+import nested_admin
 
 logger = logging.getLogger(__name__)
 
@@ -10,6 +11,11 @@ class MediaUploadInline(admin.StackedInline):
     model = ProductImage
     extra = 1
     max_num = 5
+
+class CreateVariantInLine(admin.StackedInline):
+    model = ProductVariant
+    extra = 1
+    max_num = 10
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):

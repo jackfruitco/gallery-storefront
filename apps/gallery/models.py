@@ -1,15 +1,14 @@
 from audioop import reverse
-from unicodedata import category
-
-import django_filters
+import logging
 from autoslug import AutoSlugField
 from django.db import models
-from django.utils.text import slugify
 
 from apps.shopify_app.models import ShopifyAccessToken
 from apps.shopify_app import shopify_bridge
 from django.apps import apps
-from apps.store.context_processors import store_url
+from apps.store.context_processors import store_url, locations
+
+logger = logging.getLogger(__name__)
 
 def get_image_path(instance, filename):
     return "images/products/{0}/{1}".format(instance.fk_product.pk, instance.slug + "." + filename.split('.')[-1])
@@ -104,6 +103,10 @@ class Product(models.Model):
 
 
 class ProductImage(models.Model):
+    # name = models.CharField(max_length=100, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, editable=False)
+    modified_at = models.DateTimeField(auto_now=True, editable=False)
+
     fk_product = models.ForeignKey(Product, on_delete=models.CASCADE)
     feature_image = models.BooleanField(default=False,
                                         help_text="Enable to display this image as the featured image. "
@@ -113,19 +116,42 @@ class ProductImage(models.Model):
     description = models.CharField(max_length=100, blank=False,
                                    help_text="3-5 words describing the image")
     slug = AutoSlugField(populate_from='description', unique_with='fk_product', always_update=True)
-    # credit = models.ForeignKey(Profile, on_delete=models.CASCADE, blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
     image = models.ImageField(upload_to=get_image_path)
+    resource_url = models.URLField(max_length=500, blank=True, help_text="Shopify resourceURL if uploaded to Shopify")
 
     def __str__(self):
         return self.description
 
     def save(self, **kwargs):
-        super().save(**kwargs)
-        # if self.fk_product.shopify_global_id:
-        #    shopify_bridge.create_media(self)
 
-    class ProductFilter(django_filters.FilterSet):
-        name = django_filters.CharFilter(lookup_expr='ic')
+        super().save(**kwargs)
+        if self.fk_product.shopify_sync and self.fk_product.shopify_global_id:
+            success, response = shopify_bridge.staged_uploads_create(self)
+
+
+class ProductOptionValue(models.Model):
+    name = models.CharField(max_length=100)
+    option = models.ForeignKey("ProductOption", on_delete=models.CASCADE)
+
+
+class ProductOption(models.Model):
+    shopify_id = models.CharField(max_length=100, blank=True)
+    name = models.CharField(max_length=100)
+    position = models.IntegerField()
+    values = models.ManyToManyField("ProductOptionValue", blank=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+
+
+class ProductVariant(models.Model):
+    shopify_id = models.CharField(max_length=100, blank=True)
+    inv_policy = models.CharField(max_length=100, default='DENY', verbose_name="Inventory Policy",
+                                  choices={'DENY': "Deny",'CONTINUE': "Continue"})
+    sku = models.CharField(max_length=100, blank=True)
+
+    location = models.CharField(max_length=100, choices=locations, verbose_name="Inventory Location")
+    inv_name = models.CharField(max_length=100, default="available", verbose_name="Inventory Name",
+                                choices={"available": "Available","on hand": "On Hand"})
+    quantity = models.IntegerField(default=1, verbose_name="Inventory Quantity")
+    price = models.FloatField(default=0, verbose_name="Price")
+
 
