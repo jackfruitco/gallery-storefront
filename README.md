@@ -7,7 +7,7 @@ The storefront uses Shopify as a backend, via shopify-python-api and GraphQL API
 
 ### 1. apps.Shopify_App To-Do's
 - [ ] **BUG**: Fix ShopifyAccessToken to retrieve token for user logged in
-- [ ] **BUG**: Fix decorators to required Shopify Access Token prior to making GraphQL API calls
+- [x] ~~**BUG**: Fix decorators to required Shopify Access Token prior to making GraphQL API calls~~ Solved using GraphQL error handling
 - [ ] **BUG**: Fix failure to call deleteProduct mutation upon disabling Product.shopify_sync
 
 **GraphQL API**
@@ -15,16 +15,17 @@ The storefront uses Shopify as a backend, via shopify-python-api and GraphQL API
   - Desired End State: 
     - Media uploaded via Admin are pushed to Shopify via GraphQL API
   - Current State:
-    - api_connector._shop_create_media sends GraphQL request without error and response status "UPLOADED"
-    - media fails to upload. Shopify Admin says "media failed processing"
+    - ShopifyBridge stages media, and creates media. Media fails processing due to 'corrupt file'
 - [ ] FEATURE: Add Online Store Product Link on Product Detail View
 - [x] FEATURE: Add support for syncing products with Shopify via GraphQL
-- [ ] FEATURE: GraphQL Error Handling
-  - [ ] Deserialize JSON response to parse for errors; prevent object from saving to ensure source DB matches Shopify
-  - [ ] Notify user of failed sync including error message
+- [x] FEATURE: GraphQL Error Handling
+  - [x] Deserialize JSON response to parse for errors; prevent object from saving to ensure source DB matches Shopify
+  - [x] Notify user of failed sync including error message
 
 ### 2. apps.Store To-Do's
-- [ ] Pending
+- [ ] Add order fulfillment processing
+- [ ] Add order notifications
+- [ ] Add low stock notifications
 
 ### 3. apps.Main To-Do's
 - [ ] **BUG**: Fix products appearing on site index when Product.display is set to False
@@ -32,9 +33,13 @@ The storefront uses Shopify as a backend, via shopify-python-api and GraphQL API
 
 ### 4. apps.Gallery To-Do's
 - [ ] FEATURE: Match source DB model with Shopify Product model
-  - [ ] Support Options
-  - [ ] Support Variants
-  - [ ] Update _shopify_sync to perform mutations including options and variants
+- [ ] Add gallery support to view variants on single Product detail vew
 
-### 5. General To-Do's
-- [ ] **BUG**: Fix alignment on Admin Login button
+### 5. Shopify Bridge To-Do's
+- [ ] Add full support for Options and Varints
+  - [ ] Add models: ProductOption, ProductOptionValue, ProductVariant
+  - [ ] Update productSet mutation to support dynamically building productSetInput
+- [ ] Add Async support to push Shopify Admin updates to local DB (or local to poll Shopify, if unable to push)
+
+### 6. General To-Do's
+- [x] **BUG**: Fix alignment on Admin Login button
