@@ -14,8 +14,23 @@ class MediaUploadInline(admin.StackedInline):
 
 class CreateVariantInLine(admin.StackedInline):
     model = ProductVariant
-    extra = 1
-    max_num = 10
+    extra = 0
+
+    fieldsets = [
+        (None, {'fields': ['options', 'price', 'inv_policy', 'location', 'inv_name', 'quantity'],}),
+    ]
+
+@admin.register(ProductOptionValue)
+class ProductOptionValueAdmin(admin.ModelAdmin):
+    fieldsets = [
+        (None, {'fields': ['name','value',],}),
+    ]
+
+@admin.register(ProductOption)
+class ProductOptionAdmin(admin.ModelAdmin):
+    fieldsets = [
+        (None, {'fields': ['name', 'position',],}),
+    ]
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
@@ -27,13 +42,19 @@ class ProductAdmin(admin.ModelAdmin):
         ('Storefront', {'fields': ['shopify_sync', 'shopify_global_id','shopify_status','price','sku']}),
         ('Technical Data', {'fields': ['created_at', 'modified_at']})
     ]
+    inlines = [
+        MediaUploadInline,
+        CreateVariantInLine,
+    ]
 
-    inlines = [MediaUploadInline]
+
     list_display = ['name', 'status', 'feature', 'shopify_sync', 'shopify_status']
     list_filter = ['category', 'feature', 'status', 'shopify_sync']
     search_fields = ['name', 'description', 'shopify_global_id']
 
     def save_model(self, request, obj, form, change):
+
+
         @receiver(sync_message)
         def add_sync_message(sender, level=messages.INFO, message='Contact your Shopify Partner for assistance.', **kwargs):
             """Signal handler to add message when shop sync error occurs"""

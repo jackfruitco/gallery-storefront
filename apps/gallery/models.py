@@ -125,26 +125,49 @@ class ProductImage(models.Model):
     def save(self, **kwargs):
 
         super().save(**kwargs)
-        if self.fk_product.shopify_sync and self.fk_product.shopify_global_id:
-            success, response = shopify_bridge.staged_uploads_create(self)
+        # if self.fk_product.shopify_sync and self.fk_product.shopify_global_id:
+        #     success, response = shopify_bridge.staged_uploads_create(self)
 
 
 class ProductOptionValue(models.Model):
-    name = models.CharField(max_length=100)
-    option = models.ForeignKey("ProductOption", on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True, editable=False)
+    modified_at = models.DateTimeField(auto_now=True, editable=False)
+
+    value = models.CharField(max_length=100, verbose_name="Option Value")
+    name = models.ForeignKey("ProductOption", on_delete=models.CASCADE, verbose_name="Option Name")
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, blank=True, null=True)
+
+    def __str__(self):
+        return '%s: %s' % (self.name, self.value)
 
 
 class ProductOption(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True, editable=False)
+    modified_at = models.DateTimeField(auto_now=True, editable=False)
+
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, blank=True, null=True)
+
     shopify_id = models.CharField(max_length=100, blank=True)
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, verbose_name="Option Name",
+                            help_text='e.g. "Color" or "Pattern"')
     position = models.IntegerField()
-    values = models.ManyToManyField("ProductOptionValue", blank=True)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    values = models.ManyToManyField("ProductOptionValue", blank=True, verbose_name="Option Values",
+                                    help_text='Values associated with this option (e.g. "Red",  "Blue", etc.')
+
+    def __str__(self):
+        return '%s' % self.name
 
 
 class ProductVariant(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True, editable=False)
+    modified_at = models.DateTimeField(auto_now=True, editable=False)
+
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    options = models.ManyToManyField("ProductOptionValue", blank=True, verbose_name="Options",)
+
     shopify_id = models.CharField(max_length=100, blank=True)
     inv_policy = models.CharField(max_length=100, default='DENY', verbose_name="Inventory Policy",
+                                  help_text='Selecting "Continue" allows customers to order variant when inventory is 0.',
                                   choices={'DENY': "Deny",'CONTINUE': "Continue"})
     sku = models.CharField(max_length=100, blank=True)
 
@@ -153,5 +176,11 @@ class ProductVariant(models.Model):
                                 choices={"available": "Available","on hand": "On Hand"})
     quantity = models.IntegerField(default=1, verbose_name="Inventory Quantity")
     price = models.FloatField(default=0, verbose_name="Price")
+
+    def __str__(self):
+        s = ''
+        for option in self.options.all():
+            s = s + '%s, ' % option.value
+        return '%s (%s)' % (self.product.name, None if s == '' else s[:-2])
 
 

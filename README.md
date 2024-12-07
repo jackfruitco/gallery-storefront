@@ -37,7 +37,8 @@ The storefront uses Shopify as a backend, via shopify-python-api and GraphQL API
 
 ### 5. Shopify Bridge To-Do's
 - [ ] Add full support for Options and Varints
-  - [ ] Add models: ProductOption, ProductOptionValue, ProductVariant
+  - [x] Add models (IOC): ProductOption, ProductOptionValue, ProductVariant
+  - [ ] Add models (FOC)
   - [ ] Update productSet mutation to support dynamically building productSetInput
 - [ ] Add Async support to push Shopify Admin updates to local DB (or local to poll Shopify, if unable to push)
 
