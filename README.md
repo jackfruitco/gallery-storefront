@@ -16,9 +16,9 @@ The storefront uses Shopify as a backend, via shopify-python-api and GraphQL API
     - Media uploaded via Admin are pushed to Shopify via GraphQL API
   - Current State:
     - ShopifyBridge stages media, and creates media. Media fails processing due to 'corrupt file'
-- [ ] FEATURE: Add Online Store Product Link on Product Detail View
-- [x] FEATURE: Add support for syncing products with Shopify via GraphQL
-- [x] FEATURE: GraphQL Error Handling
+- [ ] Add Online Store Product Link on Product Detail View
+- [x] Add support for syncing products with Shopify via GraphQL
+- [x] Add GraphQL Error Handling
   - [x] Deserialize JSON response to parse for errors; prevent object from saving to ensure source DB matches Shopify
   - [x] Notify user of failed sync including error message
 
@@ -29,18 +29,27 @@ The storefront uses Shopify as a backend, via shopify-python-api and GraphQL API
 
 ### 3. apps.Main To-Do's
 - [ ] **BUG**: Fix products appearing on site index when Product.display is set to False
-- [ ] FEATURE: Add field to Product Model to filter featured images for display on site index
+- [ ] Add field to Product Model to filter featured images for display on site index
 
 ### 4. apps.Gallery To-Do's
-- [ ] FEATURE: Match source DB model with Shopify Product model
+- [ ] Match source DB model with Shopify Product model
 - [ ] Add gallery support to view variants on single Product detail vew
+- [ ] Add auto assignment on field ProductOption.position if not specified by user
+- [ ] ~~Remove deprecated field: ProductOption.product~~
+- [x] Remove deprecated field: ProductOption.shopify_id
+- [ ] Remove deprecated field: ProductOptionValue.product
+- [ ] Remove deprecated field: Product.price (moved to ProductVariant.price)
+- [ ] Remove deprecated field: Product.color (moved to ProductOption)
+- [x] Add Product model fields: length, length_unit, width, width_unit, height, height_unit, weight, weight_unit
 
 ### 5. Shopify Bridge To-Do's
 - [ ] Add full support for Options and Varints
   - [x] Add models (IOC): ProductOption, ProductOptionValue, ProductVariant
   - [ ] Add models (FOC)
   - [ ] Update productSet mutation to support dynamically building productSetInput
+  - [ ] Add data validation for variants (only one OptionValue per Option per Product)
 - [ ] Add Async support to push Shopify Admin updates to local DB (or local to poll Shopify, if unable to push)
 
 ### 6. General To-Do's
 - [x] **BUG**: Fix alignment on Admin Login button
+- [ ] Store in UTC, display in local TZ

@@ -6,6 +6,25 @@ mutation productSet($productSet: ProductSetInput!, $synchronous: Boolean!) {
   productSet(synchronous: $synchronous, input: $productSet) {
     product {
       id
+      options(first: 10) {
+        name
+        position
+        optionValues {
+          name
+        }
+      }
+      variants(first: 10) {
+        nodes {
+          price
+          selectedOptions {
+            name
+            optionValue {
+              id
+              name
+            }
+          }
+        }
+      }
     }
     productSetOperation {
       id
@@ -23,6 +42,22 @@ mutation productSet($productSet: ProductSetInput!, $synchronous: Boolean!) {
     }
   }
 }
+
+
+mutation productSetDefaultVariantOnly($productSet: ProductSetInput!, $synchronous: Boolean!) {
+  productSet(synchronous: $synchronous, input: $productSet) {
+    product {
+      id
+      hasOnlyDefaultVariant
+    }
+    userErrors {
+      code
+      field
+      message
+    }
+  }
+}
+
 
 mutation publishablePublish($id: ID!, $input: [PublicationInput!]!) {
   publishablePublish(id: $id, input: $input) {

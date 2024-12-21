@@ -1,19 +1,21 @@
-from apps.shopify_app.models import ShopifyAccessToken
-from django.apps import apps
-import json, shopify, logging
-from django.contrib import messages
-from django.conf import settings
-from .signals import sync_message
-from urllib.parse import urlparse
+import json
+import logging
 from os.path import splitext
-import requests
+from urllib.parse import urlparse
 
+import requests
+import shopify
+from django.apps import apps
+from django.conf import settings
+from django.contrib import messages
+
+from apps.shopify_app.models import ShopifyAccessToken
+from .signals import sync_message
 
 logger = logging.getLogger(__name__)
 
 shop_url = apps.get_app_config('shopify_app').SHOPIFY_URL
 api_version = apps.get_app_config('shopify_app').SHOPIFY_API_VERSION
-
 
 def get_ext(url):
     """Return the filename extension from url, or ''."""
@@ -52,75 +54,37 @@ def product_set(obj) -> (bool, str):
     success, config = error_parser(sync_setup(), sync_setup.__name__, obj)
     if not success: return False, config
 
+    variables = {
+        "synchronous": True,
+        "productSet": {
+            "title": obj.name,
+            "descriptionHtml": "<p>%s</p>" % obj.description,
+            "handle": obj.slug,
+            "status": obj.shopify_status,
+        }
+    }
+
+    # Add Shopify GID if available, otherwise, omit to create new item.
+    if obj.shopify_global_id is not None:
+        variables['productSet']['id'] = obj.shopify_global_id
+
+    # Add variant and option values if exists,
+    # otherwise, change to DefaultVariantOnly operation and omit.
+    if obj.get_variants() is None:
+        operation_name += 'DefaultVariantOnly'
+        logger.debug('No variants found for %s. Switching to DefaultVariantOnly mutation.' % obj.name)
+    else:
+        variables['productSet']['productOptions'] = obj.format_options()
+        variables['productSet']['variants'] = obj.format_variants()
+
+    logger.debug(variables)
+
     with shopify.Session.temp(shop_url, api_version, config['token']):
-        if obj.shopify_global_id:
-            response = shopify.GraphQL().execute(
-                query=config['document'],
-                variables={
-                    "synchronous": True,
-                    "productSet": {
-                        "title": obj.name,
-                        "descriptionHtml": "<p>%s</p>" % obj.description,
-                        "id": obj.shopify_global_id,
-                        "handle": obj.slug,
-                        # "productType": self.category.name,
-                        "status": obj.shopify_status,
-                        "productOptions": [
-                            {
-                                "name": "Color",
-                                "position": 1,
-                                "values": [
-                                    {"name": obj.primary_color.name},
-                                ]
-                            }
-                        ],
-                        "variants": [
-                            {
-                                "optionValues": [{
-                                    "optionName": "Color",
-                                    "name": obj.primary_color.name,
-                                }],
-                                "price": obj.price,
-                            },
-                        ],
-                    }
-                },
-                operation_name=operation_name,
-            )
-        else:
-            response = shopify.GraphQL().execute(
-                query=config['document'],
-                variables={
-                    "synchronous": True,
-                    "productSet": {
-                        "title": obj.name,
-                        "descriptionHtml": "<p>%s</p>" % obj.description,
-                        # "id": self.shopify_global_id,
-                        "handle": obj.slug,
-                        # "productType": self.category.name,
-                        "status": obj.shopify_status,
-                        "productOptions": [
-                            {
-                                "name": "Color",
-                                "position": 1,
-                                "values": [
-                                    {"name": obj.primary_color.name},
-                                ]
-                            }
-                        ],
-                        "variants": [
-                            {
-                                "optionValues": [{
-                                    "optionName": "Color",
-                                    "name": obj.primary_color.name,
-                                }],
-                                "price": obj.price,
-                            },
-                        ],
-                    }
-                },
-                operation_name=operation_name,
-            )
+        response = shopify.GraphQL().execute(
+            query=config['document'],
+            variables=variables,
+            operation_name=operation_name,
+        )
     return error_parser(json.loads(response), operation_name, obj)
 
 
@@ -326,7 +290,7 @@ def error_parser(response, operation_name, obj, **kwargs):
         if operation_name == 'productSet':
             sync_message.send(sender=operation_name, level=messages.SUCCESS,
                               message='The product "%s" synced successfully to Shopify in %s status!' %
-                                      (obj.name, obj.shopify_status))
+                                      (obj.name, obj.shopify_status.title()))
 
     return success, response
 
