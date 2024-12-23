@@ -9,6 +9,8 @@
     {% block extra_stylesheet %}{% endblock %}
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
+    <meta name="description" property="og:description" content="{% block meta_description %}{{ SITE_DESCRIPTION }}{% endblock %}">
+    <meta name="keywords" content="seo, pottery, marnie, potterybymarnie, ceramics, clay, handmade, glaze, syracuse, cny">
 </head>
 <body class="background">  
     {% block header %}{% include 'header.html' %}{% endblock %}

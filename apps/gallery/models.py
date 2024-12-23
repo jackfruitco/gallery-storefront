@@ -5,6 +5,7 @@ from django.apps import apps
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from django.utils.text import slugify
 
 from apps.shopify_app import shopify_bridge
 from apps.shopify_app.models import ShopifyAccessToken
@@ -171,7 +172,7 @@ class Product(models.Model):
 
     def get_absolute_url(self) -> bytes:
         """Return URL to this product."""
-        return reverse('gallery:product', kwargs={
+        return reverse('gallery:index', kwargs={
             'category': self.category.name, 'slug': self.slug})
 
     def __str__(self):
