@@ -1,9 +1,8 @@
-from audioop import reverse
-from unicodedata import category
 
 import django_filters
 from autoslug import AutoSlugField
 from django.db import models
+from django.urls import reverse
 from django.utils.text import slugify
 
 from apps.shopify_app.models import ShopifyAccessToken
@@ -80,7 +79,7 @@ class Product(models.Model):
         return '%s/products/%s' % (url, self.slug)
 
     def get_absolute_url(self):
-        return reverse('gallery:product', kwargs={'category': self.category.name, 'slug': self.slug})
+        return reverse('gallery:detail', kwargs={'category': self.category.name, 'slug': self.slug})
         # return '/%s/%s/' % (self.category.name, self.slug())
 
     def __str__(self):
