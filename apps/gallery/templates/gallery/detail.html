@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{ product.name }}{% endblock %}
+{% block title %}{{ product.name }} | {{ SITE_NAME }}{% endblock %}
+{% block meta_description %}}{{ product.description }}{% endblock %}
 
 {% block extra_stylesheet %}
     <link rel="stylesheet" href={% static "gallery/style.css" %}>
