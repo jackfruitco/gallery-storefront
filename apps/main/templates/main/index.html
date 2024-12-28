@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block extra_stylesheet %}
+{% block style %}
     <link rel="stylesheet" href={% static "main/style.css"%}>
 {% endblock %}
 
@@ -23,6 +23,6 @@
       <h3 class="center">HIGHLIGHTS</h3>
       <p class="center"><em>Click an image to view in more detail.<br>
           Or, see <a href="{% url 'gallery:index' %}"><i>my gallery</i></a> for more!</em></p>
-       {% include 'gallery/gallery-carousel.html' %}
+       {% include 'gallery/product-carousel.html' %}
     </div>
 {%  endblock %}
