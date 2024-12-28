@@ -36,9 +36,3 @@ def index(request):
     #    # Add in the publisher
     #    context["profile"] = self.profile
     #    return context
-
-@shop_login_required
-def product(request):
-    products = shopify.Product.find(limit=3)
-
-    return render(request, template_name='main/test.html', context={'products': products})
