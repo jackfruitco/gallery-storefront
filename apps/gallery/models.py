@@ -79,7 +79,7 @@ class Product(models.Model):
         return '%s/products/%s' % (url, self.slug)
 
     def get_absolute_url(self):
-        return reverse('gallery:single-product', kwargs={'category': self.category.name, 'slug': self.slug})
+        return reverse('gallery:product-detail', kwargs={'category': self.category.name, 'slug': self.slug})
         # return '/%s/%s/' % (self.category.name, self.slug())
 
     def __str__(self):
