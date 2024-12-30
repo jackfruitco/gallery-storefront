@@ -9,3 +9,4 @@ gunicorn==23.0.0
 pillow==10.4.0
 psycopg==3.2.3
 six~=1.16.0
+django-htmx==1.21.0

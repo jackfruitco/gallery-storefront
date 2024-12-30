@@ -3,7 +3,7 @@
     <div id='carousel' class="carousel-container center">
     {% for product in product_list %}
         {% with category=product.category.name slug=product.slug img=product.get_feature_image %}
-            <a href="{% url 'gallery:detail' category slug %}"><img class="carousel round-large opacity hover-opacity-off" src="{{ img.image.url }}" alt="{{ img.description }}"></a>
+            <a href="{% url 'gallery:single-product' category slug %}"><img class="carousel round-large opacity hover-opacity-off" src="{{ img.image.url }}" alt="{{ img.description }}"></a>
         {% endwith %}
     {% endfor %}
     </div>

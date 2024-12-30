@@ -1,20 +1,23 @@
-<!DOCTYPE html>
 {% load static %}
 
+<!DOCTYPE html>
 <html lang="en">
 <head>    
     <link rel="stylesheet" href={% static "w3.css" %}>
     <link rel="stylesheet" href={% static "core.css" %}>
     <script src="https://kit.fontawesome.com/626fde7ac4.js" crossorigin="anonymous"></script>
+    <!--<script src="{% static 'htmx.min.js' %}" defer></script>-->
+    <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
     {% block style %}{% endblock %}
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
     <meta name="description" property="og:description" content="{% block meta_description %}{{ SITE_DESCRIPTION }}{% endblock %}">
     <meta name="keywords" content="seo, pottery, marnie, potterybymarnie, ceramics, clay, handmade, glaze, syracuse, cny">
 </head>
-<body class="background">  
+<body class="background"
+      hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
     {% block header %}{% include 'header.html' %}{% endblock %}
-    
+
     <main id="main">
         {% block parallax %}{% endblock %}
         {% block content %}{% endblock %}
