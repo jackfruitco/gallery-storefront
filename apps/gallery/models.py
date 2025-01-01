@@ -8,7 +8,7 @@ from django.utils.text import slugify
 from apps.shopify_app.models import ShopifyAccessToken
 from apps.shopify_app import shopify_bridge
 from django.apps import apps
-from apps.store.context_processors import store_url
+from apps.shopify_app.context_processors import shopify_context
 
 def get_image_path(instance, filename):
     return "images/products/{0}/{1}".format(instance.fk_product.pk, instance.slug + "." + filename.split('.')[-1])
@@ -74,7 +74,7 @@ class Product(models.Model):
         return ProductImage.objects.filter(fk_product=self.pk).filter(feature_image=False).all()[:4]
 
     def get_shop_url(self):
-        url = store_url()["storefront_url"]
+        url = shopify_context()["storefront_url"]
         if url.endswith("/"): url = url[:-1]
         return '%s/products/%s' % (url, self.slug)
 
