@@ -88,13 +88,33 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'GalleryStorefront.wsgi.application'
 
+CLOUDFLARE_R2_CONFIG = {
+    "bucket_name": os.getenv('CLOUDFLARE_R2_BUCKET', ''),
+    "default_acl": os.getenv('CLOUDFLARE_R2_ACL', 'public-read'),
+    "signature_version": os.getenv('CLOUDFLARE_R2_SIGNATURE', 's3v4'),
+    "endpoint_url": os.getenv('CLOUDFLARE_R2_ENDPOINT', ''),
+    "access_key": os.getenv('CLOUDFLARE_R2_ACCESS_KEY', ''),
+    "secret_key": os.getenv('CLOUDFLARE_R2_SECRET_KEY', ''),
+    "location": os.getenv('CLOUDFLARE_R2_LOCATION', ''),
+}
+
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": CLOUDFLARE_R2_CONFIG,
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-DEV_DB = os.environ.get('DJANGO_DEV_DB', False) # == True
+# DEV_DB = os.environ.get('DJANGO_DEV_DB', False) # == True
+DEV_DB = False
 
 # if DEV_DB:
-if False:
+if DEV_DB:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
