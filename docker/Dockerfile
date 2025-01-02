@@ -1,11 +1,3 @@
-# syntax=docker/dockerfile:1
-
-# Comments are provided throughout this file to help you get started.
-# If you need more help, visit the Dockerfile.dev reference guide at
-# https://docs.docker.com/go/dockerfile-reference/
-
-# Want to help us make this template better? Share your feedback here: https://forms.gle/ybq9Krt8jtBL3iCk7
-
 ARG PYTHON_VERSION=3.10.2
 FROM python:${PYTHON_VERSION}-slim AS base
 
@@ -60,10 +52,10 @@ USER appuser
 COPY .. .
 
 # Collect static files
-# RUN python manage.py collectstatic --no-input
+RUN python manage.py collectstatic --no-input
 
 # Expose the port that the application listens on.
 EXPOSE 8000
 
-# Run the application.
+# Run the application
 CMD gunicorn GalleryStorefront.wsgi:application --bind=0.0.0.0:8000
