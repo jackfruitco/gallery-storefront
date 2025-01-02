@@ -11,6 +11,7 @@ from django.contrib import messages
 
 from apps.shopify_app.models import ShopifyAccessToken
 from .signals import sync_message
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -294,4 +295,3 @@ def error_parser(response, operation_name, obj, **kwargs):
                                       (obj.name, obj.shopify_status.title()))
 
     return success, response
-

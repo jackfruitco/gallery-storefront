@@ -4,7 +4,13 @@ from autoslug import AutoSlugField
 from django.apps import apps
 from django.db import models
 from django.urls import reverse
+from django.conf import settings
 from django.utils.translation import gettext_lazy as _
+
+from GalleryStorefront.config import STOREFRONT_URL
+
+from apps.shopify_app import shopify_bridge
+from apps.shopify_app.models import ShopifyAccessToken
 
 from apps.shopify_app import shopify_bridge
 from apps.shopify_app.models import ShopifyAccessToken
@@ -14,7 +20,9 @@ logger = logging.getLogger(__name__)
 
 def get_image_path(instance, filename):
     return "images/products/{0}/{1}".format(
-        instance.fk_product.pk, instance.slug + "." + filename.split('.')[-1])
+        instance.fk_product.pk,
+        instance.slug + "." + filename.split('.')[-1]
+    )
 
 
 class ProductCategory(models.Model):
@@ -42,17 +50,32 @@ class Product(models.Model):
     # Product information
     category = models.ManyToManyField('ProductCategory')
     description = models.TextField(blank=True)
+    slug = AutoSlugField(
+        populate_from='name',
+        unique=True,
+        always_update=True
+    )
 
-    slug = AutoSlugField(populate_from='name', unique=True, always_update=True)
+    choices = {
+        "DRAFT": "Draft",
+        "ACTIVE": "Active",
+        "ARCHIVED": "Archived"
+    }
 
     # Site Options
-    status = models.CharField(max_length=10, verbose_name="Add to Gallery",
-                              choices=Status.choices, default=Status.ACTIVE,
-                              help_text="Enable to display this product in "
-                                        "Site Gallery")
+    status = models.CharField(
+        max_length=10,
+        verbose_name="Enable Site Gallery",
+        choices=Status.choices,
+        default=Status.ACTIVE,
+        help_text="Enable to display this product in Site Gallery"
+    )
     feature = models.BooleanField(
-        default=True, verbose_name="Enable Featured Product", help_text=
-        "Enable to display on the Homepage as a featured product.")
+        default=True,
+        verbose_name="Enable Featured Product",
+        help_text="Enable to display this product on "
+                  "the Homepage as a featured product."
+    )
 
     @property
     def display(self)-> bool:
@@ -63,26 +86,33 @@ class Product(models.Model):
     shopify_sync = models.BooleanField(
         default=False,
         verbose_name="Enable ShopSync",
-        help_text="Enable to sync this product with Shopify Admin and make it "
-        "available via the Shopify Online Store and Shopify POS. Please note, "
-        "updates made via Shopify Admin will be overridden, and do not sync "
-        "with this site's product database. A Shopify Access Token is "
-        "required!")
+        help_text="Enable to automatically sync product with Shopify Admin. "
+                  " Please note, updates made in Shopify Admin will be "
+                  "overridden, and do not sync with the product "
+                  "database. A Shopify Access Token is required!"
+    )
     shopify_global_id  = models.CharField(
         max_length=100,
         blank=True,
         null=True,
         editable=False,
-        help_text="Shopify Global productID")
+        help_text="Shopify Global productID",
+    )
     shopify_status = models.CharField(
-        max_length=10, choices=Status.choices, default=Status.DRAFT)
+        max_length=10,
+        choices=Status.choices,
+        default=Status.DRAFT,
+    )
     base_price = models.FloatField(
         default=0,
         blank=True,
         null=True,
         help_text="Variant pricing will override this."
     )
-    sku = models.CharField(max_length=50, blank=True)
+    sku = models.CharField(
+        max_length=50,
+        blank=True
+    )
 
     length = models.IntegerField(null=True, blank=True)
     width = models.IntegerField(null=True, blank=True)
@@ -171,23 +201,26 @@ class Product(models.Model):
 
     def get_shop_url(self) -> str:
         """Return Shopify Product Page URL."""
-        url = store_url()["storefront_url"]
+        url = STOREFRONT_URL
         if url.endswith("/"): url = url[:-1]
         return '%s/products/%s' % (url, self.slug)
 
     def get_absolute_url(self) -> bytes:
         """Return URL to this product."""
-        return reverse('gallery:index', kwargs={
-            'category': self.category.name, 'slug': self.slug})
+        return reverse(
+            viewname='gallery:product-detail',
+            kwargs={'category': self.category.name, 'slug': self.slug}
+        )
 
     def __str__(self):
         return self.name
 
     def save(self, **kwargs):
         if self.shopify_sync:
-            success, response = shopify_bridge.product_set(self)
-            if success: self.shopify_global_id = response[
-                'data']['productSet']['product']['id']
+            success, data = shopify_bridge.product_set(self)
+            if success:
+                product_id = data['data']['productSet']['product']['id']
+                self.shopify_global_id = product_id
         if (update_fields := kwargs.get("update_fields")) is not None:
             kwargs["update_fields"] = {"shopify_global_id"}.union(update_fields)
         super().save(**kwargs)
@@ -206,21 +239,43 @@ class ProductImage(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     modified_at = models.DateTimeField(auto_now=True, editable=False)
 
-    fk_product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    fk_product = models.ForeignKey(
+        to=Product,
+        on_delete=models.CASCADE
+    )
     feature_image = models.BooleanField(
         default=False,
-        help_text="Enable to display this image as the featured image. "
-                  "The featured image is used as the product's primary image. "
-                  "Only select this for one image per product.")
-
-    description = models.CharField(max_length=100, blank=False,
-                                   help_text="3-5 words describing the image")
-    slug = AutoSlugField(populate_from='description',
-                         unique_with='fk_product', always_update=True)
-    image = models.ImageField(upload_to=get_image_path)
+        help_text="Enable to display image as the featured "
+                  "image. The featured image is used as the product's "
+                  "primary image"
+    )
+    description = models.CharField(
+        max_length=100,
+        blank=False,
+        help_text="3-5 words describing the image"
+    )
+    slug = AutoSlugField(
+        populate_from='description',
+        unique_with='fk_product',
+        always_update=True
+    )
+    image = models.ImageField(
+        upload_to=get_image_path
+    )
     resource_url = models.URLField(
         max_length=500, blank=True,
-        help_text="Shopify resourceURL if uploaded to Shopify")
+        help_text="Shopify resourceURL if uploaded to Shopify"
+    )
+
+    @property
+    def get_absolute_url(self) -> str:
+        """Returns absolute url of image"""
+        if settings.STORAGES['default']['BACKEND'].endswith('S3Storage'):
+            url = ''
+        else:
+            url = 'http://localhost/'
+        url += self.image.url
+        return url
 
     def __str__(self):
         return self.description
@@ -228,6 +283,8 @@ class ProductImage(models.Model):
     def save(self, **kwargs):
 
         super().save(**kwargs)
+        if self.fk_product.shopify_global_id:
+           shopify_bridge.create_media(self)
         if self.fk_product.shopify_sync and self.fk_product.shopify_global_id:
             success, response = shopify_bridge.staged_uploads_create(self)
 

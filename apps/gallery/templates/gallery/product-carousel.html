@@ -1,0 +1,13 @@
+<section id="product-carousel">
+{% if product_list %}
+    <div id='carousel' class="carousel-container center">
+    {% for product in product_list %}
+        {% with category=product.category.name slug=product.slug img=product.get_feature_image %}
+            <a href="{% url 'gallery:product-detail' category slug %}"><img class="carousel round-large opacity hover-opacity-off" src="{{ img.image.url }}" alt="{{ img.description }}"></a>
+        {% endwith %}
+    {% endfor %}
+    </div>
+{% else %}
+    <p style="padding-left: 20%">No products are available to view.</p>
+{% endif %}
+</section>

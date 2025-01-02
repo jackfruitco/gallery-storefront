@@ -13,7 +13,7 @@ class IndexView(generic.ListView):
     context_object_name = "product_list"
 
     def get_queryset(self):
-        """Return the last five published questions."""
+        """Return the last 16 published products."""
         return Product.objects.filter(status='ACTIVE').order_by("-created_at")[:16]
 
 class DetailView(generic.DetailView):
