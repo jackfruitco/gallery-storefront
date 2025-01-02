@@ -99,28 +99,16 @@ STORAGES = {
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-# DEV_DB = os.environ.get('DJANGO_DEV_DB', False) # == True
-DEV_DB = False
-
-# if DEV_DB:
-if DEV_DB:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv("POSTGRES_DB"),
+        'USER': os.getenv("POSTGRES_USER"),
+        'PASSWORD': os.getenv("POSTGRES_PASSWORD"),
+        'HOST': os.getenv("POSTGRES_HOST"),
+        'PORT': os.getenv("POSTGRES_PORT")
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv("POSTGRES_DB"),
-            'USER': os.getenv("POSTGRES_USER"),
-            'PASSWORD': os.getenv("POSTGRES_PASSWORD"),
-            'HOST': os.getenv("POSTGRES_HOST"),
-            'PORT': os.getenv("POSTGRES_PORT")
-        }
-    }
+}
 
 LOGGING = {
     "version": 1,  # the dictConfig format version
@@ -129,20 +117,13 @@ LOGGING = {
         "console": {
             "class": "logging.StreamHandler",
         },
-        # "file": {
-        #     "class": "logging.FileHandler",
-        #     "filename": "logs/general.log",
-        #     "level": "DEBUG",
-        # },
     },
     "loggers": {
         "": {
             "level": os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
-            # "handlers": ["file", "console"],
             "handlers": ["console"],
         },
     },
-
 }
 
 # Password validation
