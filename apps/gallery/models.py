@@ -2,6 +2,7 @@ from autoslug import AutoSlugField
 from django.apps import apps
 from django.db import models
 from django.urls import reverse
+from GalleryStorefront.config import STOREFRONT_URL
 
 from apps.shopify_app import shopify_bridge
 from apps.shopify_app.context_processors import shopify_context
@@ -108,7 +109,7 @@ class Product(models.Model):
             fk_product=self.pk).filter(feature_image=False).all()[:4]
 
     def get_shop_url(self):
-        url = shopify_context()["storefront_url"]
+        url = STOREFRONT_URL
         if url.endswith("/"): url = url[:-1]
         return '%s/products/%s' % (url, self.slug)
 
