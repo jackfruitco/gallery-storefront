@@ -69,7 +69,10 @@ class Product(models.Model):
         "with this site's product database. A Shopify Access Token is "
         "required!")
     shopify_global_id  = models.CharField(
-        max_length=100, blank=True, editable=False,
+        max_length=100,
+        blank=True,
+        null=True,
+        editable=False,
         help_text="Shopify Global productID")
     shopify_status = models.CharField(
         max_length=10, choices=Status.choices, default=Status.DRAFT)
