@@ -72,6 +72,7 @@ def product_set(obj) -> (bool, str):
     # otherwise, change to DefaultVariantOnly operation and omit.
     if obj.get_variants() is None:
         operation_name += 'DefaultVariantOnly'
+        variables['price']
         logger.debug('No variants found for %s. Switching to DefaultVariantOnly mutation.' % obj.name)
     else:
         variables['productSet']['productOptions'] = obj.format_options()

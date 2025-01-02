@@ -76,6 +76,12 @@ class Product(models.Model):
         help_text="Shopify Global productID")
     shopify_status = models.CharField(
         max_length=10, choices=Status.choices, default=Status.DRAFT)
+    base_price = models.FloatField(
+        default=0,
+        blank=True,
+        null=True,
+        help_text="Variant pricing will override this."
+    )
     sku = models.CharField(max_length=50, blank=True)
 
     length = models.IntegerField(null=True, blank=True)
@@ -107,9 +113,6 @@ class Product(models.Model):
                                    default=WeightUnits.OUNCES)
 
     # START deprecated field(s)
-    price = models.FloatField(
-        default=0, blank=True, null=True, verbose_name='Base Price',
-        help_text="Item base price. Variant pricing will override this.")
     primary_color = models.ForeignKey(Color, on_delete=models.CASCADE,
                                       blank=True, null=True)
     # END deprecated field(s)
@@ -209,7 +212,7 @@ class ProductImage(models.Model):
         help_text="Enable to display this image as the featured image. "
                   "The featured image is used as the product's primary image. "
                   "Only select this for one image per product.")
-    # priority = models.PositiveSmallIntegerField(default=10)
+
     description = models.CharField(max_length=100, blank=False,
                                    help_text="3-5 words describing the image")
     slug = AutoSlugField(populate_from='description',
@@ -225,8 +228,8 @@ class ProductImage(models.Model):
     def save(self, **kwargs):
 
         super().save(**kwargs)
-        # if self.fk_product.shopify_sync and self.fk_product.shopify_global_id:
-        #     success, response = shopify_bridge.staged_uploads_create(self)
+        if self.fk_product.shopify_sync and self.fk_product.shopify_global_id:
+            success, response = shopify_bridge.staged_uploads_create(self)
 
 
 class ProductOptionValue(models.Model):
