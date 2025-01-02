@@ -2,10 +2,11 @@ from autoslug import AutoSlugField
 from django.apps import apps
 from django.db import models
 from django.urls import reverse
+from django.conf import settings
+
 from GalleryStorefront.config import STOREFRONT_URL
 
 from apps.shopify_app import shopify_bridge
-from apps.shopify_app.context_processors import shopify_context
 from apps.shopify_app.models import ShopifyAccessToken
 
 
@@ -169,11 +170,22 @@ class ProductImage(models.Model):
         upload_to=get_image_path
     )
 
+    @property
+    def get_absolute_url(self) -> str:
+        """Returns absolute url of image"""
+        if settings.STORAGES['default']['BACKEND'].endswith('S3Storage'):
+            url = ''
+        else:
+            url = 'http://localhost/'
+        url += self.image.url
+        return url
+
+
     def __str__(self):
         return self.description
 
     def save(self, **kwargs):
         super().save(**kwargs)
-        # if self.fk_product.shopify_global_id:
-        #    shopify_bridge.create_media(self)
+        if self.fk_product.shopify_global_id:
+           shopify_bridge.create_media(self)
 
