@@ -1,5 +1,5 @@
 from django.apps import AppConfig
-import os, shopify
+import os
 
 class ShopifyAppConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
@@ -23,5 +23,5 @@ class ShopifyAppConfig(AppConfig):
         }
     ]
 
-    def ready(self):
-        import apps.shopify_app.signals
+    # def ready(self):
+    #    import apps.shopify_app.signals

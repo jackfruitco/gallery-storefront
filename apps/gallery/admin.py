@@ -13,24 +13,42 @@ class MediaUploadInline(admin.StackedInline):
     extra = 1
     max_num = 5
 
+    readonly_fields = [
+        'resource_url',
+    ]
+
 class CreateVariantInLine(admin.StackedInline):
     model = ProductVariant
     extra = 0
 
     fieldsets = [
-        (None, {'fields': ['options', 'price', 'inv_policy', 'location', 'inv_name', 'oh_quantity'],}),
+        (None, {'fields': [
+            'options',
+            'price',
+            'inv_policy',
+            # 'location',
+            'inv_name',
+            'oh_quantity',
+        ]}),
     ]
 
 @admin.register(ProductOptionValue)
 class ProductOptionValueAdmin(admin.ModelAdmin):
     fieldsets = [
-        (None, {'fields': ['option','value',],}),
+        (None, {'fields': [
+            'option',
+            'value',
+        ]}),
     ]
 
 @admin.register(ProductOption)
 class ProductOptionAdmin(admin.ModelAdmin):
     fieldsets = [
-        (None, {'fields': ['product', 'name', 'position']}),
+        (None, {'fields': [
+            'product',
+            'name',
+            'position',
+        ]}),
     ]
 
 @admin.register(Product)
@@ -46,6 +64,21 @@ class ProductAdmin(admin.ModelAdmin):
             'category',
             'description',
         ]}),
+        ('Technical Data', {'fields': [
+            'created_at',
+            'modified_at'
+        ]}),
+        ('Website Options', {'fields': [
+            'status',
+            'feature'
+        ]}),
+        ('Storefront', {'fields': [
+            'shopify_sync',
+            'shopify_global_id',
+            'shopify_status',
+            'base_price',
+            'sku'
+        ]}),
         ('Product Data', {'fields': [
             'length',
             'length_unit',
@@ -56,22 +89,6 @@ class ProductAdmin(admin.ModelAdmin):
             'weight',
             'weight_unit',
         ]}),
-        ('Website Options', {'fields': [
-            'status',
-            'feature'
-        ]}),
-        ('Storefront', {'fields': [
-            'shopify_sync',
-            'shopify_global_id',
-            'shopify_status',
-            'price',
-            'sku'
-        ]}),
-        ('Technical Data', {'fields': [
-            'created_at',
-            'modified_at'
-        ]})
-        ('Product Data', {'fields': ['length', 'length_unit', 'width', 'width_unit', 'height', 'height_unit', 'weight', 'weight_unit']}),
     ]
     inlines = [
         MediaUploadInline,

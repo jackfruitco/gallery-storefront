@@ -1,5 +1,6 @@
 import logging
 
+import boto3
 from autoslug import AutoSlugField
 from django.apps import apps
 from django.db import models
@@ -7,14 +8,12 @@ from django.urls import reverse
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
-from GalleryStorefront.config import STOREFRONT_URL
+from GalleryStorefront.config import STOREFRONT_URL, configure_s3
 
-from apps.shopify_app import shopify_bridge
 from apps.shopify_app.models import ShopifyAccessToken
 
 from apps.shopify_app import shopify_bridge
 from apps.shopify_app.models import ShopifyAccessToken
-from apps.store.context_processors import store_url, locations
 
 logger = logging.getLogger(__name__)
 
@@ -267,6 +266,41 @@ class ProductImage(models.Model):
         help_text="Shopify resourceURL if uploaded to Shopify"
     )
 
+    def get_file_data(self) -> bytes:
+        """
+        Retrieves S3 Object data from Cloudflare R2.
+
+        This is primarily used to get object data in bytes for use in
+        a PUT request to upload media to Shopify.
+
+        :return: Bytes of Image Object
+        """
+
+        from botocore.client import Config
+
+        # Initiate S3 Client
+        conf = configure_s3()
+        s3_client = boto3.client(
+            's3',
+            endpoint_url=conf['endpoint_url'],
+            aws_access_key_id=conf['access_key'],
+            aws_secret_access_key=conf['secret_key'],
+            config=Config(signature_version=conf['signature_version'])
+        )
+
+        # Retrieve S3 Object Key from image url
+        # Strips endpoint url, then strips qeurystring
+        base_url = '%s/%s/' % (conf['endpoint_url'], conf['bucket_name'])
+        key = self.image.url[len(base_url):].split('?')[0]
+
+        # retrieves data of
+        file_data = s3_client.get_object(
+            Bucket=conf['bucket_name'],
+            Key=key,
+        )['Body'].read()
+
+        return file_data
+
     @property
     def get_absolute_url(self) -> str:
         """Returns absolute url of image"""
@@ -283,10 +317,8 @@ class ProductImage(models.Model):
     def save(self, **kwargs):
 
         super().save(**kwargs)
-        if self.fk_product.shopify_global_id:
-           shopify_bridge.create_media(self)
         if self.fk_product.shopify_sync and self.fk_product.shopify_global_id:
-            success, response = shopify_bridge.staged_uploads_create(self)
+            shopify_bridge.staged_uploads_create(self)
 
 
 class ProductOptionValue(models.Model):
@@ -354,10 +386,17 @@ class ProductVariant(models.Model):
                   'or be denied.')
     sku = models.CharField(max_length=100, blank=True)
     location = models.CharField(
-        max_length=100, choices=locations, verbose_name="Inventory Location")
+        max_length=100,
+    #     choices=locations,
+        verbose_name="Inventory Location",
+    )
     oh_quantity = models.IntegerField(
-        default=1, verbose_name="On Hand Quantity")
-    price = models.FloatField(default=0, verbose_name="Variant Price")
+        default=1,
+        verbose_name="On Hand Quantity"
+    )
+    price = models.FloatField(
+        default=0,
+        verbose_name="Variant Price")
 
     # START deprecated field(s):
     inv_name = models.CharField(

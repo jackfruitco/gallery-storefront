@@ -100,7 +100,7 @@ class Migration(migrations.Migration):
                 ('shopify_id', models.CharField(blank=True, max_length=100)),
                 ('inv_policy', models.CharField(choices=[('DENY', 'Deny'), ('CONTINUE', 'Continue')], default='DENY', max_length=100, verbose_name='Inventory Policy')),
                 ('sku', models.CharField(blank=True, max_length=100)),
-                ('location', models.CharField(choices=apps.store.context_processors.locations, max_length=100, verbose_name='Inventory Location')),
+                ('location', models.CharField(max_length=100, verbose_name='Inventory Location')),
                 ('inv_name', models.CharField(choices=[('available', 'Available'), ('on hand', 'On Hand')], default='available', max_length=100, verbose_name='Inventory Name')),
                 ('quantity', models.IntegerField(default=1, verbose_name='Inventory Quantity')),
                 ('price', models.FloatField(default=0, verbose_name='Price')),
