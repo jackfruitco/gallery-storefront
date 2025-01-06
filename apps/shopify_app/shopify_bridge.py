@@ -19,13 +19,16 @@ api_version = apps.get_app_config('shopify_app').SHOPIFY_API_VERSION
 
 def get_ext(url, leading_period=True):
     """
+    Return extension of filename or path.
 
     :param url: URL to retreieve extension from
     :type url: str
     :param leading_period: Specify true to include a leading period
     :type leading_period: bool
+
     :return: Extension of filename or path
     """
+
     parsed = urlparse(url)
     root, ext = splitext(parsed.path)
 
@@ -33,8 +36,12 @@ def get_ext(url, leading_period=True):
     else: return ext[1:]
 
 
-def sync_setup() -> (str, str):
-    """Syncs product with Shopify Admin using various GraphQL mutations"""
+def sync_setup() -> dict:
+    """
+    Return Shopify API Token and GraphQL mutations document.
+
+    :return: dict  with token and document, or, key 'errors' with msg and location
+    """
 
     # Attempt to get Shopify Token. If token not found, exit function and return error
     token_exists, token = get_token_or_error()
