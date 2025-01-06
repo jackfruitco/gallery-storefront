@@ -17,11 +17,20 @@ logger = logging.getLogger(__name__)
 shop_url = apps.get_app_config('shopify_app').SHOPIFY_URL
 api_version = apps.get_app_config('shopify_app').SHOPIFY_API_VERSION
 
-def get_ext(url):
-    """Return the filename extension from url, or ''."""
+def get_ext(url, leading_period=True):
+    """
+
+    :param url: URL to retreieve extension from
+    :type url: str
+    :param leading_period: Specify true to include a leading period
+    :type leading_period: bool
+    :return: Extension of filename or path
+    """
     parsed = urlparse(url)
     root, ext = splitext(parsed.path)
-    return ext  # or ext[1:] if you don't want the leading '.'
+
+    if leading_period: return ext
+    else: return ext[1:]
 
 
 def sync_setup() -> (str, str):
@@ -42,9 +51,9 @@ def sync_setup() -> (str, str):
 
 def get_token_or_error() -> (bool, str):
     """
-    Return Shopify Access Token if exists
+    Return Shopify Access Token if exists.
 
-    :return:
+    :return: Token as String
     """
 
     if ShopifyAccessToken.objects.filter(user=1).exists():
@@ -58,6 +67,8 @@ def product_set(obj) -> (bool, str):
     Sync product with Shopify Admin using GraphQL mutations
 
     Reference Shopify GraphQL Docs mutation 'createProductSynchronous'
+
+    :param obj: Product Object Model
     """
 
     operation_name = 'productSet'
@@ -133,6 +144,8 @@ def product_delete(obj):
     Delete product from Shopify Admin
 
     Reference Shopify GraphQL Docs mutation 'productDelete'
+
+    :param obj: Product Model Object
     """
 
     operation_name = 'productDelete'
@@ -159,6 +172,10 @@ def create_media(obj, resource_url):
     Sync product media in Shopify Admin
 
     Reference Shopify GraphQL Docs mutation 'productCreateMedia'
+
+    :param obj: ProductImage Model Object
+    :param resource_url: Resource URL provided in response GraphQL to GraphQL 'staged_uploads_create' method. URL is used to POST/PUT media for upload to Shopify Admin.
+    :type resource_url: str
     """
 
     operation_name = 'productCreateMedia'
@@ -187,6 +204,8 @@ def staged_uploads_create(obj):
     Creates staged upload targets to upload media to Shopify.
 
     Reference Shopify GraphQL Docs mutation 'stagedUploadsCreate'
+
+    :param obj: ProductImage Model Object
     """
 
     operation_name = 'stagedUploadsCreate'
