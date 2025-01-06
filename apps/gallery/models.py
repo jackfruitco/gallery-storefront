@@ -147,19 +147,45 @@ class Product(models.Model):
     # END deprecated field(s)
 
     def get_feature_image(self):
-        """Return a single image that is featured."""
+        """
+        Return the featured ProductImage object for a product.
+
+        :param self: Product Object
+        :return: QuerySet
+        """
+
         return ProductImage.objects.filter(
             fk_product=self, feature_image=True).first()
 
     def get_images(self) -> object:
-        """Return all images EXCEPT the featured image."""
+        """
+        Return QuerySet of images for a product, excluding featured image.
+
+        :param self: Product Object
+        :return: QuerySet
+        """
+
         return ProductImage.objects.filter(
             fk_product=self.pk).filter(feature_image=False).all()[:4]
 
     def get_variants(self) -> list:
+        """
+        Return QuerySet of variants for a product.
+
+        :param self: Product Object
+        :return: QuerySet
+        """
+
         return ProductVariant.objects.filter(product=self)
 
     def format_variants(self) -> list:
+        """
+        Return JSON-serializable dictionary of variants for a product.
+
+        :param self: Product Object
+        :return: JSON-serializable dictionary
+        """
+
         list_ = []
         for variant in self.get_variants():
             options_ = []
@@ -181,11 +207,23 @@ class Product(models.Model):
         return list_
 
     def get_options(self) -> list:
-        """Return all ProductOptions associated with this product."""
-        # return ProductOption.objects.filter(product=self).all()
+        """
+        Return QuerySet of options for a product.
+
+        :param self: Product Object
+        :return: QuerySet
+        """
+
         return ProductOption.objects.filter(product=self)
 
     def format_options(self) -> list:
+        """
+        Return JSON-serializable dictionary of options for a product.
+
+        :param self: Product Object
+        :return: JSON-serializable dictionary
+        """
+
         list_ = []
         # v = []
         for option in self.get_options():
