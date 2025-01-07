@@ -21,7 +21,7 @@ def get_ext(url, leading_period=True):
     """
     Return extension of filename or path.
 
-    :param url: URL to retreieve extension from
+    :param url: URL to retrieve extension from
     :type url: str
     :param leading_period: Specify true to include a leading period
     :type leading_period: bool
@@ -97,16 +97,23 @@ def product_set(obj) -> (bool, str):
     if obj.shopify_global_id is not None:
         variables['productSet']['id'] = obj.shopify_global_id
 
-    # Add variant and option values if exists,
-    # otherwise, change to DefaultVariantOnly operation and omit.
-    if obj.get_variants() is None:
-        operation_name += 'DefaultVariantOnly'
-        # variables['price']
-        logger.debug('No variants found for %s. Switching to '
-                     'DefaultVariantOnly mutation.' % obj.name)
-    else:
+    # Add option values and variants if exists,
+    # otherwise, change to DefaultVariantOnly operation.
+
+    if obj.get_variants() is not None:
         variables['productSet']['productOptions'] = obj.format_options()
         variables['productSet']['variants'] = obj.format_variants()
+        logger.debug('Variants found for %s.' % obj.name)
+    else:
+        # Update GraphQL mutation operation_name
+        operation_name += 'DefaultVariantOnly'
+
+        variants, options = obj.format_default_variant()
+        variables['productSet']['productOptions'] = options
+        variables['productSet']['variants'] = variants
+
+        logger.debug('No variants found for %s. Switching to '
+                     'DefaultVariantOnly mutation.' % obj.name)
 
     logger.debug(variables)
 

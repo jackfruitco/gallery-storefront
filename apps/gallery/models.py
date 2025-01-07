@@ -168,32 +168,76 @@ class Product(models.Model):
         return ProductImage.objects.filter(
             fk_product=self.pk).filter(feature_image=False).all()[:4]
 
-    def get_variants(self) -> list:
+    def get_variants(self) -> list or None:
         """
         Return QuerySet of variants for a product.
 
-        :param self: Product Object
-        :return: QuerySet
-        """
+        If no variants are found, return None.
 
-        return ProductVariant.objects.filter(product=self)
+        :param self: Product Object
+        :return: QuerySet list, or None
+        """
+        if len(list_ := ProductVariant.objects.filter(product=self))==0:
+            return None
+        else:
+            return list_
+
+    def format_default_variant(self) -> tuple:
+        """
+        Return JSON-serializable dictionary for default variant only.
+
+        :param self: Product Object
+        :return: tuple (variants, options)
+        """
+        variants = [{
+            'optionValues': [
+                {
+                    'optionName': 'Title',
+                    'name': 'Default Title',
+                }
+            ],
+            'price': self.base_price,
+        }]
+
+        options = [{
+            'name': 'Title',
+            'values': [
+                {
+                    'name': 'Default Title'
+                }
+            ]
+        }]
+
+        return variants, options
 
     def format_variants(self) -> list:
         """
         Return JSON-serializable dictionary of variants for a product.
 
+        Check if product has any variants. If no variants are found,
+        return a list for the default variant using the product's base
+        price. Otherwise, loop through each product variant and format
+        the options in to match GraphQL implementation.
+
         :param self: Product Object
         :return: JSON-serializable dictionary
         """
 
+        # If no variants found, raise error.
+        # :BUG: add error handling.
+        if len(self.get_variants())==0:
+            pass
+
+        # For each variant, append dict of values to list
         list_ = []
         for variant in self.get_variants():
             options_ = []
+
+            # for each option, append dict of values to list
             for optionValue in variant.options.all():
                 options_.append({
                     'optionName': optionValue.option.name,
                     'name': optionValue.value,
-
                 })
             list_.append({
                 'price': variant.price,
