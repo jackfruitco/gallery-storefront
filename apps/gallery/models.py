@@ -141,11 +141,6 @@ class Product(models.Model):
                                    choices=WeightUnits.choices,
                                    default=WeightUnits.OUNCES)
 
-    # START deprecated field(s)
-    primary_color = models.ForeignKey(Color, on_delete=models.CASCADE,
-                                      blank=True, null=True)
-    # END deprecated field(s)
-
     def get_feature_image(self):
         """
         Return the featured ProductImage object for a product.
