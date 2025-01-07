@@ -123,7 +123,8 @@ def product_set(obj) -> (bool, str):
             variables=variables,
             operation_name=operation_name,
         )
-    return error_parser(json.loads(response), operation_name, obj)
+
+    return error_parser(json.loads(response), 'productSet', obj)
 
 
 def publish(obj, publication) -> (bool, str):
