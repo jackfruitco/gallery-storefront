@@ -1,11 +1,13 @@
-{% extends 'base.html' %}
+{% extends 'gallery/base_gallery.html' %}
 {% load static %}
 
-{% block extra_stylesheet %}
-    <link rel="stylesheet" href={% static "gallery/style.css" %}>
-{% endblock %}
+{% block title %}
+    Gallery
+{% endblock title %}
 
-{% block title %}Gallery{% endblock %}
+{% block meta_description %}
+    Marnie's collection of handmade pottery pieces, by Pottery By Marnie
+{% endblock meta_description %}
 
 {% block parallax %}
     <div id="parallax" class="bgimg-2 display-container opacity-min">
@@ -13,12 +15,12 @@
             <span class="center padding-large black xxlarge letter-wide animate-opacity">GALLERY</span>
         </div>
     </div>
-{% endblock %}
+{% endblock parallax %}
 
 {% block content %}
-    <div id="portfolio" class="content container padding-64" >
+    <div id="portfolio" class="content container padding-64">
       <h3 class="center">MY WORK</h3>
       <p class="center"><em>Here is some of my latest work.<br> Click a project to view in more detail.</em></p><br>
+        {% include 'gallery/product-carousel.html' %}
     </div>
-    {% include 'gallery/gallery-carousel.html' %}
-{% endblock %}
+{% endblock content %}

@@ -60,9 +60,9 @@ services:
     networks:
       - StoreNet
 volumes:
-   db-data:
-   static-vol:
-   media-vol:
+  db-data:
+  static-vol:
+  media-vol:
 networks:
   StoreNet:
     driver: bridge

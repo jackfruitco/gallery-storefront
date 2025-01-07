@@ -4,6 +4,7 @@ from django.utils.text import slugify
 import json, shopify, logging
 from django.contrib import messages
 from .signals import sync_message
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -164,9 +165,6 @@ def create_media(obj):
     success, config = error_parser(sync_setup(), sync_setup.__name__, obj)
     if not success: return False, config
 
-    #! BUG: remove hardcoded domain link
-    img_url = 'http://%s%s' % ('localhost', obj.image.url)
-
     with shopify.Session.temp(shop_url, api_version, config['token']):
         response = shopify.GraphQL().execute(
             query=config['document'],
@@ -174,7 +172,7 @@ def create_media(obj):
                 "media": {
                     "alt": obj.description,
                     "mediaContentType": "IMAGE",
-                    "originalSource": img_url,
+                    "originalSource": obj.image.url,
                 },
                 "productId": obj.fk_product.shopify_global_id
             },
