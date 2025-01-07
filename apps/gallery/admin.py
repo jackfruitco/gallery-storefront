@@ -92,7 +92,7 @@ class ProductAdmin(admin.ModelAdmin):
     ]
     inlines = [
         MediaUploadInline,
-        CreateVariantInLine,
+        # CreateVariantInLine,
     ]
 
     list_display = [
