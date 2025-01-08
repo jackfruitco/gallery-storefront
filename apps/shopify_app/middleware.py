@@ -1,8 +1,4 @@
 from django.apps import apps
-from django.shortcuts import redirect
-from django.urls import reverse
-from .models import ShopifyAccessToken
-from .views import authenticate
 import shopify
 
 class ConfigurationError(BaseException):

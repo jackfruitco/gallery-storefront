@@ -1,8 +1,5 @@
-from django.shortcuts import render, get_object_or_404
-from django.views import generic
+from django.shortcuts import render
 from apps.gallery.models import Product
-from apps.shopify_app.decorators import shop_login_required
-import shopify
 
 def index(request):
     # Number of visits to this view, as counted in the session variable.

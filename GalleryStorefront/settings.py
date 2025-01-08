@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+from GalleryStorefront.config import configure_s3
 from gunicorn import app
 
 from apps import shopify_app
@@ -36,6 +37,7 @@ INSTALLED_APPS = [
     'apps.store.apps.StoreConfig',
     'apps.shopify_app.apps.ShopifyAppConfig',
     # 'django_htmx',
+    'nested_admin'
 ]
 
 MIDDLEWARE = [
@@ -73,24 +75,10 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'GalleryStorefront.wsgi.application'
 
-def _get_s3_config(**kwargs):
-    """Returns S3 configuration for Cloudflare R2"""
-    config = {
-        "bucket_name": os.getenv('CLOUDFLARE_R2_BUCKET', ''),
-        "default_acl": os.getenv('CLOUDFLARE_R2_ACL', 'public-read'),
-        "signature_version": os.getenv('CLOUDFLARE_R2_SIGNATURE', 's3v4'),
-        "endpoint_url": os.getenv('CLOUDFLARE_R2_ENDPOINT', ''),
-        "access_key": os.getenv('CLOUDFLARE_R2_ACCESS_KEY', ''),
-        "secret_key": os.getenv('CLOUDFLARE_R2_SECRET_KEY', ''),
-    }
-    for key, value in kwargs.items():
-        config[key] = value
-    return config
-
 STORAGES = {
     "default": {
         "BACKEND": "storages.backends.s3.S3Storage",
-        "OPTIONS": _get_s3_config(location=os.getenv('CLOUDFLARE_R2_DEFAULT_LOCATION', ''),),
+        "OPTIONS": configure_s3(location=os.getenv('CLOUDFLARE_R2_DEFAULT_LOCATION', ''),),
     },
     "staticfiles": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
