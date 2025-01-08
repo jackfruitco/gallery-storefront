@@ -2,14 +2,14 @@
     background-image: url("https://public.potterybymarnie.com/gallery/images/multiple-items.png");
 }
 
-    img.featured {
-        margin: auto;
-        max-height: 50vh;
-        max-width: 90vw;
-    }
-    .item-details {
-        margin: auto;
-    }
+img.featured {
+    margin: auto;
+    max-height: 50vh;
+    max-width: 90vw;
+}
+.item-details {
+    margin: auto;
+}
 
 @media only screen and (max-device-width: 768px) {
     .flex-left {
