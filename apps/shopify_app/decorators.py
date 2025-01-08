@@ -1,12 +1,7 @@
-from os.path import exists
-
 from django.shortcuts import redirect
-from django.contrib import messages
 from django.urls import reverse
 from apps.shopify_app.models import ShopifyAccessToken
 import logging
-from django.conf import settings
-from . import views
 
 logger = logging.getLogger(__name__)
 

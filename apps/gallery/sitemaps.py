@@ -1,6 +1,6 @@
 from django.contrib.sitemaps import Sitemap
 
-from .models import Product, ProductCategory
+from .models import Product
 
 class ProductSitemap(Sitemap):
         changefreq = 'always'
@@ -9,5 +9,6 @@ class ProductSitemap(Sitemap):
         def items(self):
                 return Product.objects.all()
 
-        def lastmod(self, obj):
+        @staticmethod
+        def lastmod(obj):
                 return obj.modified_at

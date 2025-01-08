@@ -2,31 +2,33 @@
     background-image: url("https://public.potterybymarnie.com/gallery/images/multiple-items.png");
 }
 
-img.key {
-    /* margin: auto; */
-    max-height: 60vh;
-    max-width: 100vw;
-    padding-right: 1vw;
+img.featured {
+    margin: auto;
+    max-height: 50vh;
+    max-width: 90vw;
 }
-
 .item-details {
-    max-width: 60vw;
-    flex-direction: column;
-    margin: auto 5%;
+    margin: auto;
 }
 
-@media only screen and (max-width: 600px) {
-    img.key {
-        margin: auto;
-        max-height: 80vh;
-        max-width: 90vw;
-    }
-    .item-details {
-        margin: auto;
-    }
+@media only screen and (max-device-width: 768px) {
     .flex-left {
         justify-content: center;
     }
 }
 
 .container::before {}
+
+@media only screen and (min-device-width: 768px) {
+    img.featured {
+        max-height: 60vh;
+        max-width: 100vw;
+        padding-right: 1vw;
+    }
+
+    .flex .item {
+        max-width: 60vw;
+        flex-direction: column;
+        margin: auto 5%;
+    }
+}

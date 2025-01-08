@@ -23,9 +23,9 @@
 {% block content %}
     <div class="flex flex-left no-wrap" style="padding: 56px">
         {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-        <img class="key round-xxlarge" src="{{ product.get_feature_image.image.url }}"
+        <img class="featured round-xxlarge" src="{{ product.get_feature_image.image.url }}"
              alt="{{ product.get_feature_image.description }}">
-        <div class="item-details flex">
+        <div class="item">
             <h1>{{ product.name }}</h1>
             <hr><h6>
             {% if product.shopify_sync and product.shopify_status == 'ACTIVE' %}
