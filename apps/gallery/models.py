@@ -284,7 +284,7 @@ class Product(models.Model):
         return '%s/products/%s' % (url, self.slug)
 
     def get_absolute_url(self) -> bytes:
-        """Return URL to this product."""
+        """Return URL to product."""
         return reverse(
             viewname='gallery:product-detail',
             kwargs={'category': self.category.name, 'slug': self.slug}
