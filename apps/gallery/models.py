@@ -172,6 +172,7 @@ class Product(models.Model):
         :param self: Product Object
         :return: QuerySet list, or None
         """
+
         if len(list_ := ProductVariant.objects.filter(product=self))==0:
             return None
         else:
@@ -184,6 +185,7 @@ class Product(models.Model):
         :param self: Product Object
         :return: tuple (variants, options)
         """
+
         variants = [{
             'optionValues': [
                 {
