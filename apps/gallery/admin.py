@@ -2,6 +2,7 @@ import logging
 
 from django.contrib import admin, messages
 from django.dispatch import receiver
+from django.utils.safestring import mark_safe
 
 from apps.shopify_app.signals import sync_message
 from .models import Product, ProductImage, Color, ProductCategory, ProductVariant, ProductOption, ProductOptionValue
@@ -135,7 +136,7 @@ class ProductAdmin(admin.ModelAdmin):
                 message='Contact your Shopify Partner for assistance.',
                 **kwargs):
             """Signal handler to add message when sync error occurs"""
-            messages.add_message(request, level, message)
+            messages.add_message(request, level, mark_safe(message))
         super(ProductAdmin, self).save_model(request, obj, form, change)
 
 admin.site.register(ProductCategory)

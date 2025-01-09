@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
-from GalleryStorefront.config import STOREFRONT_URL, configure_s3
+from GalleryStorefront.config import STOREFRONT_URL, SHOPIFY_ADMIN_URL,configure_s3
 
 from apps.shopify_app.models import ShopifyAccessToken
 
@@ -277,11 +277,19 @@ class Product(models.Model):
             })
         return list_
 
-    def get_shop_url(self) -> str:
+    def get_shop_url(self, admin=False) -> str:
         """Return Shopify Product Page URL."""
-        url = STOREFRONT_URL
-        if url.endswith("/"): url = url[:-1]
-        return '%s/products/%s' % (url, self.slug)
+        if not admin:
+            url = STOREFRONT_URL
+
+            # Strips trailing / if found, then adds slug
+            if url.endswith("/"): url = url[:-1]
+            url += '/products/%s' % self.slug
+        else:
+            # Split ID number off GID string, then add to admin url
+            gid = self.shopify_global_id.split('/')[-1]
+            url = '%s/products/%s' % (SHOPIFY_ADMIN_URL, gid)
+        return url
 
     def get_absolute_url(self) -> bytes:
         """Return URL to product."""

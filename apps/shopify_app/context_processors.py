@@ -9,4 +9,5 @@ def shopify_context(request):
     else: _context['current_shop'] = shopify.ShopifyResource.site.url
 
     _context['storefront_url'] = os.getenv('STOREFRONT_URL')
+
     return _context

@@ -8,6 +8,7 @@ import requests
 import shopify
 from django.apps import apps
 from django.contrib import messages
+from django.urls import reverse
 
 from apps.shopify_app.models import ShopifyAccessToken
 from .signals import sync_message
@@ -47,8 +48,15 @@ def sync_setup() -> dict:
     token_exists, token = get_token_or_error()
     if not token_exists:
         # FUTURE FEAT: add link to error message
-        msg = "token does not exist - are you authorized with Shopify?"
-        return {"errors": [{'message': msg, 'locations': sync_setup.__name__}]}
+        # msg = "token does not exist - are you authorized with Shopify?"
+        url = reverse('shopify:login')
+        msg = ("token does not exist - are you <a href='%s'>"
+               "authorized with Shopify</a>?") % url
+
+        return {"errors": [{
+            'message': msg,
+            'locations': sync_setup.__name__
+        }]}
 
     # Open GraphQL document
     document = open('/app/apps/shopify_app/product_mutations.graphql', 'r').read()
