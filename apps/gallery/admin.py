@@ -52,7 +52,7 @@ class ProductOptionAdmin(admin.ModelAdmin):
     ]
 
 @admin.register(Product)
-class ProductAdminV2(admin.ModelAdmin):
+class ProductAdmin(admin.ModelAdmin):
     readonly_fields = (
         'shopify_global_id',
         'created_at',
@@ -136,84 +136,7 @@ class ProductAdminV2(admin.ModelAdmin):
                 **kwargs):
             """Signal handler to add message when sync error occurs"""
             messages.add_message(request, level, message)
-        super(ProductAdminV2, self).save_model(request, obj, form, change)
-
-'''
-@admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
-    readonly_fields = (
-        'shopify_global_id',
-        'created_at',
-        'modified_at')
-
-    fieldsets = [
-        (None, {'fields': [
-            'name',
-            'category',
-            'description',
-        ]}),
-        ('Technical Data', {'fields': [
-            'created_at',
-            'modified_at'
-        ]}),
-        ('Website Options', {'fields': [
-            'status',
-            'feature'
-        ]}),
-        ('Storefront', {'fields': [
-            'shopify_sync',
-            'shopify_global_id',
-            'shopify_status',
-            'base_price',
-            # 'sku'
-        ]}),
-        ('Product Data', {'fields': [
-            'length',
-            'length_unit',
-            'width',
-            'width_unit',
-            'height',
-            'height_unit',
-            'weight',
-            'weight_unit',
-        ]}),
-    ]
-
-    inlines = [
-        MediaUploadInline,
-        # CreateVariantInLine,
-    ]
-
-    list_display = [
-        'name',
-        'status',
-        'feature',
-        'shopify_sync',
-        'shopify_status'
-    ]
-    list_filter = [
-        'category',
-        'feature',
-        'status',
-        'shopify_sync'
-    ]
-    search_fields = [
-        'name',
-        'description',
-        'shopify_global_id'
-    ]
-
-    def save_model(self, request, obj, form, change):
-        @receiver(sync_message)
-        def add_sync_message(
-                sender,
-                level=messages.INFO,
-                message='Contact your Shopify Partner for assistance.',
-                **kwargs):
-            """Signal handler to add message when sync error occurs"""
-            messages.add_message(request, level, message)
         super(ProductAdmin, self).save_model(request, obj, form, change)
-'''
 
 admin.site.register(ProductCategory)
 admin.site.register(Color)
