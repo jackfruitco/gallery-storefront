@@ -5,6 +5,8 @@ import os
 from dataclasses import dataclass
 
 STOREFRONT_URL = os.getenv('STOREFRONT_URL', '')
+SHOP_URL = os.getenv('SHOP_URL', '')
+SHOPIFY_ADMIN_URL = 'https://admin.shopify.com/store/%s' % SHOP_URL
 
 def configure_s3(**kwargs):
     """Returns S3 configuration for Cloudflare R2"""
