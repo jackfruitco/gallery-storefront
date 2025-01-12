@@ -46,8 +46,6 @@ def sync_setup() -> dict:
     # Attempt to get Shopify Token. If token not found, exit function and return error
     token_exists, token = get_token_or_error()
     if not token_exists:
-        # FUTURE FEAT: add link to error message
-        # msg = "token does not exist - are you authorized with Shopify?"
         url = reverse('shopify:login')
         msg = ("token does not exist - are you <a href='%s'>"
                "authorized with Shopify</a>?") % url
