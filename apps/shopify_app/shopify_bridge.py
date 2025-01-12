@@ -1,4 +1,3 @@
-import boto3
 import json
 import logging
 from os.path import splitext
@@ -6,17 +5,17 @@ from urllib.parse import urlparse
 
 import requests
 import shopify
-from django.apps import apps
 from django.contrib import messages
 from django.urls import reverse
 
 from apps.shopify_app.models import ShopifyAccessToken
+from .apps import ShopifyAppConfig
 from .signals import sync_message
 
 logger = logging.getLogger(__name__)
 
-shop_url = apps.get_app_config('shopify_app').SHOPIFY_URL
-api_version = apps.get_app_config('shopify_app').SHOPIFY_API_VERSION
+SHOP_URL = ShopifyAppConfig.SHOPIFY_URL
+API_VERSION = ShopifyAppConfig.SHOPIFY_API_VERSION
 
 def get_ext(url, leading_period=True):
     """
@@ -125,7 +124,7 @@ def product_set(obj) -> (bool, str):
 
     logger.debug(variables)
 
-    with shopify.Session.temp(shop_url, api_version, config['token']):
+    with shopify.Session.temp(SHOP_URL, API_VERSION, config['token']):
         response = shopify.GraphQL().execute(
             query=config['document'],
             variables=variables,
@@ -147,7 +146,7 @@ def publish(obj, publication) -> (bool, str):
     success, config = error_parser(sync_setup(), sync_setup.__name__, obj)
     if not success: return False, config
 
-    with shopify.Session.temp(shop_url, api_version, config['token']):
+    with shopify.Session.temp(SHOP_URL, API_VERSION, config['token']):
         response = shopify.GraphQL().execute(
             query=config['document'],
             variables={
@@ -176,7 +175,7 @@ def product_delete(obj):
     success, config = error_parser(sync_setup(), sync_setup.__name__, obj)
     if not success: return False, config
 
-    with shopify.Session.temp(shop_url, api_version, config['token']):
+    with shopify.Session.temp(SHOP_URL, API_VERSION, config['token']):
         response = shopify.GraphQL().execute(
             query=config['document'],
             variables={
@@ -206,7 +205,7 @@ def create_media(obj, resource_url):
     success, config = error_parser(sync_setup(), sync_setup.__name__, obj)
     if not success: return False, config
 
-    with shopify.Session.temp(shop_url, api_version, config['token']):
+    with shopify.Session.temp(SHOP_URL, API_VERSION, config['token']):
         response = shopify.GraphQL().execute(
             query=config['document'],
             variables={
@@ -239,7 +238,7 @@ def staged_uploads_create(obj):
     http_method = 'PUT'
     ext = get_ext(obj.image.url)
 
-    with shopify.Session.temp(shop_url, api_version, config['token']):
+    with shopify.Session.temp(SHOP_URL, API_VERSION, config['token']):
         response = shopify.GraphQL().execute(
             query=config['document'],
             variables={
@@ -305,7 +304,7 @@ def get_file_status(obj):
     success, config = error_parser(sync_setup(), sync_setup.__name__, obj)
     if not success: return False, config
 
-    with shopify.Session.temp(shop_url, api_version, config['token']):
+    with shopify.Session.temp(SHOP_URL, API_VERSION, config['token']):
         response = shopify.GraphQL().execute(
             query=config['document'],
             variables={
