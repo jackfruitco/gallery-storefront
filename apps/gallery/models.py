@@ -2,7 +2,6 @@ import logging
 
 import boto3
 from autoslug import AutoSlugField
-from django.apps import apps
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
@@ -53,17 +52,11 @@ class Product(models.Model):
         always_update=True
     )
 
-    choices = {
-        "DRAFT": "Draft",
-        "ACTIVE": "Active",
-        "ARCHIVED": "Archived"
-    }
-
     # Site Options
     status = models.CharField(
         max_length=10,
         verbose_name="Enable Site Gallery",
-        choices=Status.choices,
+        choices=Status,
         default=Status.ACTIVE,
         help_text="Enable to display this product in Site Gallery"
     )
@@ -97,7 +90,7 @@ class Product(models.Model):
     )
     shopify_status = models.CharField(
         max_length=10,
-        choices=Status.choices,
+        choices=Status,
         default=Status.DRAFT,
     )
     base_price = models.FloatField(
@@ -127,16 +120,16 @@ class Product(models.Model):
         KILOGRAMS = "KG", _("Kilograms")
 
     length_unit = models.CharField(max_length=10, null=True, blank=True,
-                                   choices=MeasurementUnits.choices,
+                                   choices=MeasurementUnits,
                                    default=MeasurementUnits.INCHES)
     width_unit = models.CharField(max_length=10, null=True, blank=True,
-                                  choices=MeasurementUnits.choices,
+                                  choices=MeasurementUnits,
                                   default=MeasurementUnits.INCHES)
     height_unit = models.CharField(max_length=10, null=True, blank=True,
-                                   choices=MeasurementUnits.choices,
+                                   choices=MeasurementUnits,
                                    default=MeasurementUnits.INCHES)
     weight_unit = models.CharField(max_length=10, null=True, blank=True,
-                                   choices=WeightUnits.choices,
+                                   choices=WeightUnits,
                                    default=WeightUnits.OUNCES)
 
     def get_feature_image(self):
@@ -309,7 +302,7 @@ class Product(models.Model):
             kwargs["update_fields"] = {"shopify_global_id"}.union(update_fields)
         super().save(**kwargs)
         if self.shopify_sync and self.shopify_global_id:
-            for publication in apps.get_app_config('shopify_app').SHOPIFY_PUBLICATIONS:
+            for publication in ShopifyAppConfig.SHOPIFY_PUBLICATIONS:
                 shopify_bridge.publish(self, publication)
 
     def delete(self, **kwargs):
@@ -374,7 +367,7 @@ class ProductImage(models.Model):
         )
 
         # Retrieve S3 Object Key from image url
-        # Strips endpoint url, then strips qeurystring
+        # Strips endpoint url, then strips querystring
         base_url = '%s/%s/' % (conf['endpoint_url'], conf['bucket_name'])
         key = self.image.url[len(base_url):].split('?')[0]
 
@@ -436,7 +429,7 @@ class ProductOption(models.Model):
         "ProductOptionValue", blank=True, verbose_name="Option Values",
         help_text='Values for this Option (e.g. "Red", "Blue", etc.')
 
-    def get_values(self) -> list:
+    def get_values(self):
         """Return QuerySet with values associated with this Option."""
         return ProductOptionValue.objects.filter(option=self)
 
