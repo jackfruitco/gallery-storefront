@@ -10,7 +10,7 @@ from django.utils.translation import gettext_lazy as _
 
 from GalleryStorefront.config import configure_s3
 from apps.shopify_app import shopify_bridge
-from apps.shopify_app.models import ShopifyAccessToken
+from apps.shopify_app.apps import ShopifyAppConfig
 from apps.shopify_app.models import ShopifyAccessToken
 
 logger = logging.getLogger(__name__)
@@ -245,7 +245,7 @@ class Product(models.Model):
             })
         return list_
 
-    def get_options(self) -> list:
+    def get_options(self):
         """
         Return QuerySet of options for a product.
 
@@ -278,7 +278,7 @@ class Product(models.Model):
     def get_shop_url(self, admin=False) -> str:
         """Return Shopify Product Page URL."""
         if not admin:
-            url = STOREFRONT_URL
+            url = ShopifyAppConfig.SHOP_DOMAIN
 
             # Strips trailing / if found, then adds slug
             if url.endswith("/"): url = url[:-1]
@@ -286,10 +286,10 @@ class Product(models.Model):
         else:
             # Split ID number off GID string, then add to admin url
             gid = self.shopify_global_id.split('/')[-1]
-            url = '%s/products/%s' % (SHOPIFY_ADMIN_URL, gid)
+            url = '%s/products/%s' % (ShopifyAppConfig.ADMIN_URL, gid)
         return url
 
-    def get_absolute_url(self) -> bytes:
+    def get_absolute_url(self) -> str:
         """Return URL to product."""
         return reverse(
             viewname='gallery:product-detail',
