@@ -21,14 +21,17 @@ def get_current_api_version() -> str:
     :return: A string representing the API version in the format `<year>-<month>`.
     :rtype: str
     """
-    _today = datetime.today()
-    match _today.month:
+    _year = datetime.today().year
+    match datetime.today().month:
         case 2 | 3 | 4: _month = '01'
         case 5 | 6 | 7: _month = '04'
         case 8 | 9 | 10: _month = '07'
-        case 11 | 12 | 1: _month = '10'
+        case 11 | 12: _month = '10'
+        case 1:
+            _month = '10'
+            _year = _year - 1
         case _: raise ValueError('Invalid month')
-    return '%s-%s' % (_today.year, _month)
+    return '%s-%s' % (_year, _month)
 
 class ShopifyAppConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
