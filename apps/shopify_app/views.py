@@ -1,41 +1,42 @@
-import binascii
 import logging
 import os
+
+import binascii
 import shopify
-from django.apps import apps
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from six.moves import urllib
 
+from .apps import ShopifyAppConfig
 from .models import ShopifyAccessToken
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-shop_url = apps.get_app_config('shopify_app').SHOPIFY_URL
-api_version = apps.get_app_config('shopify_app').SHOPIFY_API_VERSION
+SHOP_URL = ShopifyAppConfig.SHOPIFY_URL
+API_VERSION = ShopifyAppConfig.SHOPIFY_API_VERSION
 
 def _new_session():
-    return shopify.Session(shop_url, api_version)
+    return shopify.Session(SHOP_URL, API_VERSION)
 
 
 @staff_member_required
 def login(request):
     # If the ${shop}.myshopify.com address is already provided in the URL,
     # just skip to authenticate
-    if shop_url:
-        logger.info('shop_url already exists: %s' % shop_url)
+    if SHOP_URL:
+        logger.info('shop_url already exists: %s' % SHOP_URL)
         return authenticate(request)
     return render(request, 'shopify_app/login.html', {})
 
 
 def authenticate(request):
-    if not shop_url:
+    if not SHOP_URL:
         messages.error(request, "A shop param is required")
         return redirect(reverse(login))
-    # scope = apps.get_app_config('shopify_app').SHOPIFY_API_SCOPES
+
     redirect_uri = request.build_absolute_uri(reverse('shopify:finalize'))
     state = binascii.b2a_hex(os.urandom(15)).decode("utf-8")
 
@@ -51,8 +52,7 @@ def authenticate(request):
 
 
 def finalize(request):
-    shop_url = apps.get_app_config('shopify_app').SHOPIFY_URL
-    session = shopify.Session(shop_url, api_version)
+    session = shopify.Session(SHOP_URL, API_VERSION)
     params = request.GET.dict()
     logger.debug("Shopify Auth Response Params: %s" % params)
 
@@ -63,13 +63,13 @@ def finalize(request):
         user=request.user,
         defaults={"user": request.user,
                   "access_token": access_token,
-                  "shop": shop_url},
+                  "shop": SHOP_URL},
     )
 
-    logger.info("ShopifyAccessToken saved (store: %s; user: %s)" % (shop_url, request.user) )
+    logger.info("ShopifyAccessToken saved (store: %s; user: %s)" % (SHOP_URL, request.user) )
     messages.success(request, "ShopifyAccessToken saved! You can now sync items with the Shopify storefront.")
 
-    session = shopify.Session(shop_url, api_version, access_token)
+    session = shopify.Session(SHOP_URL, API_VERSION, access_token)
     shopify.ShopifyResource.activate_session(session)
 
     return redirect(request.session.get('return_to', reverse('admin:index')))
