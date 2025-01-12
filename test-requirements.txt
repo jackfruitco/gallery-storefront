@@ -1,0 +1,3 @@
+-i https://test.pypi.org/simple/
+
+ShopifyAPI==12.7.0

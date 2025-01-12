@@ -38,6 +38,8 @@ RUN --mount=type=cache,target=/root/.cache/pip \
    --mount=type=bind,source=requirements.txt,target=requirements.txt \
     python -m pip install -r requirements.txt
 
+RUN python -m pip install -i https://test.pypi.org/simple/ ShopifyAPI==12.7.0
+
 # Create Static/Media Files Directory
 RUN mkdir -p /app/static && \
     mkdir -p /app/media && \

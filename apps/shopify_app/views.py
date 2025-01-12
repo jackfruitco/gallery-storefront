@@ -7,7 +7,6 @@ from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from six.moves import urllib
 
 from .apps import ShopifyAppConfig
 from .models import ShopifyAccessToken
@@ -40,12 +39,7 @@ def authenticate(request):
     redirect_uri = request.build_absolute_uri(reverse('shopify:finalize'))
     state = binascii.b2a_hex(os.urandom(15)).decode("utf-8")
 
-    # auth_url = _new_session().create_permission_url(scope, redirect_uri, state)
-    session = _new_session()
-    query_params = dict(client_id=session.api_key, redirect_uri=redirect_uri)
-    if state:
-        query_params["state"] = state
-    auth_url = "https://%s/admin/oauth/authorize?%s" % (session.url, urllib.parse.urlencode(query_params))
+    auth_url = _new_session().create_permission_url(redirect_uri, state)
 
     logger.debug('auth_url finished: %s' % auth_url)
     return redirect(auth_url)
