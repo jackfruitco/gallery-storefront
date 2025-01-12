@@ -1,16 +1,17 @@
-from django.apps import AppConfig
 import os
+
+from django.apps import AppConfig
+
 
 class ShopifyAppConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'apps.shopify_app'
 
-    SHOPIFY_API_KEY = os.environ.get('SHOPIFY_API_KEY')
-    SHOPIFY_API_SECRET = os.environ.get('SHOPIFY_API_SECRET')
-    SHOPIFY_URL = os.environ.get('SHOPIFY_URL')
-    SHOPIFY_API_VERSION = os.environ.get('SHOPIFY_API_VERSION', '2024-07')
+    API_KEY = os.environ.get('API_KEY')
+    API_SECRET = os.environ.get('API_SECRET')
+    SHOP_URL = os.environ.get('SHOP_URL')
+    API_VERSION = os.environ.get('API_VERSION', '2024-07')
     MAIN_LOCATION = os.environ.get('SHOPIFY_MAIN_LOCATION')
-    SHOPIFY_ACCESS_TOKEN = None
 
     SHOPIFY_PUBLICATIONS = [
         {
