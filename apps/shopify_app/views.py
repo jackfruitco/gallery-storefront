@@ -15,8 +15,8 @@ from .models import ShopifyAccessToken
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-SHOP_URL = ShopifyAppConfig.SHOPIFY_URL
-API_VERSION = ShopifyAppConfig.SHOPIFY_API_VERSION
+SHOP_URL = ShopifyAppConfig.SHOP_DOMAIN
+API_VERSION = ShopifyAppConfig.API_VERSION
 
 def _new_session():
     return shopify.Session(SHOP_URL, API_VERSION)

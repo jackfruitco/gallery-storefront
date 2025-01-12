@@ -3,16 +3,14 @@ import logging
 import boto3
 from autoslug import AutoSlugField
 from django.apps import apps
+from django.conf import settings
 from django.db import models
 from django.urls import reverse
-from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
-from GalleryStorefront.config import STOREFRONT_URL, SHOPIFY_ADMIN_URL,configure_s3
-
-from apps.shopify_app.models import ShopifyAccessToken
-
+from GalleryStorefront.config import configure_s3
 from apps.shopify_app import shopify_bridge
+from apps.shopify_app.models import ShopifyAccessToken
 from apps.shopify_app.models import ShopifyAccessToken
 
 logger = logging.getLogger(__name__)
