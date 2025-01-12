@@ -14,8 +14,8 @@ from .signals import sync_message
 
 logger = logging.getLogger(__name__)
 
-SHOP_URL = ShopifyAppConfig.SHOPIFY_URL
-API_VERSION = ShopifyAppConfig.SHOPIFY_API_VERSION
+SHOP_URL = ShopifyAppConfig.SHOP_URL
+API_VERSION = ShopifyAppConfig.API_VERSION
 
 def get_ext(url, leading_period=True):
     """
