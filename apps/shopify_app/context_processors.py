@@ -1,13 +1,15 @@
 import shopify
-import os
 
-def shopify_context(request):
+from apps.shopify_app.apps import ShopifyAppConfig
+
+
+def shopify_custom(request):
     _context = {}
 
     if not shopify.ShopifyResource.site:
         _context['current_shop'] =  None
     else: _context['current_shop'] = shopify.ShopifyResource.site.url
 
-    _context['storefront_url'] = os.getenv('STOREFRONT_URL')
+    _context['shopify_app_url'] = ShopifyAppConfig.APP_URL
 
     return _context

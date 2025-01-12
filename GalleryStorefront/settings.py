@@ -1,9 +1,9 @@
 import os
 from pathlib import Path
 
-from GalleryStorefront.config import configure_s3
 from gunicorn import app
 
+from GalleryStorefront.config import configure_s3
 from apps import shopify_app
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -65,7 +65,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'apps.shopify_app.context_processors.shopify_context',
+                'apps.shopify_app.context_processors.shopify_custom',
                 'apps.store.context_processors.store',
                 'apps.main.context_processors.main'
             ],
