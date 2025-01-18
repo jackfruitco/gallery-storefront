@@ -37,8 +37,26 @@ INSTALLED_APPS = [
     'apps.store.apps.StoreConfig',
     'apps.shopify_app.apps.ShopifyAppConfig',
     # 'django_htmx',
-    'nested_admin'
+    'nested_admin',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.shopify',
+    # 'allauth.socialaccount.providers.apple',
 ]
+
+SOCIALACCOUNT_PROVIDERS = {
+    'shopify': {
+        'APP': {
+            'client_id': os.getenv('SHOPIFY_API_KEY'),
+            'secret': os.getenv('SHOPIFY_API_SECRET'),
+        },
+        'AUTH_PARAMS': {'grant_options[]': 'per-user'},
+        'EMAIL_AUTHENTICATION': True
+    }
+}
+
+LOGIN_REDIRECT_URL = '/admin'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -50,6 +68,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'apps.shopify_app.middleware.LoginProtection',
     # 'django_htmx.middleware.HtmxMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'GalleryStorefront.urls'
@@ -67,7 +86,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'apps.shopify_app.context_processors.shopify_custom',
                 'apps.store.context_processors.store',
-                'apps.main.context_processors.main'
+                'apps.main.context_processors.main',
             ],
         },
     },
@@ -113,6 +132,11 @@ LOGGING = {
         },
     },
 }
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
