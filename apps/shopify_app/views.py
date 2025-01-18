@@ -35,7 +35,7 @@ def login(request):
 def authenticate(request):
     if not SHOP_URL:
         messages.error(request, "A shop param is required")
-        return redirect(reverse(login))
+        return redirect(reverse('shopify:login'))
 
     redirect_uri = request.build_absolute_uri(reverse('shopify:finalize'))
     state = binascii.b2a_hex(os.urandom(15)).decode("utf-8")
