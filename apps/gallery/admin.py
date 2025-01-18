@@ -9,6 +9,7 @@ from .models import Product, ProductImage, Color, ProductCategory, ProductVarian
 
 logger = logging.getLogger(__name__)
 
+
 class MediaUploadInline(admin.StackedInline):
     model = ProductImage
     extra = 1
@@ -17,6 +18,7 @@ class MediaUploadInline(admin.StackedInline):
     readonly_fields = [
         'resource_url',
     ]
+
 
 class CreateVariantInLine(admin.StackedInline):
     model = ProductVariant
@@ -33,6 +35,7 @@ class CreateVariantInLine(admin.StackedInline):
         ]}),
     ]
 
+
 @admin.register(ProductOptionValue)
 class ProductOptionValueAdmin(admin.ModelAdmin):
     fieldsets = [
@@ -41,6 +44,7 @@ class ProductOptionValueAdmin(admin.ModelAdmin):
             'value',
         ]}),
     ]
+
 
 @admin.register(ProductOption)
 class ProductOptionAdmin(admin.ModelAdmin):
@@ -52,6 +56,7 @@ class ProductOptionAdmin(admin.ModelAdmin):
         ]}),
     ]
 
+
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     readonly_fields = (
@@ -61,44 +66,50 @@ class ProductAdmin(admin.ModelAdmin):
 
     def get_fieldsets(self, request, obj=None) -> tuple:
         default_fieldsets = [
-                (None, {
-                    'fields': (
-                        'name',
-                        'description',
-                        'category',
-                    )
-                }),
-                ('Website Options', {
-                    'fields': (
-                        'status',
-                        'feature'
-                    )
-                }),
+            (None, {
+                'fields': (
+                    'name',
+                    ('description', 'category'),
+                )
+            }),
+            (None, {
+                'classes': ('collapse',),
+                'fields': (
+                    'status',
+                    'feature',
+                )
+            }),
+            ('Product Data', {
+                'classes': ('collapse',),
+                'fields': (
+                    ('length', 'length_unit'),
+                    ('width', 'width_unit'),
+                    ('height', 'height_unit'),
+                    ('weight', 'weight_unit'),
+                )
+            })
             ]
 
         advanced_fieldsets = [
-            ('Technical Data', {
-                'classes': ('collapse',),
-                'description': 'Expand to view technical data',
-                'fields': (
-                    'created_at',
-                    'modified_at',
-                )
-            }),
             ('Shopify Storefront', {
                 'classes': ('collapse',),
-                'description': 'Expand to sync product with Shopify Admin',
+                'description': 'Advanced Options to Sync with Shopify',
                 'fields': (
-                    'shopify_sync',
-                    'shopify_global_id',
+                    ('shopify_sync', 'shopify_global_id'),
                     'shopify_status',
                     'base_price',
+                )
+            }),
+            (None, {
+                'classes': ('collapse',),
+                'fields': (
+                    ('created_at', 'modified_at'),
                 )
             }),
         ]
 
         # If object doesn't yet exist, only display default fieldsets
-        # Otherwise, display advanced fieldsets
+        # Otherwise, display all fieldsets
         if obj is None:
             return tuple(default_fieldsets)
         else:
