@@ -4,7 +4,8 @@
 {% block title %}{{ product.name }} | {{ SITE_NAME }}{% endblock %}
 {% block meta_description %}}{{ product.description }}{% endblock %}
 
-{% block extra_style %}
+{% block style %}
+    {{ block.super }}
     <link rel="stylesheet" href={% static "gallery/style.css" %}>
     <style>
     .background {
@@ -18,7 +19,7 @@
     }
     .bar:hover { opacity: 1 !important; }
     </style>
-{% endblock extra_style %}
+{% endblock style %}
 
 {% block content %}
     <div class="flex flex-left no-wrap" style="padding: 56px">

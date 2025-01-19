@@ -2,6 +2,6 @@
 {% load static %}
 
 {% block style %}
+    {{ block.super }} %}
     <link rel="stylesheet" href={% static "gallery/style.css" %}>
-    {% block extra_style %}{% endblock %}
 {% endblock style %}
