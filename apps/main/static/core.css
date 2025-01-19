@@ -1,70 +1,68 @@
-h1, h2, h3, h4, h5, h6, body, p, main {
-    font-family: "Segoe UI", system-ui, sans-serif;
-}
+html, body { height: 100%; margin: auto; }
 
-body, html {
-    height: 100%;
-    margin: auto;
-}
+h1, h2, h3, h4, h5, h6, body, p, main { font-family: "Segoe UI", system-ui, sans-serif; }
+h1, h2, h3 { font-size: 10vw; }
+h4, h5 { font-size: 8vw; }
+h6 { font-size: 6vw; }
+p { font-size: 5vw; }
 
+
+#Navbar { background-color: rgba(255, 255, 255, 0.3) }
 .bgimg-1, .bgimg-2, .bgimg-3 {
     background-attachment: scroll;
-    max-height: 400px;
+    height: 100vh;
+    background-size: cover;
 }
 
-h1 { font-size: 3.0vw; }
-h2 { font-size: 2.5vw; }
-h3 { font-size: 2.0vw; }
-h4 { font-size: 1.5vw; }
-h5 { font-size: 1.25vw;}
-h6 { font-size: 1.0vw; }
-
-.flex {
-    width: 100%;
-}
-
-.flex.no-wrap {
-    flex-wrap: wrap;
-}
-
-
-img.carousel {
-    max-width: 22vw;
-    padding: 0.3vw;
-}
+.flex { width: 100%; }
+.flex.no-wrap { flex-wrap: wrap; }
 
 .carousel-container {
     display: flex;
     flex-flow: row wrap;
     position: relative;
-    margin: 0 5%;
+    margin: 0 1vw;
     padding-bottom: 10vh;
-}
 
-.flex {
-    display: flex;
-    flex-flow: row wrap;
+    img { max-width: 40vw; padding: 2vw; }
 }
+/*
+img.carousel { max-width: 40vw; padding: 2vw; }
+*/
 
-.flex.item {
-    width: inherit;
-}
-
-.center { justify-content: center; }
+.flex { display: flex; flex-flow: row wrap; }
+.flex.item { width: inherit; }
 .flex-left { justify-content: flex-start; }
 .flex-right { justify-content: flex-end; }
+.center { justify-content: center; }
 
+/* START large screen media query */
 @media only screen and (min-device-width: 768px) {
     /* Parallax */
     .bgimg-1, .bgimg-2, .bgimg-3 {
-        height: 100vh;
+        min-height: 100vh;
         background-attachment: fixed;
         background-position: center;
         background-repeat: no-repeat;
         background-size: cover;
     }
-    .flex.no-wrap {
-        flex-wrap: nowrap;
+
+    .flex.no-wrap { flex-wrap: nowrap; }
+
+    h1.letter-wide, h2.letter-wide, h3.letter-wide, h4.letter-wide, h5.letter-wide, h6.letter-wide {
+        letter-spacing: 0.2vw;
     }
+
+    h1 { font-size: 3.0vw; }
+    h2 { font-size: 2.5vw; }
+    h3 { font-size: 2.0vw; }
+    h4 { font-size: 1.5vw; }
+    h5 { font-size: 1.25vw;}
+    h6 { font-size: 1.0vw; }
+    p { font-size: 1.0vw; }
+
+    .carousel-container { margin: 0 5vw; }
+    img.carousel { max-width: 22vw; }
 }
+/* END media query */
 

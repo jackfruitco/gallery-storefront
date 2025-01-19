@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-    Gallery
+    Marnie's Gallery
 {% endblock title %}
 
 {% block meta_description %}
@@ -11,16 +11,15 @@
 
 {% block parallax %}
     <div id="parallax" class="bgimg-2 display-container opacity-min">
-        <div class="display-topthirdmiddle">
+        <div class="center" style="transform: translate(0vw, 20vh);">
             <span class="center padding-large black xxlarge letter-wide animate-opacity">GALLERY</span>
+            <p class="center"><em>Here is some of my latest work.<br> Click a project to view in more detail.</em></p><br>
         </div>
     </div>
 {% endblock parallax %}
 
 {% block content %}
     <div id="portfolio" class="content container padding-64">
-      <h3 class="center">MY WORK</h3>
-      <p class="center"><em>Here is some of my latest work.<br> Click a project to view in more detail.</em></p><br>
         {% include 'gallery/product-carousel.html' %}
     </div>
 {% endblock content %}

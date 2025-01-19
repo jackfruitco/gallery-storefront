@@ -1,5 +1,12 @@
 .bgimg-2 {
-    background-image: url("https://public.potterybymarnie.com/gallery/images/multiple-items.png");
+    background-image: url("https://public.potterybymarnie.com/gallery/images/bg-brick-wall.png");
+    height: 40vh;
+}
+
+@media only screen and (min-device-width: 768px) {
+    .bgimg-2 {
+        background-image: url("https://public.potterybymarnie.com/gallery/images/multiple-items.png");
+    }
 }
 
 img.featured {
