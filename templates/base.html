@@ -3,6 +3,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
+    <link rel="icon" type="image/x-icon" href="{% block favicon %}{% static "main/images/favicon.ico" %}{% endblock %}">
     {% block style %}
         <link rel="stylesheet" href={% static "w3.css" %}>
         <link rel="stylesheet" href={% static "core.css" %}>
@@ -11,7 +13,6 @@
     <!--<script src="{% static 'htmx.min.js' %}" defer></script>-->
     <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
-    <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
     <meta name="description" property="og:description" content="{% block meta_description %}{{ SITE_DESCRIPTION }}{% endblock %}">
     <meta name="keywords" content="seo, pottery, marnie, potterybymarnie, ceramics, clay, handmade, glaze, syracuse, cny">
 </head>

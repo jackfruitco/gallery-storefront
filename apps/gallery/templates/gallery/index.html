@@ -10,16 +10,16 @@
 {% endblock meta_description %}
 
 {% block parallax %}
-    <div id="parallax" class="bgimg-2 display-container opacity-min">
+    <section id="parallax" class="bgimg-2 display-container opacity-min">
         <div class="center" style="transform: translate(0vw, 20vh);">
             <span class="center padding-large black xxlarge letter-wide animate-opacity">GALLERY</span>
             <p class="center"><em>Here is some of my latest work.<br> Click a project to view in more detail.</em></p><br>
         </div>
-    </div>
+    </section>
 {% endblock parallax %}
 
 {% block content %}
-    <div id="portfolio" class="content container padding-64">
+    <section id="Gallery">
         {% include 'gallery/product-carousel.html' %}
-    </div>
+    </section>
 {% endblock content %}

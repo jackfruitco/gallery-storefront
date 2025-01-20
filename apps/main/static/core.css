@@ -1,5 +1,14 @@
-html, body { height: 100%; margin: auto; }
+:root {
+    --primary-color-light: 242, 231, 213;
+    --secondary-color: 217, 136, 83;
+    --tertiary-color: 120, 134, 107;
+    --primary-color-dark: 61, 61, 61;
+    --white: 255, 255, 255;
+}
 
+
+html, body { height: 100%; margin: auto; }
+body { background-color: rgb(var(--primary-color-light)); }
 h1, h2, h3, h4, h5, h6, body, p, main { font-family: "Segoe UI", system-ui, sans-serif; }
 h1, h2, h3 { font-size: 10vw; }
 h4, h5 { font-size: 8vw; }
@@ -7,28 +16,50 @@ h6 { font-size: 6vw; }
 p { font-size: 5vw; }
 
 
-#Navbar { background-color: rgba(255, 255, 255, 0.3) }
+#Navbar { background-color: rgba(var(--white), 0.3) }
 .bgimg-1, .bgimg-2, .bgimg-3 {
     background-attachment: scroll;
-    height: 100vh;
+    min-height: 100vh;
     background-size: cover;
 }
+
+#Gallery { padding-top: 2vh; }
 
 .flex { width: 100%; }
 .flex.no-wrap { flex-wrap: wrap; }
 
-.carousel-container {
+.carousel {
     display: flex;
     flex-flow: row wrap;
     position: relative;
     margin: 0 1vw;
     padding-bottom: 10vh;
 
-    img { max-width: 40vw; padding: 2vw; }
+    .carousel-item {
+        background-color: rgba(var(--secondary-color), 0.2);
+        height: 90vw;
+        width: 90vw;
+        align-content: flex-end;
+        margin: 0.5vw 0.5vw 35vw 0.5vw;
+        border-radius: 2vw;
+    }
+    img {
+        max-width: 100%;
+        max-height: 100%;
+        padding: 1vw;
+        border-radius: 5vw;
+    }
+    .product-caption {
+        text-align: start;
+        margin: auto;
+        padding-left: 5%;
+        h4 { font-style: italic;, font-weight: bold; }
+        p { font-weight: lighter; }
+        border-bottom-style: ridge;
+        border-width: 1vh;
+        border-color: rgb(var(--tertiary-color));
+    }
 }
-/*
-img.carousel { max-width: 40vw; padding: 2vw; }
-*/
 
 .flex { display: flex; flex-flow: row wrap; }
 .flex.item { width: inherit; }
@@ -38,6 +69,7 @@ img.carousel { max-width: 40vw; padding: 2vw; }
 
 /* START large screen media query */
 @media only screen and (min-device-width: 768px) {
+    .content { max-width: 95vw; }
     /* Parallax */
     .bgimg-1, .bgimg-2, .bgimg-3 {
         min-height: 100vh;
@@ -61,8 +93,29 @@ img.carousel { max-width: 40vw; padding: 2vw; }
     h6 { font-size: 1.0vw; }
     p { font-size: 1.0vw; }
 
-    .carousel-container { margin: 0 5vw; }
-    img.carousel { max-width: 22vw; }
+    .carousel {
+        margin: auto;
+        .carousel-item {
+            height: 22vw;
+            width: 22vw;
+            img {}
+            .product-caption {
+                border-bottom-style: none;
+            }
+        }
+    }
 }
 /* END media query */
 
+.primary-color-light-bg { background-color: rgb(var(--primary-color-light)); }
+.primary-color-light-text { color: rgb(var(--primary-color-light)); }
+.primary-color-dark-bg { background-color: rgb(var(--primary-color-dark)); }
+.primary-color-dark-text { color: rgb(var(--primary-color-dark)); }
+.secondary-color-bg { background-color: rgb(var(--secondary-color)); }
+.secondary-color-text { color: rgb(var(--secondary-color)); }
+.tertiary-color-bg { background-color: rgb(var(--tertiary-color)); }
+.tertiary-color-text { color: rgb(var(--tertiary-color)); }
+
+
+.white-bg { background-color: rgb(var(--white)); }
+.white-text { color: rgb(var(--white)); }
