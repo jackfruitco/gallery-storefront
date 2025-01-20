@@ -4,7 +4,7 @@
 # from django.urls import reverse
 from django.views import generic
 
-from .models import Product, ProductImage
+from .models import Product
 
 
 # Create your views here.
@@ -14,7 +14,8 @@ class IndexView(generic.ListView):
 
     def get_queryset(self):
         """Return the last 16 published products."""
-        return Product.objects.filter(status='ACTIVE').order_by("-created_at")[:16]
+        return Product.objects.filter(status="ACTIVE").order_by("-created_at")[:16]
+
 
 class DetailView(generic.DetailView):
     template_name = "gallery/detail.html"
