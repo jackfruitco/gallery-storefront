@@ -1,70 +1,146 @@
-h1, h2, h3, h4, h5, h6, body, p, main {
-    font-family: "Segoe UI", system-ui, sans-serif;
+:root {
+    --primary-color-light: 242, 231, 213;
+    --secondary-color: 217, 136, 83;
+    --tertiary-color: 120, 134, 107;
+    --primary-color-dark: 61, 61, 61;
+    --white: 255, 255, 255;
 }
 
-body, html {
-    height: 100%;
-    margin: auto;
-}
 
+html, body { height: 100%; margin: auto; }
+body { background-color: rgba(var(--secondary-color), 0.6); }
+h1, h2, h3, h4, h5, h6, body, p, main { font-family: "Segoe UI", system-ui, sans-serif; }
+h1, h2, h3 { font-size: 10vw; }
+h4, h5 { font-size: 8vw; }
+h6, p { font-size: 6vw; }
+
+
+#Navbar { background-color: rgba(var(--white), 0.3) }
 .bgimg-1, .bgimg-2, .bgimg-3 {
     background-attachment: scroll;
-    max-height: 400px;
+    min-height: 100vh;
+    background-size: cover;
 }
 
-h1 { font-size: 3.0vw; }
-h2 { font-size: 2.5vw; }
-h3 { font-size: 2.0vw; }
-h4 { font-size: 1.5vw; }
-h5 { font-size: 1.25vw;}
-h6 { font-size: 1.0vw; }
+#Gallery { padding-top: 2vh; }
 
-.flex {
-    width: 100%;
-}
+.flex { width: 100%; }
+.flex.no-wrap { flex-wrap: wrap; }
 
-.flex.no-wrap {
-    flex-wrap: wrap;
-}
-
-
-img.carousel {
-    max-width: 22vw;
-    padding: 0.3vw;
-}
-
-.carousel-container {
+.carousel {
     display: flex;
     flex-flow: row wrap;
+    justify-content: space-around;
     position: relative;
-    margin: 0 5%;
+    margin: 0 1vw;
     padding-bottom: 10vh;
+
+    .item-container {
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: space-between;
+        height: 90vw;
+        width: 90vw;
+        margin: auto auto 5vw auto;
+        border-bottom-style: ridge;
+        border-width: 1vh;
+        border-color: rgb(var(--tertiary-color));
+
+        .item-img {
+            background-color: rgba(var(--primary-color-light), 0.7);
+            height: 70%;
+            border-radius: 2vw;
+            align-content: center;
+            img {
+                max-width: 100%;
+                max-height: 100%;
+                align-self: center;
+                padding: 1vw;
+                border-radius: 5vw;
+            }
+        }
+
+        .item-cap {
+            text-align: start;
+            padding-left: 5%;
+            h4 { font-style: italic; font-weight: bold; }
+            p { font-weight: lighter; }
+        }
+    }
 }
 
-.flex {
-    display: flex;
-    flex-flow: row wrap;
-}
-
-.flex.item {
-    width: inherit;
-}
-
-.center { justify-content: center; }
+.no-marg { margin: 0!important;}
+.flex { display: flex; flex-flow: row wrap; }
+.flex.item { width: inherit; }
 .flex-left { justify-content: flex-start; }
 .flex-right { justify-content: flex-end; }
+.center { justify-content: center; }
 
+/* START medium screen media query */
+@media only screen and (min-device-width: 400px) {
+    h1 { font-size: 5.5vw; }
+    h2 { font-size: 5.0vw; }
+    h3 { font-size: 4.5vw; }
+    h4 { font-size: 4.0vw; }
+    h5 { font-size: 3.5vw; }
+    h6 { font-size: 3.0vw; }
+    p  { font-size: 2.0vw; }
+    .carousel {
+        .item-container {
+            width: 45vw;
+            height: 60vw;
+            margin: auto auto 2vw auto;
+            border-style: none;
+            .item-img {
+                height: 85%;
+            }
+        }
+    }
+}
+/* END medium screen media query */
+
+/* START large screen media query */
 @media only screen and (min-device-width: 768px) {
+    h1 { font-size: 3.0vw;  }
+    h2 { font-size: 2.5vw;  }
+    h3 { font-size: 2.0vw;  }
+    h4 { font-size: 1.5vw;  }
+    h5 { font-size: 1.25vw; }
+    h6 { font-size: 1.0vw;  }
+    p  { font-size: 1.0vw;  }
+    .letter-wide { letter-spacing: 0.2vw; }
+    .content { max-width: 95vw; }
+
     /* Parallax */
     .bgimg-1, .bgimg-2, .bgimg-3 {
-        height: 100vh;
+        min-height: 100vh;
         background-attachment: fixed;
         background-position: center;
         background-repeat: no-repeat;
         background-size: cover;
     }
-    .flex.no-wrap {
-        flex-wrap: nowrap;
+
+    .flex.no-wrap { flex-wrap: nowrap; }
+
+    .carousel {
+        .item-container {
+            height: 30vw;
+            width: 18vw;
+            border-style: none;
+        }
     }
 }
+/* END media query */
 
+.primary-color-light-bg { background-color: rgb(var(--primary-color-light)); }
+.primary-color-light-text { color: rgb(var(--primary-color-light)); }
+.primary-color-dark-bg { background-color: rgb(var(--primary-color-dark)); }
+.primary-color-dark-text { color: rgb(var(--primary-color-dark)); }
+.secondary-color-bg { background-color: rgb(var(--secondary-color)); }
+.secondary-color-text { color: rgb(var(--secondary-color)); }
+.tertiary-color-bg { background-color: rgb(var(--tertiary-color)); }
+.tertiary-color-text { color: rgb(var(--tertiary-color)); }
+
+
+.white-bg { background-color: rgb(var(--white)); }
+.white-text { color: rgb(var(--white)); }

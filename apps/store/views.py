@@ -1,7 +1,9 @@
 from django.shortcuts import render
 from django.views import generic
-from apps.gallery.models import Product
 from django.views.decorators.http import require_http_methods
+
+from apps.gallery.models import Product
+
 
 class StoreListView(generic.ListView):
     template_name = "store/index.html"
@@ -9,13 +11,11 @@ class StoreListView(generic.ListView):
 
     def get_queryset(self):
         """Return the last 16 published products."""
-        return Product.objects.filter(status='ACTIVE').order_by("-created_at")
+        return Product.objects.filter(status="ACTIVE").order_by("-created_at")
+
 
 @require_http_methods(["DELETE"])
 def store_delete(request, id):
     Product.objects.get(id=id).delete()
     products = Product.objects.all()
-    return render(request, 'store/display_products.html', {'products': products})
-
-
-
+    return render(request, "store/display_products.html", {"products": products})

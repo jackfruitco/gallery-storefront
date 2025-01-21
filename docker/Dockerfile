@@ -51,11 +51,9 @@ USER appuser
 # Copy the source code into the container.
 COPY .. .
 
-# Collect static files
-RUN python manage.py collectstatic --no-input
-
 # Expose the port that the application listens on.
 EXPOSE 8000
 
 # Run the application
-CMD gunicorn GalleryStorefront.wsgi:application --bind=0.0.0.0:8000
+RUN ["chmod", "+x", "docker/docker-entrypoint.sh"]
+ENTRYPOINT ["docker/docker-entrypoint.sh"]

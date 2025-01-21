@@ -3,7 +3,7 @@
 <header id="header">
     <!-- Navbar (sit on top) -->
     <div class="top">
-        <div class="bar" id="myNavbar">
+        <div class="bar" id="Navbar">
           <a class="bar-item button hover-black hide-medium hide-large right" href="javascript:void(0);" onclick="toggleFunction()" title="Toggle Navigation Menu">
             <i class="fa fa-bars"></i>
           </a>
@@ -14,9 +14,9 @@
           <!--<a href="#" class="bar-item button hide-small right hover-red"><i class="fa fa-search"></i></a>-->
         </div>
     
-      <!-- Navbar on small screen   s -->
+      <!-- Navbar on small screens -->
         <div id="navDemo" class="bar-block white hide hide-large hide-medium">
-            <a href="{% url 'gallery:index' %}" class="bar-item button" onclick="toggleFunction()">GALLERY</a>
+            <a href="{% url 'gallery:index' %}" class="bar-item button" onclick="toggleFunction()"><i class="fa fa-th"></i> GALLERY</a>
             <a href="{{ shopify_app_url }}" class="bar-item button" onclick="toggleFunction()"><i class="fa-solid fa-shop"></i> SHOP</a>
         </div>
     
@@ -25,9 +25,9 @@
             function toggleFunction() {
                 let x = document.getElementById("navDemo");
                 if (x.className.indexOf("show") === -1) {
-                    x.className += " w3-show";
+                    x.className += " show";
                 } else {
-                    x.className = x.className.replace(" w3-show", "");
+                    x.className = x.className.replace(" show", "");
                 }
             }
         </script>
