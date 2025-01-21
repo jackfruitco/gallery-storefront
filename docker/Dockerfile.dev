@@ -62,5 +62,5 @@ COPY .. .
 EXPOSE 8000
 
 # Run the application.
-RUN ["chmod", "+x", "docker/docker-entrypoint.dev.sh"]
-ENTRYPOINT ["docker/docker-entrypoint.dev.sh"]
+RUN ["chmod", "+x", "docker/entrypoint.dev.sh"]
+ENTRYPOINT ["docker/entrypoint.dev.sh"]
