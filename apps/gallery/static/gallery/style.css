@@ -3,39 +3,43 @@
     height: 40vh;
 }
 
-@media only screen and (min-device-width: 768px) {
-    .bgimg-2 {
-        background-image: url("https://public.potterybymarnie.com/gallery/images/multiple-items.png");
-    }
-}
-
 img.featured {
     margin: auto;
     max-height: 50vh;
     max-width: 90vw;
 }
-.item-details {
-    margin: auto;
-}
+.full-size { height: 100%; !important;}
+.item-details { margin: auto; }
+.no-radius { border-radius: 0 !important; }
 
-@media only screen and (max-device-width: 768px) {
-    .flex-left {
-        justify-content: center;
-    }
-}
-
-.container::before {}
-
+/* START MEDIUM screen media query */
 @media only screen and (min-device-width: 768px) {
+    .bgimg-2 {
+        background-image: url("https://public.potterybymarnie.com/gallery/images/multiple-items.png");
+    }
     img.featured {
         max-height: 60vh;
-        max-width: 100vw;
+        max-width: 60vw;
         padding-right: 1vw;
     }
-
     .flex .item {
         max-width: 60vw;
         flex-direction: column;
         margin: auto 5%;
     }
+
 }
+/* END MEDIUM screen media query */
+
+
+/* START LARGE screen media query */
+@media only screen and (min-device-width: 1024px) {
+    img.featured {
+        max-height: 40vh;
+        max-width: 30vw;
+    }
+    .flex .item { h6 { margin-right: 15vw; !important } }
+}
+/* END LARGE screen media query */
+
+.container::before {}

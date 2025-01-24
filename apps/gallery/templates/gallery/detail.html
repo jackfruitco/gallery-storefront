@@ -6,38 +6,38 @@
 
 {% block style %}
     {{ block.super }}
-    <link rel="stylesheet" href={% static "gallery/style.css" %}>
     <style>
     html, body {
         background-color: rgba(var(--tertiary-color), 0.4);
-        color: silver;
+        color: rgba(var(--primary-color-dark), 0.8);
     }
-    .bar {
-        background-color: rgba(var(--tertiary-color), 0.6);
-        color: #000000;
-    }
-    .bar:hover { opacity: 1 !important; }
+    #Navbar { background-color: rgba(var(--secondary-color), 0.3); }
+    hr { border-color: rgba(var(--secondary-color), 0.8); }
     </style>
 {% endblock style %}
 
 {% block content %}
-    <div class="flex flex-left no-wrap" style="padding: 56px">
-        {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-        <img class="featured round-xxlarge" src="{{ product.get_feature_image.image.url }}"
-             alt="{{ product.get_feature_image.description }}">
-        <div class="item">
-            <h1>{{ product.name }}</h1>
-            <hr><h6>
-            {% if product.shopify_sync and product.shopify_status == 'ACTIVE' %}
-            <a href="{{ product.get_shop_url }}"><i>Available!</i></a>
-            {% endif %}{{ product.description }}</h6>
-        </div>
+    <div class="flex col">
+        <section class="flex left no-wrap" style="padding: 56px">
+            {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+            <img class="featured round-xxlarge" src="{{ product.get_feature_image.image.url }}"
+                 alt="{{ product.get_feature_image.description }}">
+            <div class="item">
+                <h1>{{ product.name }}</h1>
+                <hr><h6>
+                {% if product.shopify_sync and product.shopify_status == 'ACTIVE' %}
+                <a href="{{ product.get_shop_url }}"><i>Available!</i></a>
+                {% endif %}{{ product.description }}</h6>
+            </div>
+        </section>
+        <section id="product-images" class="flex carousel center">
+            {% for img in product.get_images %}
+                <section id='{{ img.description }}' class="item-container full-size transparent">
+                    <div class="item-img transparent">
+                        <img class="carousel transparent no-radius" src="{{ img.image.url }}" alt="{{ img.description }}">
+                    </div>
+                </section>
+            {% endfor %}
+        </section>
     </div>
-
-    <div class="carousel-container">
-        {% for img in product.get_images %}
-            <img class="carousel round-xlarge" src="{{ img.image.url }}" alt="{{ img.description }}">
-        {% endfor %}
-    </div>
-
-{% endblock %}
+{% endblock content %}
