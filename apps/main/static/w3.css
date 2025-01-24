@@ -69,7 +69,7 @@ hr{border:0;border-top:1px solid #eee;margin:20px 0}
 .responsive{display:block;overflow-x:auto}
 .container:after,.container:before,.panel:after,.panel:before,.row:after,.row:before,.row-padding:after,.row-padding:before,
 .cell-row:before,.cell-row:after,.clear:after,.clear:before,.bar:before,.bar:after{content:"";display:table;clear:both}
-.col,.half,.third,.twothird,.threequarter,.quarter{float:left;width:100%}
+.half,.third,.twothird,.threequarter,.quarter{float:left;width:100%}
 .col.s1{width:8.33333%}.col.s2{width:16.66666%}.col.s3{width:24.99999%}.col.s4{width:33.33333%}
 .col.s5{width:41.66666%}.col.s6{width:49.99999%}.col.s7{width:58.33333%}.col.s8{width:66.66666%}
 .col.s9{width:74.99999%}.col.s10{width:83.33333%}.col.s11{width:91.66666%}.col.s12{width:99.99999%}

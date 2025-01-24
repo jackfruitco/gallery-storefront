@@ -4,18 +4,24 @@
     --tertiary-color: 120, 134, 107;
     --primary-color-dark: 61, 61, 61;
     --white: 255, 255, 255;
+    background-color: inherit;
 }
-
 
 html, body { height: 100%; margin: auto; }
 body { background-color: rgba(var(--secondary-color), 0.6); }
 h1, h2, h3, h4, h5, h6, body, p, main { font-family: "Segoe UI", system-ui, sans-serif; }
 h1, h2, h3 { font-size: 10vw; }
-h4, h5 { font-size: 8vw; }
-h6, p { font-size: 6vw; }
+h4, h5 { font-size: 7vw; }
+h6, p { font-size: 4vw; }
 
+#Navbar {
+    width: 100vw;
+    background-color: rgba(var(--white), 0.3);
+    color: rgba(var(--primary-color-dark), 0.9);
+    overflow: hidden;
+    :hover { opacity: 1.0 !important; }
+}
 
-#Navbar { background-color: rgba(var(--white), 0.3) }
 .bgimg-1, .bgimg-2, .bgimg-3 {
     background-attachment: scroll;
     min-height: 100vh;
@@ -24,8 +30,14 @@ h6, p { font-size: 6vw; }
 
 #Gallery { padding-top: 2vh; }
 
-.flex { width: 100%; }
-.flex.no-wrap { flex-wrap: wrap; }
+.flex {
+    width: 100%;
+    display: flex;
+    flex-flow: row wrap;
+}
+.flex .col { flex-flow: column wrap; float: none; }
+.flex .nowrap { flex-wrap: nowrap; }
+.flex .left { justify-content: center; text-align: center; }
 
 .carousel {
     display: flex;
@@ -54,7 +66,7 @@ h6, p { font-size: 6vw; }
             img {
                 max-width: 100%;
                 max-height: 100%;
-                align-self: center;
+                margin: auto;
                 padding: 1vw;
                 border-radius: 5vw;
             }
@@ -76,8 +88,8 @@ h6, p { font-size: 6vw; }
 .flex-right { justify-content: flex-end; }
 .center { justify-content: center; }
 
-/* START medium screen media query */
-@media only screen and (min-device-width: 400px) {
+/* START MEDIUM screen media query */
+@media only screen and (min-device-width: 768px) {
     h1 { font-size: 5.5vw; }
     h2 { font-size: 5.0vw; }
     h3 { font-size: 4.5vw; }
@@ -87,9 +99,11 @@ h6, p { font-size: 6vw; }
     p  { font-size: 2.0vw; }
     .carousel {
         .item-container {
-            width: 45vw;
+            min-width: 125px;
+            max-width: 45vw;
             height: 60vw;
             margin: auto auto 2vw auto;
+            padding: 1vw;
             border-style: none;
             .item-img {
                 height: 85%;
@@ -99,8 +113,8 @@ h6, p { font-size: 6vw; }
 }
 /* END medium screen media query */
 
-/* START large screen media query */
-@media only screen and (min-device-width: 768px) {
+/* START LARGE screen media query */
+@media only screen and (min-device-width: 1024px) {
     h1 { font-size: 3.0vw;  }
     h2 { font-size: 2.5vw;  }
     h3 { font-size: 2.0vw;  }
@@ -121,11 +135,13 @@ h6, p { font-size: 6vw; }
     }
 
     .flex.no-wrap { flex-wrap: nowrap; }
+    .flex .left { justify-content: flex-start; text-align: start; }
 
     .carousel {
         .item-container {
+            min-width: 125px;
+            max-width: 18vw;
             height: 30vw;
-            width: 18vw;
             border-style: none;
         }
     }
