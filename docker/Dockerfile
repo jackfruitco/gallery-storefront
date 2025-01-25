@@ -55,5 +55,4 @@ COPY .. .
 EXPOSE 8000
 
 # Run the application
-RUN ["chmod", "+x", "docker/entrypoint.sh"]
 ENTRYPOINT ["docker/entrypoint.sh"]
