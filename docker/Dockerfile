@@ -54,5 +54,8 @@ COPY .. .
 # Expose the port that the application listens on.
 EXPOSE 8000
 
+# Check that Django Server is running
+HEALTHCHECK --interval=10s --timeout=5s --start-period=10s --retries=10 CMD docker/healthcheck.sh
+
 # Run the application
 ENTRYPOINT ["docker/entrypoint.sh"]

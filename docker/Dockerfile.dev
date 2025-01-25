@@ -53,13 +53,16 @@ RUN apt-get update && apt-get install -y \
     curl
 
 # Switch to the non-privileged user to run the application.
-# USER appuser
+USER appuser
 
 # Copy the source code into the container.
 COPY .. .
 
 # Expose the port that the application listens on.
 EXPOSE 8000
+
+# Check that Django Server is running
+HEALTHCHECK --interval=10s --timeout=5s --start-period=10s --retries=10 CMD docker/healthcheck.sh
 
 # Run the application.
 ENTRYPOINT ["docker/entrypoint.dev.sh"]
