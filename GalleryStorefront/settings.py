@@ -87,7 +87,7 @@ STORAGES = {
         ),
     },
     "staticfiles": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
     },
 }
 
