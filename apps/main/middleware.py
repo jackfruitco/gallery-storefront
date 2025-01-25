@@ -1,3 +1,5 @@
+import json
+
 from django.http import HttpResponse
 
 
@@ -7,5 +9,7 @@ class HealthCheckMiddleware:
 
     def __call__(self, request):
         if request.path == '/health':
-            return HttpResponse('ok')
+            s = {'status': 'ok'}
+            return HttpResponse(status=200, content=json.dumps(s),
+                                content_type='application/json')
         return self.get_response(request)
