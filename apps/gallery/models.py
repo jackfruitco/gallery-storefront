@@ -164,7 +164,7 @@ class Product(models.Model):
         return (
             ProductImage.objects.filter(fk_product=self.pk)
             .filter(feature_image=False)
-            .all()[:4]
+            .all()[:8]
         )
 
     def get_variants(self) -> list or None:
