@@ -35,7 +35,7 @@ img.featured {
 /* START LARGE screen media query */
 @media only screen and (min-device-width: 1024px) {
     img.featured {
-        max-height: 40vh;
+        max-height: none;
         max-width: 30vw;
     }
     .flex .item { h6 { margin-right: 15vw; !important } }
