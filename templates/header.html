@@ -1,35 +1,19 @@
 {% load static %}
 
 <header id="header">
-    <!-- Navbar (sit on top) -->
+    <!-- Navbar  -->
     <div class="top">
-        <div class="bar" id="Navbar">
-          <a class="bar-item button hover-black hide-medium hide-large right" href="javascript:void(0);" onclick="toggleFunction()" title="Toggle Navigation Menu">
-            <i class="fa fa-bars"></i>
-          </a>
-          <a href="{% url 'main:index' %}" class="bar-item button"><i class="fa-solid fa-house"></i> HOME</a>
-          <a href="{% url 'gallery:index' %}" class="bar-item button hide-small"><i class="fa fa-th"></i> GALLERY</a>
-          <a href="{{ shopify_app_url }}" class="bar-item button hide-small"><i class="fa-solid fa-shop"></i> SHOP</a>
-          <!--<a href="{% url 'admin:index' %}" style="float: right; background: #ffffff; opacity: 0.5" class="bar-item button" onclick="toggleFunction()">Admin Site</a>-->
-          <!--<a href="#" class="bar-item button hide-small right hover-red"><i class="fa fa-search"></i></a>-->
+        <div class="bar" id="Navbar" x-data="{ open: false }">
+            <button @click="open = ! open" @click.outside="open = false" class="bar-item button hover-black hide-large right"><i class="fa fa-bars"></i></button>
+            <a href="{% url 'main:index' %}" class="bar-item button"><i class="fa-solid fa-house"></i> HOME</a>
+            <a href="{% url 'gallery:index' %}" class="bar-item button hide-small"><i class="fa fa-th"></i> GALLERY</a>
+            <a href="{{ shopify_app_url }}" class="bar-item button hide-small"><i class="fa-solid fa-shop"></i> SHOP</a>
+
+            <!-- Navbar (small screens only) -->
+            <div id="navSmall" x-cloak x-show.important="open" class="bar-block white hide-large hide-medium" >
+                <a href="{% url 'gallery:index' %}" class="bar-item button" @click="open = false"><i class="fa fa-th"></i> GALLERY</a>
+                <a href="{{ shopify_app_url }}" class="bar-item button" @click="open = false"><i class="fa-solid fa-shop"></i> SHOP</a>
+            </div>
         </div>
-    
-      <!-- Navbar on small screens -->
-        <div id="navDemo" class="bar-block white hide hide-large hide-medium">
-            <a href="{% url 'gallery:index' %}" class="bar-item button" onclick="toggleFunction()"><i class="fa fa-th"></i> GALLERY</a>
-            <a href="{{ shopify_app_url }}" class="bar-item button" onclick="toggleFunction()"><i class="fa-solid fa-shop"></i> SHOP</a>
-        </div>
-    
-        <script>
-        // Used to toggle the menu on small screens when clicking on the menu button
-            function toggleFunction() {
-                let x = document.getElementById("navDemo");
-                if (x.className.indexOf("show") === -1) {
-                    x.className += " show";
-                } else {
-                    x.className = x.className.replace(" show", "");
-                }
-            }
-        </script>
     </div>
 </header>
