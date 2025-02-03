@@ -1,6 +1,6 @@
 <section id="product-carousel" class="carousel center">
-{% if product_list %}
-    {% for product in product_list %}
+{% if products %}
+    {% for product in products %}
         <section id='{{ product.name }}' class="item-container">
         {% with category=product.category.first.name slug=product.slug img=product.get_feature_image %}
         <div class="item-img">

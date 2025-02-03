@@ -19,6 +19,18 @@
 {% endblock parallax %}
 
 {% block content %}
+    <section id="filter-selection" class="flex flex-left">
+        <h3>Filter by Category</h3>
+        {% for category in categories %}
+            <button type="button"
+                    hx-target="#Gallery"
+                    hx-swap="innerHTML"
+                    hx-get='{% url "gallery:carousel-filter" category.name %}'>
+                {{ category.name }}
+            </button>
+        {% endfor %}
+    </section>
+
     <section id="Gallery">
         {% include 'gallery/product-carousel.html' %}
     </section>
