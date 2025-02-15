@@ -27,6 +27,7 @@ if (hosts := os.getenv("DJANGO_ALLOWED_HOSTS", None)) is not None:
 # CSRF Configuration
 if (origins := os.getenv("CSRF_TRUSTED_ORIGINS", None)) is not None:
     CSRF_TRUSTED_ORIGINS = origins.split(", ")
+
 CSRF_COOKIE_SECURE = True if (
         os.getenv("CSRF_COOKIE_SECURE", "false").lower() == "true"
 ) else False
@@ -98,16 +99,25 @@ STORAGES = {
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("POSTGRES_DB"),
-        "USER": os.getenv("POSTGRES_USER"),
-        "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
-        "HOST": os.getenv("POSTGRES_HOST"),
-        "PORT": os.getenv("POSTGRES_PORT"),
+# Currently Configured Databases: Postgres (default), SQLite
+# Database engine can be chosen via environment variable "DATABASE"
+if (db_engine := os.getenv("DATABASE", None)) == "sqlite3":
+    default = {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
-}
+# elif db_engine == "":
+else:
+    default = {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("DB_NAME", "AppDatabase"),
+        "USER": os.getenv("DB_USER", "appuser"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": os.getenv("DB_HOST", "db"),
+        "PORT": os.getenv("DB_PORT", "5432"),
+    }
+
+DATABASES = { 'default': default }
 
 LOGGING = {
     "version": 1,  # the dictConfig format version
