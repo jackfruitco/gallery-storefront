@@ -19,10 +19,10 @@
 {% endblock parallax %}
 
 {% block content %}
-    <section id="filter-selection" class="flex flex-left">
-        <h3>Filter by Category</h3>
+    <section id="filter-selection" class="flex center">
         {% for category in categories %}
             <button type="button"
+                    class="button"
                     hx-target="#Gallery"
                     hx-swap="innerHTML"
                     hx-get='{% url "gallery:carousel-filter" category.name %}'>

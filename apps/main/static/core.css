@@ -86,8 +86,7 @@ h6, p { font-size: 4vw; }
 .no-marg { margin: 0!important;}
 .flex { display: flex; flex-flow: row wrap; }
 .flex.item { width: inherit; }
-.flex-left { justify-content: flex-start; }
-.flex-right { justify-content: flex-end; }
+
 .center { justify-content: center; }
 
 /* START MEDIUM screen media query */
