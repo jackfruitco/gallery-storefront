@@ -10,22 +10,26 @@ from apps import shopify_app
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY_INSECURE = (
-    "django-insecure-h##h3=8!gm4$46q3vm2%o3$*9pjb6ghrbih)!pd2wk=-1va8pv"
+SECRET_KEY = os.getenv(
+    "DJANGO_SECRET_KEY",
+    "django-insecure-ny+o5v-y861n+kguypqq2)ivq89wym@+e0fm5d)l1qx968ehc&"
 )
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", SECRET_KEY_INSECURE)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DJANGO_DEBUG", "") != "False"
+DEBUG = True if (
+        os.getenv("DJANGO_DEBUG", "false").lower() == "true"
+) else False
 
-envvar = os.getenv("DJANGO_ALLOWED_HOSTS", None)
-if envvar:
-    ALLOWED_HOSTS = envvar.split(", ")
+# Set Allowed Hosts
+if (hosts := os.getenv("DJANGO_ALLOWED_HOSTS", None)) is not None:
+    ALLOWED_HOSTS = hosts.split(", ")
 
-CSRF_COOKIE_SECURE = os.environ.get("CSRF_COOKIE_SECURE", "") != "False"
-envvar = os.getenv("CSRF_TRUSTED_ORIGINS", None)
-if envvar:
-    CSRF_TRUSTED_ORIGINS = envvar.split(", ")
+# CSRF Configuration
+if (origins := os.getenv("CSRF_TRUSTED_ORIGINS", None)) is not None:
+    CSRF_TRUSTED_ORIGINS = origins.split(", ")
+CSRF_COOKIE_SECURE = True if (
+        os.getenv("CSRF_COOKIE_SECURE", "false").lower() == "true"
+) else False
 
 # Application definition
 INSTALLED_APPS = [
