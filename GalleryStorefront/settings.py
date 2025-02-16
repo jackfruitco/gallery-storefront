@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     "apps.gallery.apps.GalleryConfig",
     "apps.store.apps.StoreConfig",
     "apps.shopify_app.apps.ShopifyAppConfig",
-    # 'django_htmx',
     "nested_admin",
 ]
 
@@ -59,7 +58,6 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "apps.shopify_app.middleware.LoginProtection",
-    # 'django_htmx.middleware.HtmxMiddleware',
 ]
 
 ROOT_URLCONF = "GalleryStorefront.urls"
