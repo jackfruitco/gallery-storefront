@@ -18,18 +18,19 @@ logger = logging.getLogger(__name__)
 #         """Return the last 16 published products."""
 #         return Product.objects.filter(status="ACTIVE").order_by("-created_at")[:16]
 
+
 def IndexView(request):
     products = Product.objects.filter(status="ACTIVE").order_by("-created_at")[:16]
     categories = ProductCategory.objects.all()
     return render(
-        request,
-        "gallery/index.html",
-        {"products": products, "categories": categories}
+        request, "gallery/index.html", {"products": products, "categories": categories}
     )
+
 
 class DetailView(generic.DetailView):
     template_name = "gallery/detail.html"
     model = Product
+
 
 @require_http_methods(["GET"])
 def carousel_filter(request):
@@ -46,5 +47,5 @@ def carousel_filter(request):
     return render(
         request,
         "gallery/product-carousel.html",
-        {"products": products, "filters": filters}
+        {"products": products, "filters": filters},
     )

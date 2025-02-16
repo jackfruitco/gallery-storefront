@@ -1,7 +1,7 @@
 # Gallery Storefront Django Project
-This Django project's goal is to create a website that serves the dual purpose of a showcase gallery and storefront. 
+This Django project's goal is to create a website that serves the dual purpose of a showcase gallery and storefront.
 
-The storefront uses Shopify as a backend, via shopify-python-api and GraphQL API integration. Both the site and Shopify store use the site as the database of truth, meaning products should only be managed via the Django Project Admin page. 
+The storefront uses Shopify as a backend, via shopify-python-api and GraphQL API integration. Both the site and Shopify store use the site as the database of truth, meaning products should only be managed via the Django Project Admin page.
 
 ***This project is not yet complete, and as such, not all capabilities exist.***
 
@@ -12,7 +12,7 @@ The storefront uses Shopify as a backend, via shopify-python-api and GraphQL API
 
 **GraphQL API**
 - [ ] **BUG**: Fix media upload
-  - Desired End State: 
+  - Desired End State:
     - Media uploaded via Admin are pushed to Shopify via GraphQL API
   - Current State:
     - ShopifyBridge stages media, and creates media. Media fails processing due to 'corrupt file'

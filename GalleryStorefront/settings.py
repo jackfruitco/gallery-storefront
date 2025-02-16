@@ -12,13 +12,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv(
     "DJANGO_SECRET_KEY",
-    "django-insecure-ny+o5v-y861n+kguypqq2)ivq89wym@+e0fm5d)l1qx968ehc&"
+    "django-insecure-ny+o5v-y861n+kguypqq2)ivq89wym@+e0fm5d)l1qx968ehc&",
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True if (
-        os.getenv("DJANGO_DEBUG", "false").lower() == "true"
-) else False
+DEBUG = True if (os.getenv("DJANGO_DEBUG", "false").lower() == "true") else False
 
 # Set Allowed Hosts
 if (hosts := os.getenv("DJANGO_ALLOWED_HOSTS", None)) is not None:
@@ -28,9 +26,9 @@ if (hosts := os.getenv("DJANGO_ALLOWED_HOSTS", None)) is not None:
 if (origins := os.getenv("CSRF_TRUSTED_ORIGINS", None)) is not None:
     CSRF_TRUSTED_ORIGINS = origins.split(", ")
 
-CSRF_COOKIE_SECURE = True if (
-        os.getenv("CSRF_COOKIE_SECURE", "false").lower() == "true"
-) else False
+CSRF_COOKIE_SECURE = (
+    True if (os.getenv("CSRF_COOKIE_SECURE", "false").lower() == "true") else False
+)
 
 # Application definition
 INSTALLED_APPS = [
@@ -101,8 +99,8 @@ STORAGES = {
 # Database engine can be chosen via environment variable "DATABASE"
 if (db_engine := os.getenv("DATABASE", None)) == "sqlite3":
     default = {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
 # elif db_engine == "":
 else:
@@ -115,7 +113,7 @@ else:
         "PORT": os.getenv("DB_PORT", "5432"),
     }
 
-DATABASES = { 'default': default }
+DATABASES = {"default": default}
 
 LOGGING = {
     "version": 1,  # the dictConfig format version

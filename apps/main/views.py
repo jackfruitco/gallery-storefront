@@ -9,11 +9,11 @@ def index(request):
     num_visits += 1
     request.session["num_visits"] = num_visits
 
-    products = Product.objects.filter(
-        status="ACTIVE"
-    ).filter(
-        feature=True
-    ).order_by("-created_at")[:4]
+    products = (
+        Product.objects.filter(status="ACTIVE")
+        .filter(feature=True)
+        .order_by("-created_at")[:4]
+    )
 
     return render(
         request,
