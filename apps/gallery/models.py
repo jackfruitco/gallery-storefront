@@ -66,7 +66,7 @@ class Product(models.Model):
     )
 
     @property
-    def display(self) -> bool:
+    def is_active(self) -> bool:
         """Used to check if Bool to display on gallery website."""
         return True if self.status == "ACTIVE" else False
 
