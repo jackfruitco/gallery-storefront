@@ -30,6 +30,11 @@ h6, p { font-size: 4vw; }
     background-size: cover;
 }
 
+.iconify.fit {
+    max-height: 100%;
+    max-width: 100%;
+}
+
 #Gallery { padding-top: 2vh; }
 
 .flex {

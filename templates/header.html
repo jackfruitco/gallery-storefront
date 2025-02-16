@@ -4,10 +4,15 @@
     <!-- Navbar  -->
     <div class="top">
         <div class="bar" id="Navbar" x-data="{ open: false }">
-            <button @click="open = ! open" @click.outside="open = false" class="bar-item button hover-black hide-large right"><i class="fa fa-bars"></i></button>
-            <a href="{% url 'main:index' %}" class="bar-item button"><i class="fa-solid fa-house"></i> HOME</a>
-            <a href="{% url 'gallery:index' %}" class="bar-item button hide-small"><i class="fa fa-th"></i> GALLERY</a>
-            <a href="{{ shopify_app_url }}" class="bar-item button hide-small"><i class="fa-solid fa-shop"></i> SHOP</a>
+            <button @click="open = ! open" @click.outside="open = false" class="bar-item button hover-black hide-large right">
+                <span class="iconify" data-icon="fa-solid:bars" data-inline="false"></span>
+            </button>
+            <a href="{% url 'main:index' %}" class="bar-item button">
+                <span class="iconify fit" data-icon="line-md:home-twotone" data-inline="false"></span> HOME</a>
+            <a href="{% url 'gallery:index' %}" class="bar-item button hide-small">
+                <span class="iconify fit" data-icon="line-md:grid-3-filled"></span> GALLERY</a>
+            <a href="{{ shopify_app_url }}" class="bar-item button hide-small">
+                <span class="iconify fit" data-icon="fa6-solid:shop"></span> SHOP</a>
 
             <!-- Navbar (small screens only) -->
             <div id="navSmall" x-cloak x-show.important="open" class="bar-block white hide-large hide-medium" >
