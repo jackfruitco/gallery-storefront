@@ -1,9 +1,12 @@
+import logging
+
 from django.shortcuts import render
 from django.views import generic
 from django.views.decorators.http import require_http_methods
 
 from .models import Product, ProductCategory
 
+logger = logging.getLogger(__name__)
 
 # Create your views here.
 
@@ -18,13 +21,30 @@ from .models import Product, ProductCategory
 def IndexView(request):
     products = Product.objects.filter(status="ACTIVE").order_by("-created_at")[:16]
     categories = ProductCategory.objects.all()
-    return render(request, "gallery/index.html", {"products": products, "categories": categories})
+    return render(
+        request,
+        "gallery/index.html",
+        {"products": products, "categories": categories}
+    )
 
 class DetailView(generic.DetailView):
     template_name = "gallery/detail.html"
     model = Product
 
 @require_http_methods(["GET"])
-def carousel_filter(request, category):
-    products = Product.objects.filter(category__name=category).order_by("-created_at")
-    return render(request, "gallery/product-carousel.html", {"products": products})
+def carousel_filter(request):
+    # Retrieve filters from request
+    filters = request.GET.getlist("filters", default=[])
+
+    # Set QuerySet to all products initially
+    products = Product.objects.filter(status="ACTIVE").order_by("-created_at")
+
+    # Apply filter if filters found in request
+    if filters:
+        products = products.filter(category__name__in=filters).order_by("-created_at")
+
+    return render(
+        request,
+        "gallery/product-carousel.html",
+        {"products": products, "filters": filters}
+    )

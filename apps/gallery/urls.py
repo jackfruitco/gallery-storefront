@@ -8,5 +8,5 @@ urlpatterns = [
     path(
         "<str:category>/<slug:slug>", views.DetailView.as_view(), name="product-detail"
     ),
-    path("filter/<str:category>", views.carousel_filter, name="carousel-filter"),
+    path("filter", views.carousel_filter, name="carousel-filter"),
 ]

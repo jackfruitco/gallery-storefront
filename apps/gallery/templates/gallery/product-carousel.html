@@ -1,4 +1,4 @@
-<section id="product-carousel" class="carousel center">
+<section id="product-carousel" class="carousel center" data-filters="{{ filters|safe }}">
 {% if products %}
     {% for product in products %}
         <section id='{{ product.name }}' class="item-container">

@@ -19,19 +19,53 @@
 {% endblock parallax %}
 
 {% block content %}
-    <section id="filter-selection" class="flex center">
+    <section id="filter-selection" class="flex center hide-small hide-medium" x-data="{}">
         {% for category in categories %}
-            <button type="button"
-                    class="button"
+            <button class="button"
+                    @click="$store.filters.toggle('{{ category.name }}')"
                     hx-target="#Gallery"
                     hx-swap="innerHTML"
-                    hx-get='{% url "gallery:carousel-filter" category.name %}'>
-                {{ category.name }}
+                    hx-get='{% url "gallery:carousel-filter" %}'
+                    :hx-vals='JSON.stringify({filters: $store.filters.list})'
+                    :class="$store.filters.list.length == 0 ? '' :
+                    $store.filters.list.includes('{{ category.name }}') ? 'filtered' : 'not-filtered'">
+            {{ category.name }}s
             </button>
         {% endfor %}
+        <div x-data>
+            <button class="reset"
+                    x-show="$store.filters.list.length > 0"
+                    @click="$store.filters.reset()"
+                    hx-target="#Gallery"
+                    hx-swap="innerHTML"
+                    hx-get='{% url "gallery:carousel-filter" %}'
+            >X</button>
+        </div>
     </section>
 
     <section id="Gallery">
         {% include 'gallery/product-carousel.html' %}
     </section>
+
+    {% block scripts %}
+        <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.store('filters', {
+                list: [],
+                toggle(filter) {
+                    console.log("toggling filter: " + filter);
+                    if (this.list.includes(filter)) {
+                        this.list = this.list.filter(item => item !== filter);
+                    } else {
+                        this.list.push(filter);
+                    }
+                    console.log(Alpine.store('filters').list);
+                },
+                reset() {
+                    this.list = [];
+                }
+            });
+        });
+        </script>
+    {% endblock scripts %}
 {% endblock content %}
