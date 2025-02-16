@@ -1,6 +1,6 @@
-<section id="product-carousel" class="carousel center">
-{% if product_list %}
-    {% for product in product_list %}
+<section id="product-carousel" class="carousel center" data-filters="{{ filters|safe }}">
+{% if products %}
+    {% for product in products %}
         <section id='{{ product.name }}' class="item-container">
         {% with category=product.category.first.name slug=product.slug img=product.get_feature_image %}
         <div class="item-img">
@@ -16,7 +16,7 @@
         </section>
     {% endfor %}
 {% else %}
-    <p style="padding-left: 20%">Uh oh... there are no products available to view.</p>
-    <p style="padding-left: 30%">Please check back soon!</p>
+    <h2 style="padding-left: 20%">Uh oh... there are no products available to view.</h2>
+    <h3 style="padding-left: 30%">Please check back soon!</h3>
 {% endif %}
 </section>

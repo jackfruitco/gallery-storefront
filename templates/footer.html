@@ -1,9 +1,14 @@
 <footer id="footer">
     <div class="center black padding-64">
-        <a href="{% url 'main:index' %}" class="button light-grey"><i class="fa fa-arrow-up margin-right"></i>To the top</a>
+        <a href="{% url 'main:index' %}" class="button light-grey">
+            <span class="iconify fit" data-icon="line-md:arrow-up"></span> To the top</a>
         <div class="xlarge section">
-            <a href="https://www.instagram.com/potterybymarnie/" class="fa fa-instagram hover-opacity"></a>
-            <a href="{{ shopify_app_url }}" class="fa fa-shopify hover-opacity"></a>
+            <a href="https:/www.instagram.com/potterybymarnie/" target="_blank" rel="noopener noreferrer">
+                <span class="iconify hover-opacity" data-icon="mdi:instagram" data-width="30" data-height="30" data-inline="false"></span>
+            </a>
+            <a href="{{ shopify_app_url }}" target="_blank" rel="noopener noreferrer">
+                <span class="iconify hover-opacity" data-icon="fa6-brands:shopify" data-width="30" data-height="30" data-inline="false"></span>
+            </a>
         </div>
         <a href="{% url 'admin:index' %}" class="hover-text-deep-orange">Admin Login</a>
         <p style="font-size: xx-small">Copyright © 2024-2025 {{ SITE_NAME }}. All rights reserved.</p>

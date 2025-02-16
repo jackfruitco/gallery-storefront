@@ -9,9 +9,13 @@
         <link rel="stylesheet" href={% static "w3.css" %}>
         <link rel="stylesheet" href={% static "core.css" %}>
     {% endblock style %}
-    <script src="https://kit.fontawesome.com/626fde7ac4.js" crossorigin="anonymous"></script>
-    <!--<script src="{% static 'htmx.min.js' %}" defer></script>-->
-    <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+    {% block head-scripts %}
+        <!--<script src="https://kit.fontawesome.com/626fde7ac4.js" crossorigin="anonymous"></script>-->
+        <script src="//code.iconify.design/1/1.0.6/iconify.min.js"></script>
+        <!--<script src="{% static 'htmx.min.js' %}" defer></script>-->
+        <script src="//unpkg.com/alpinejs" defer></script>
+        <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+    {% endblock head-scripts %}
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
     <meta name="description" property="og:description" content="{% block meta_description %}{{ SITE_DESCRIPTION }}{% endblock %}">
     <meta name="keywords" content="seo, pottery, marnie, potterybymarnie, ceramics, clay, handmade, glaze, syracuse, cny">
@@ -27,5 +31,7 @@
     </main>
 
     {% block footer %}{% include 'footer.html' %}{% endblock %}
+
+    {% block scripts %}{% endblock %}
 </body>
 </html>

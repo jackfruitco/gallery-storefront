@@ -347,6 +347,7 @@ class ProductImage(models.Model):
         populate_from="description", unique_with="fk_product", always_update=True
     )
     image = models.ImageField(upload_to=get_image_path)
+
     resource_url = models.URLField(
         max_length=500,
         blank=True,

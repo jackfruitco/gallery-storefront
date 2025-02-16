@@ -14,6 +14,8 @@ h1, h2, h3 { font-size: 10vw; }
 h4, h5 { font-size: 7vw; }
 h6, p { font-size: 4vw; }
 
+[x-cloak] { display: none !important; }
+
 #Navbar {
     width: 100vw;
     background-color: rgba(var(--white), 0.3);
@@ -26,6 +28,11 @@ h6, p { font-size: 4vw; }
     background-attachment: scroll;
     min-height: 100vh;
     background-size: cover;
+}
+
+.iconify.fit {
+    max-height: 100%;
+    max-width: 100%;
 }
 
 #Gallery { padding-top: 2vh; }
@@ -84,8 +91,7 @@ h6, p { font-size: 4vw; }
 .no-marg { margin: 0!important;}
 .flex { display: flex; flex-flow: row wrap; }
 .flex.item { width: inherit; }
-.flex-left { justify-content: flex-start; }
-.flex-right { justify-content: flex-end; }
+
 .center { justify-content: center; }
 
 /* START MEDIUM screen media query */
