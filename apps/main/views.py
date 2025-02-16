@@ -9,14 +9,16 @@ def index(request):
     num_visits += 1
     request.session["num_visits"] = num_visits
 
-    def get_queryset():
-        """Return the last five published questions."""
-        return Product.objects.filter(feature=True).order_by("-created_at")[:4]
+    products = Product.objects.filter(
+        status="ACTIVE"
+    ).filter(
+        feature=True
+    ).order_by("-created_at")[:4]
 
     return render(
         request,
         "main/index.html",
-        {"product_list": get_queryset()},
+        {"products": products},
     )
 
 
