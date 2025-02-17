@@ -20,7 +20,7 @@
     <div class="flex col">
         <section class="flex left no-wrap" style="padding: 56px">
             {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-            <img class="featured round-xxlarge" src="{{ product.get_feature_image.image.url }}"
+            <img class="featured round-xxlarge" src="{{ product.get_feature_image.thumbnail.url }}"
                  alt="{{ product.get_feature_image.description }}">
             <div class="item">
                 <h1>{{ product.name }}</h1>
@@ -34,7 +34,7 @@
             {% for img in product.get_images %}
                 <section id='{{ img.description }}' class="item-container full-size transparent">
                     <div class="item-img transparent">
-                        <img class="carousel transparent no-radius" src="{{ img.image.url }}" alt="{{ img.description }}">
+                        <img class="carousel transparent no-radius" src="{{ img.thumbnail.url }}" alt="{{ img.description }}">
                     </div>
                 </section>
             {% endfor %}

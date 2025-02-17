@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 class MediaUploadInline(admin.StackedInline):
     model = ProductImage
     extra = 1
-    max_num = 5
+    max_num = 9
 
     readonly_fields = [
         "resource_url",

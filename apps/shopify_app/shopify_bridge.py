@@ -245,7 +245,7 @@ def staged_uploads_create(obj):
         return False, config
 
     http_method = "PUT"
-    ext = get_ext(obj.image.url)
+    ext = get_ext(obj.thumbnail.url)
 
     with shopify.Session.temp(SHOP_URL, API_VERSION, config["token"]):
         response = shopify.GraphQL().execute(
@@ -276,11 +276,11 @@ def staged_uploads_create(obj):
 
     if http_method == "PUT":
         param_method = "headers"
-        # http['files'] = {'file': open(obj.image.url, 'rb').read()}
+        # http['files'] = {'file': open(obj.original.url, 'rb').read()}
         http["files"] = {"file": obj.get_file_data()}
     elif http_method == "POST":
         param_method = "files"
-        http[param_method] = {"file": open(obj.image.url, "rb").read()}
+        http[param_method] = {"file": open(obj.original.url, "rb").read()}
     else:
         param_method = ["missing"]
 

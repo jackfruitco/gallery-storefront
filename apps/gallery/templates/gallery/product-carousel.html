@@ -5,7 +5,7 @@
         {% with category=product.category.first.name slug=product.slug img=product.get_feature_image %}
         <div class="item-img">
             <a href="{% url 'gallery:product-detail' category slug %}">
-                <img class="round-large" src="{{ img.image.url }}" alt="{{ img.description }}">
+                <img class="round-large" src="{{ img.thumbnail.url }}" alt="{{ img.description }}">
             </a>
         </div>
         <div class="item-cap">

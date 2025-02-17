@@ -6,6 +6,8 @@ from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from imagekit.models import ImageSpecField
+from pilkit.processors import Thumbnail
 
 from GalleryStorefront.config import configure_s3
 from apps.shopify_app import shopify_bridge
@@ -333,20 +335,62 @@ class ProductImage(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     modified_at = models.DateTimeField(auto_now=True, editable=False)
 
-    fk_product = models.ForeignKey(to=Product, on_delete=models.CASCADE)
+    description = models.CharField(
+        max_length=100,
+        blank=False,
+        help_text="3-5 words describing the image",
+    )
+
+    slug = AutoSlugField(
+        populate_from="description",
+        unique_with="fk_product",
+        always_update=True,
+    )
+
+    original = models.ImageField(
+        upload_to=get_image_path,
+        verbose_name="image",
+        height_field="original_height",
+        width_field="original_width",
+    )
+
+    original_height = models.PositiveIntegerField(
+        editable=False,
+        blank=True,
+        null=True,
+    )
+
+    original_width = models.PositiveIntegerField(
+        editable=False,
+        blank=True,
+        null=True,
+    )
+
+    thumbnail = ImageSpecField(
+        source="original",
+        processors=[Thumbnail(width=300, height=300, crop=False)],
+        format="WEBP",
+        options={"quality": 80},
+    )
+
+    logo = ImageSpecField(
+        source="original",
+        processors=[Thumbnail(width=600, height=600, crop=False)],
+        format="WEBP",
+        options={"quality": 80},
+    )
+
+    fk_product = models.ForeignKey(
+        to=Product,
+        on_delete=models.CASCADE,
+    )
+
     feature_image = models.BooleanField(
         default=False,
         help_text="Enable to display image as the featured "
         "image. The featured image is used as the product's "
         "primary image",
     )
-    description = models.CharField(
-        max_length=100, blank=False, help_text="3-5 words describing the image"
-    )
-    slug = AutoSlugField(
-        populate_from="description", unique_with="fk_product", always_update=True
-    )
-    image = models.ImageField(upload_to=get_image_path)
 
     resource_url = models.URLField(
         max_length=500,
@@ -379,7 +423,7 @@ class ProductImage(models.Model):
         # Retrieve S3 Object Key from image url
         # Strips endpoint url, then strips querystring
         base_url = "%s/%s/" % (conf["endpoint_url"], conf["bucket_name"])
-        key = self.image.url[len(base_url) :].split("?")[0]
+        key = self.original.url[len(base_url) :].split("?")[0]
 
         # retrieves data of
         file_data = s3_client.get_object(
@@ -396,7 +440,7 @@ class ProductImage(models.Model):
             url = ""
         else:
             url = "http://localhost/"
-        url += self.image.url
+        url += self.original.url
         return url
 
     def __str__(self):
