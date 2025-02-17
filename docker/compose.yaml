@@ -1,56 +1,67 @@
 services:
   server:
-    # image: ghcr.io/jackruitco/gallery-storefront:${SERVER_IMAGE_TAG}
-    build:
-      context: ..
-      dockerfile: docker/Dockerfile
+    image: ghcr.io/jackfruitco/gallery-storefront:${SERVER_IMAGE_TAG:-latest}
+    # build:
+    #   context: .  .
+    #   dockerfile: docker/Dockerfile
     env_file:
-      - .env
-    expose:
-      - '8000'
+      - stack.env
     volumes:
       - static-vol:/app/static
       - media-vol:/app/media
+      - /opt/www/logs:/app/logs
     networks:
       - StoreNet
+    expose:
+      - '8000'
     depends_on:
       db:
         condition: service_healthy
 
   db:
-    image: postgres:16.4
+    image: postgres:${DB_IMAGE_TAG:-17.2-alpine}
     restart: always
+    user: postgres
     volumes:
       - db-data:/var/lib/postgresql/data
-    expose:
-      - '5432'
     env_file:
-      - .env
-    user: postgres
+      - stack.env
+    environment:
+      POSTGRES_DB: ${DB_NAME:-AppDatabase}
+      POSTGRES_USER: ${DB_USER:-appuser}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?password not set!}
+      POSTGRES_HOST: ${DB_HOST:-db}
+      POSTGRES_PORT: ${DB_PORT:-5432}
+    networks:
+      - StoreNet
+    expose:
+      - '${DB_PORT:-5432}'
     healthcheck:
       test: [ "CMD", "pg_isready" ]
       interval: 10s
       timeout: 5s
       retries: 5
-    networks:
-      - StoreNet
+
 
   nginx:
-    image: nginx:latest
+    image: nginx:${PROXY_IMAGE_TAG:-latest}
     ports:
       - '80:80'
     env_file:
-      - .env
+      - stack.env
     volumes:
-      - opt/www/nginx/custom-nginx.conf:/etc/nginx/conf.d/default.conf
+      - /opt/www/nginx/custom-nginx.conf:/etc/nginx/conf.d/default.conf
       # - ../nginx/custom-nginx.conf:/etc/nginx/conf.d/default.conf
       - static-vol:/app/static
       - media-vol:/app/media
     depends_on:
-      - server
+      server:
+        condition: service_healthy
     networks:
       - StoreNet
-      # - _TunnelNet            # Cloudflare Tunnel
+      - _TunnelNet            # Cloudflare Tunnel
+
+
 volumes:
   db-data:
   static-vol:
@@ -58,5 +69,5 @@ volumes:
 networks:
   StoreNet:
     driver: bridge
-#   _TunnelNet:
-#     external: True
+  _TunnelNet:
+    external: True

@@ -27,7 +27,7 @@ if (origins := os.getenv("CSRF_TRUSTED_ORIGINS", None)) is not None:
     CSRF_TRUSTED_ORIGINS = origins.split(", ")
 
 CSRF_COOKIE_SECURE = (
-    True if (os.getenv("CSRF_COOKIE_SECURE", "false").lower() == "true") else False
+    True if (os.getenv("CSRF_COOKIE_SECURE", "true").lower() == "true") else False
 )
 
 # Application definition
