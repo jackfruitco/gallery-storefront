@@ -46,14 +46,13 @@ RUN mkdir -p /app/static && \
     chown -R appuser:appuser /app/media && \
     chown -R appuser:appuser /app/logs
 
-# Install libpq (PostgreSQL client library)
+# Install packages
 RUN apt-get update && apt-get install -y \
-    libpq-dev \
     nano \
     curl
 
 # Switch to the non-privileged user to run the application.
-USER appuser
+# USER appuser
 
 # Copy the source code into the container.
 COPY .. .

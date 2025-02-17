@@ -41,7 +41,6 @@ RUN mkdir -p /app/static && \
 
 # Install libpq (PostgreSQL client library)
 RUN apt-get update && apt-get install -y \
-    libpq-dev \
     nano \
     curl
 
