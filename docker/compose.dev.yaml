@@ -19,7 +19,7 @@ services:
     expose:
       - 8000
     volumes:
-      - static-vol:/app/static
+      - static-vol:/app/staticfiles
       - media-vol:/app/media
     networks:
       - StoreNet
