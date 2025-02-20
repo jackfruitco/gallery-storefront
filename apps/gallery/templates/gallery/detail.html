@@ -20,8 +20,11 @@
     <div class="flex col">
         <section class="flex left no-wrap" style="padding: 56px">
             {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-            <img class="featured round-xxlarge" src="{{ product.get_feature_image.thumbnail.url }}"
-                 alt="{{ product.get_feature_image.description }}">
+            <img class="featured round-xxlarge"
+                 x-data="{ loaded: false }"
+                 x-intersect.once="loaded = true"
+                 :src=" loaded ? '{{ product.get_feature_image.thumbnail.url }}' : '{% static "gallery/svg/eos-icons--three-dots-loading.svg" %}'"
+                 :alt=" loaded ? '{{ product.get_feature_image.description }}' : 'image loading icon'">
             <div class="item">
                 <h1>{{ product.name }}</h1>
                 <hr><h6>
@@ -34,7 +37,12 @@
             {% for img in product.get_images %}
                 <section id='{{ img.description }}' class="item-container full-size transparent">
                     <div class="item-img transparent">
-                        <img class="carousel transparent no-radius" src="{{ img.thumbnail.url }}" alt="{{ img.description }}">
+                        <!--<img class="carousel transparent no-radius" src="{{ img.thumbnail.url }}" alt="{{ img.description }}">-->
+                        <img class="carousel transparent no-radius"
+                             x-data="{ loaded: false }"
+                             x-intersect.once="loaded = true"
+                             :src=" loaded ? '{{ img.thumbnail.url }}' : '{% static "gallery/svg/eos-icons--three-dots-loading.svg" %}'"
+                             :alt=" loaded ? '{{ img.description }}' : 'image loading icon'">
                     </div>
                 </section>
             {% endfor %}
