@@ -1,3 +1,5 @@
+{% load static %}
+
 <section id="product-carousel" class="carousel center" data-filters="{{ filters|safe }}">
 {% if products %}
     {% for product in products %}
@@ -5,7 +7,11 @@
         {% with category=product.category.first.name slug=product.slug img=product.get_feature_image %}
         <div class="item-img">
             <a href="{% url 'gallery:product-detail' category slug %}">
-                <img class="round-large" src="{{ img.thumbnail.url }}" alt="{{ img.description }}">
+                <img x-data="{ loaded: false }"
+                     x-intersect.once="loaded = true"
+                     :src=" loaded ? '{{ img.thumbnail.url }}' : '{% static "gallery/svg/eos-icons--three-dots-loading.svg" %}'"
+                     class="round-large"
+                     :alt=" loaded ? '{{ img.description }}' : 'loading icon'">
             </a>
         </div>
         <div class="item-cap">
