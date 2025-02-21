@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.views.generic import TemplateView
 
 from apps.gallery.models import Product
 
@@ -22,20 +23,5 @@ def index(request):
     )
 
 
-# class AboutView(generic.DetailView):
-# model = Profile
-# context_object_name = "profile"
-# queryset = Profile.objects.get(id=1)
-# template_name = "main/about_index.html"
-
-# def get_queryset(self):
-#    self.profile = get_object_or_404(Profile, slug=self.kwargs["slug"])
-#    # return Profile.objects.filter(id=self.profile.id)
-#    return Profile.objects.filter(id=1)
-
-# def get_context_data(self, **kwargs):
-#    # Call the base implementation first to get a context
-#    context = super().get_context_data(**kwargs)
-#    # Add in the publisher
-#    context["profile"] = self.profile
-#    return context
+class RobotsView(TemplateView):
+    template_name = "robots.txt"

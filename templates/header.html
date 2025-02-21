@@ -7,7 +7,7 @@
             <button @click="open = ! open" @click.outside="open = false" class="bar-item button hover-black hide-large right">
                 <span class="iconify" data-icon="fa-solid:bars" data-inline="false"></span>
             </button>
-            <a href="{% url 'main:index' %}" class="bar-item button">
+            <a href="{% url 'index' %}" class="bar-item button">
                 <span class="iconify fit" data-icon="line-md:home-twotone" data-inline="false"></span> HOME</a>
             <a href="{% url 'gallery:index' %}" class="bar-item button hide-small">
                 <span class="iconify fit" data-icon="line-md:grid-3-filled"></span> GALLERY</a>
