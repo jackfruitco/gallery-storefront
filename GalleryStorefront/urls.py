@@ -2,21 +2,27 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.sitemaps.views import sitemap
-from django.urls import include, path
+from django.urls import include
+from django.urls import path
 
 from apps.gallery.sitemaps import ProductSitemap
-from apps.main import views as main_views
+from apps.main import views as MainViews
 
 sitemaps = {
     "products": ProductSitemap,
 }
 urlpatterns = [
-    path("", main_views.index, name="index_redirect"),
+    path("", MainViews.index, name="index"),
     path("admin/", admin.site.urls, name="admin"),
     path("main/", include("apps.main.urls")),
     path("gallery/", include("apps.gallery.urls")),
     path("store/", include("apps.store.urls")),
     path("shopify/", include("apps.shopify_app.urls", namespace="shopify")),
+    path(
+        "robots.txt",
+        MainViews.RobotsView.as_view(content_type="text/plain"),
+        name="robots",
+    ),
     path(
         "sitemap.xml",
         sitemap,

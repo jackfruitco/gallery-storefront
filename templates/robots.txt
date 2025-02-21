@@ -1,0 +1,11 @@
+# robots.txt
+User-Agent: *
+Disallow: /admin/
+Disallow: /*?*
+Allow: /static/
+Allow: /media/
+
+User-agent: GPTBot
+Disallow: /
+
+Sitemap: https://potterybymarnie.com/sitemap.xml
