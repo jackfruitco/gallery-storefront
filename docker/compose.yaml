@@ -7,7 +7,7 @@ services:
     env_file:
       - stack.env
     volumes:
-      - static-vol:/app/static
+      - static-vol:/app/staticfiles
       - media-vol:/app/media
       - /opt/www/logs:/app/logs
     networks:

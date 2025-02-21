@@ -31,11 +31,11 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     python -m pip install -r requirements.txt
 
 # Create Static/Media/Logging Files Directory
-RUN mkdir -p /app/static && \
+RUN mkdir -p /app/staticfiles && \
     mkdir -p /app/media && \
     mkdir -p /app/logs && \
     touch /app/logs/general.log && \
-    chown -R appuser:appuser /app/static && \
+    chown -R appuser:appuser /app/staticfiles && \
     chown -R appuser:appuser /app/media && \
     chown -R appuser:appuser /app/logs
 
