@@ -11,11 +11,12 @@
     {% endblock style %}
     {% block head-scripts %}
         <script src="//code.iconify.design/1/1.0.6/iconify.min.js" defer></script>
-        <script src="{% static 'js/htmx.min.js' %}" defer></script>
-        <!--<script src="//unpkg.com/alpinejs" defer></script>--->
-        <script src="{% static 'js/intersect.min.js'%}" defer></script>
-        <script src="{% static "js/alpine.min.js" %}" defer></script>
-        <!--<script src="//unpkg.com/htmx.org@2.0.4" defer integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>-->
+        <!--<script src="{% static 'js/htmx.min.js' %}" defer></script>-->
+        <!--<script src="{% static 'js/intersect.min.js'%}" defer></script>--->
+        <!--<script src="{% static "js/alpine.min.js" %}" defer></script>--->
+        <script src="//unpkg.com/@alpinejs/intersect" defer></script>
+        <script src="//unpkg.com/alpinejs" defer></script>
+        <script src="//unpkg.com/htmx.org@2.0.4" defer integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
     {% endblock head-scripts %}
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
     <meta name="description" property="og:description" content="{% block meta_description %}{{ SITE_DESCRIPTION }}{% endblock %}">
