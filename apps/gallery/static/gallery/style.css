@@ -1,5 +1,5 @@
 .bgimg-2 {
-    background-image: url("https://potterybymarnie.com/cdn-cgi/image/q=85/https://public.potterybymarnie.com/gallery/images/bg-brick-wall.png");
+    background-image: url("https://potterybymarnie.com/cdn-cgi/image/q=85/https://public.potterybymarnie.com/gallery/images/bg-brick-wall.webp");
     height: 40vh;
 }
 
@@ -15,7 +15,7 @@ img.featured {
 /* START MEDIUM screen media query */
 @media only screen and (min-device-width: 768px) {
     .bgimg-2 {
-        background-image: url("https://public.potterybymarnie.com/gallery/images/multiple-items.png");
+        background-image: url("https://potterybymarnie.com/cdn-cgi/image/q=75/https://public.potterybymarnie.com/gallery/images/multiple-items.webp");
     }
     img.featured {
         max-height: 60vh;

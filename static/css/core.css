@@ -108,11 +108,15 @@ h6, p { font-size: 4vw; }
             min-width: 125px;
             max-width: 45vw;
             height: 60vw;
-            margin: auto auto 2vw auto;
+            margin: auto;
             padding: 1vw;
             border-style: none;
+            justify-content: start;
             .item-img {
-                height: 85%;
+                /* height: 85%; */
+            }
+            .item-cap {
+                margin-top: 5vh;
             }
         }
     }
