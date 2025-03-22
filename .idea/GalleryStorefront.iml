@@ -17,7 +17,7 @@
       <excludeFolder url="file://$MODULE_DIR$/.venv" />
       <excludeFolder url="file://$MODULE_DIR$/.venv1" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.13 (GalleryStorefront) (2)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="uv (GalleryStorefront)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="626fde7ac4" level="application" />
     <orderEntry type="library" name="htmx.org" level="application" />

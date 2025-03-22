@@ -1,5 +1,5 @@
 ARG PYTHON_VERSION=3.12.8
-FROM python:${PYTHON_VERSION}-slim AS base
+FROM ghcr.io/astral-sh/uv:python${PYTHON_VERSION}-bookworm-slim AS base
 
 # Prevents Python from writing pyc files.
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -28,7 +28,7 @@ RUN adduser \
 # into this layer.
 RUN --mount=type=cache,target=/root/.cache/pip \
     --mount=type=bind,source=requirements.txt,target=requirements.txt \
-    python -m pip install -r requirements.txt
+    uv pip install --system -r requirements.txt
 
 # Create Static/Media/Logging Files Directory
 RUN mkdir -p /app/staticfiles && \
