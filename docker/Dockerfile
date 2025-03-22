@@ -1,4 +1,4 @@
-ARG PYTHON_VERSION=3.12.8
+ARG PYTHON_VERSION=3.13
 FROM ghcr.io/astral-sh/uv:python${PYTHON_VERSION}-bookworm-slim AS base
 
 # Prevents Python from writing pyc files.
