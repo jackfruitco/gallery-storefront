@@ -24,10 +24,10 @@ def create_test_categories():
 
 def create_test_products():
     """Create test categories for use in development."""
-
+    num_of_products = int(input("How many test products should be created?"))
     print("...creating products:")
 
-    for i in range(21):
+    for i in range(num_of_products):
         o = P(
             name=lorem.get_word(count=(1, 5), sep=" ").capitalize(),
             description=lorem.get_sentence(
