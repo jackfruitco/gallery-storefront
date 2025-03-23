@@ -3,7 +3,7 @@ import logging
 from django.shortcuts import redirect
 from django.urls import reverse
 
-from apps.shopify_app.models import ShopifyAccessToken
+from shopify_app.models import ShopifyAccessToken
 
 logger = logging.getLogger(__name__)
 

@@ -2,7 +2,7 @@ import os
 
 from django import template
 
-from apps.gallery.models import Product
+from gallery.models import Product
 
 register = template.Library()
 

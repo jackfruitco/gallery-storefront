@@ -1,6 +1,6 @@
 import shopify
 
-from apps.shopify_app.apps import ShopifyAppConfig
+from shopify_app.apps import ShopifyAppConfig
 
 
 def shopify_custom(request):

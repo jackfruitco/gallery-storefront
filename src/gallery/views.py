@@ -4,7 +4,8 @@ from django.shortcuts import render
 from django.views import generic
 from django.views.decorators.http import require_http_methods
 
-from .models import Product, ProductCategory
+from .models import Product
+from .models import ProductCategory
 
 logger = logging.getLogger(__name__)
 

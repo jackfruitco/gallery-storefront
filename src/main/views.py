@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import TemplateView
 
-from apps.gallery.models import Product
+from gallery.models import Product
 
 
 def index(request):

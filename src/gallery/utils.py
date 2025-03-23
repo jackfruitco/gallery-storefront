@@ -2,7 +2,8 @@ import random
 
 import lorem
 
-from .models import Product as P, ProductCategory as C
+from .models import Product as P
+from .models import ProductCategory as C
 
 
 def create_test_categories():

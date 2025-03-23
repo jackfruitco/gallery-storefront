@@ -1,10 +1,7 @@
 import os
 from pathlib import Path
 
-from gunicorn import app
-
-from GalleryStorefront.config import configure_s3
-from apps import shopify_app
+from core.config import configure_s3
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -39,15 +36,15 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.sitemaps",
-    "apps.main.apps.MainConfig",
-    "apps.gallery.apps.GalleryConfig",
-    "apps.store.apps.StoreConfig",
-    "apps.shopify_app.apps.ShopifyAppConfig",
+    "main",
+    "gallery",
+    "store",
+    "shopify_app",
     "imagekit",
 ]
 
 MIDDLEWARE = [
-    "apps.main.middleware.HealthCheckMiddleware",
+    "main.middleware.HealthCheckMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -55,10 +52,10 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "apps.shopify_app.middleware.LoginProtection",
+    "shopify_app.middleware.LoginProtection",
 ]
 
-ROOT_URLCONF = "GalleryStorefront.urls"
+ROOT_URLCONF = "core.urls"
 
 TEMPLATES = [
     {
@@ -71,15 +68,15 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "apps.shopify_app.context_processors.shopify_custom",
-                "apps.store.context_processors.store",
-                "apps.main.context_processors.main",
+                "shopify_app.context_processors.shopify_custom",
+                "store.context_processors.store",
+                "main.context_processors.main",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = "GalleryStorefront.wsgi.application"
+WSGI_APPLICATION = "core.wsgi.application"
 
 STORAGES = {
     "default": {

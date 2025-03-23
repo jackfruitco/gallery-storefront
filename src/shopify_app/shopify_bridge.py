@@ -8,7 +8,7 @@ import shopify
 from django.contrib import messages
 from django.urls import reverse
 
-from apps.shopify_app.models import ShopifyAccessToken
+from shopify_app.models import ShopifyAccessToken
 from .apps import ShopifyAppConfig
 from .signals import sync_message
 

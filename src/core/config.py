@@ -1,6 +1,5 @@
 # Used for all global constants
 # Can be imported to any python module for use
-
 import os
 from dataclasses import dataclass
 

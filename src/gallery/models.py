@@ -9,10 +9,9 @@ from django.utils.translation import gettext_lazy as _
 from imagekit.models import ImageSpecField
 from pilkit.processors import Thumbnail
 
-from GalleryStorefront.config import configure_s3
-from apps.shopify_app import shopify_bridge
-from apps.shopify_app.apps import ShopifyAppConfig
-from apps.shopify_app.models import ShopifyAccessToken
+from core.config import configure_s3
+from shopify_app import shopify_bridge
+from shopify_app.apps import ShopifyAppConfig
 
 logger = logging.getLogger(__name__)
 

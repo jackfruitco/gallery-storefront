@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.views import generic
 from django.views.decorators.http import require_http_methods
 
-from apps.gallery.models import Product
+from gallery.models import Product
 
 
 class StoreListView(generic.ListView):

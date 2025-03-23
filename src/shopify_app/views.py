@@ -5,7 +5,8 @@ import binascii
 import shopify
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
+from django.shortcuts import render
 from django.urls import reverse
 from six.moves import urllib
 

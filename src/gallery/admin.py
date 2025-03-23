@@ -1,19 +1,18 @@
 import logging
 
-from django.contrib import admin, messages
+from django.contrib import admin
+from django.contrib import messages
 from django.dispatch import receiver
 from django.utils.safestring import mark_safe
 
-from apps.shopify_app.signals import sync_message
-from .models import (
-    Product,
-    ProductImage,
-    Color,
-    ProductCategory,
-    ProductVariant,
-    ProductOption,
-    ProductOptionValue,
-)
+from shopify_app.signals import sync_message
+from .models import Color
+from .models import Product
+from .models import ProductCategory
+from .models import ProductImage
+from .models import ProductOption
+from .models import ProductOptionValue
+from .models import ProductVariant
 
 logger = logging.getLogger(__name__)
 

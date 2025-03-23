@@ -41,7 +41,7 @@ def get_current_api_version() -> str:
 
 class ShopifyAppConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "apps.shopify_app"
+    name = "shopify_app"
 
     API_KEY = os.environ.get("SHOPIFY_API_KEY")
     API_SECRET = os.environ.get("SHOPIFY_API_SECRET")
