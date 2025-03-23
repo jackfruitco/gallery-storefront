@@ -9,7 +9,7 @@ from django.utils.translation import gettext_lazy as _
 from imagekit.models import ImageSpecField
 from pilkit.processors import Thumbnail
 
-from core.config import configure_s3
+from core.config import S3
 from shopify_app import shopify_bridge
 from shopify_app.apps import ShopifyAppConfig
 
@@ -410,7 +410,7 @@ class ProductImage(models.Model):
         from botocore.client import Config
 
         # Initiate S3 Client
-        conf = configure_s3()
+        conf = S3.get_config()
         s3_client = boto3.client(
             "s3",
             endpoint_url=conf["endpoint_url"],

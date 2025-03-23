@@ -1,7 +1,9 @@
 import os
 from pathlib import Path
 
-from core.config import configure_s3
+from core.config import S3
+
+# from core.config import configure_s3
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -81,7 +83,7 @@ WSGI_APPLICATION = "core.wsgi.application"
 STORAGES = {
     "default": {
         "BACKEND": "storages.backends.s3.S3Storage",
-        "OPTIONS": configure_s3(
+        "OPTIONS": S3.get_config(
             location=os.getenv("CLOUDFLARE_R2_DEFAULT_LOCATION", ""),
         ),
     },
